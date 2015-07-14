@@ -6,3 +6,7 @@
 psd
 config.py
 app.yaml
+node_modules
+tpl
+static
+bower_components
