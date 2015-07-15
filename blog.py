@@ -68,12 +68,12 @@ class BlogEntryHandler(BaseHandler):
             self.set_title(u'Topic Not Found')
             self.finalize(template_name='topic_not_found')
 
-def main():
-    application = webapp.WSGIApplication([
+application = webapp.WSGIApplication([
     ('/blog/([a-z0-9A-Z\_\-]+)', BlogHandler),
     ('/entry/([0-9]+)', BlogEntryHandler)
     ],
                                          debug=True)
+def main():
     util.run_wsgi_app(application)
 
 if __name__ == '__main__':

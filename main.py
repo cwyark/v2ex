@@ -72,7 +72,7 @@ class HomeHandler(webapp.RequestHandler):
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
         if member:
-            self.response.headers['Set-Cookie'] = 'auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/'
+            self.response.headers['Set-Cookie'] = str('auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
             template_values['member'] = member
             try:
                 blocked = pickle.loads(member.blocked.encode('utf-8'))
@@ -335,7 +335,7 @@ class SigninHandler(webapp.RequestHandler):
                 q = db.GqlQuery("SELECT * FROM Member WHERE username_lower = :1 AND password = :2", u.lower(), p_sha1)
             if (q.count() == 1):
                 member = q[0]
-                self.response.headers['Set-Cookie'] = 'auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/'
+                self.response.headers['Set-Cookie'] = str('auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
                 next = self.request.get('next').strip()
                 host = self.request.host + '/'
                 if next.rfind(host)>0 and not next.rfind('/sign'):
@@ -531,7 +531,7 @@ class SignupHandler(webapp.RequestHandler):
             member.put()
             counter.put()
             counter2.put()
-            self.response.headers['Set-Cookie'] = 'auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/'
+            self.response.headers['Set-Cookie'] = str('auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
             memcache.delete('member_total')
             self.redirect('/')
         else:
@@ -1198,26 +1198,27 @@ class ChangesHandler(webapp.RequestHandler):
         output = template.render(path, template_values)
         self.response.out.write(output)
 
+application = webapp.WSGIApplication([
+('/', HomeHandler),
+('/planes/?', PlanesHandler),
+('/recent', RecentHandler),
+('/ua', UAHandler),
+('/signin', SigninHandler),
+('/signup', SignupHandler),
+('/signout', SignoutHandler),
+('/forgot', ForgotHandler),
+('/reset/([0-9]+)', PasswordResetHandler),
+('/go/([a-zA-Z0-9]+)/graph', NodeGraphHandler),
+('/go/([a-zA-Z0-9]+)', NodeHandler),
+('/n/([a-zA-Z0-9]+).json', NodeApiHandler),
+('/q/(.*)', SearchHandler),
+('/_dispatcher', DispatcherHandler),
+('/changes', ChangesHandler),
+('/(.*)', RouterHandler)
+],
+                                     debug=True)
+
 def main():
-    application = webapp.WSGIApplication([
-    ('/', HomeHandler),
-    ('/planes/?', PlanesHandler),
-    ('/recent', RecentHandler),
-    ('/ua', UAHandler),
-    ('/signin', SigninHandler),
-    ('/signup', SignupHandler),
-    ('/signout', SignoutHandler),
-    ('/forgot', ForgotHandler),
-    ('/reset/([0-9]+)', PasswordResetHandler),
-    ('/go/([a-zA-Z0-9]+)/graph', NodeGraphHandler),
-    ('/go/([a-zA-Z0-9]+)', NodeHandler),
-    ('/n/([a-zA-Z0-9]+).json', NodeApiHandler),
-    ('/q/(.*)', SearchHandler),
-    ('/_dispatcher', DispatcherHandler),
-    ('/changes', ChangesHandler),
-    ('/(.*)', RouterHandler)
-    ],
-                                         debug=True)
     util.run_wsgi_app(application)
 
 

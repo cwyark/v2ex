@@ -331,8 +331,7 @@ class CurrencyHandler(ApiHandler):
             memcache.set('currency.json', o, 86400)
         self.write(o)
 
-def main():
-    application = webapp.WSGIApplication([
+application = webapp.WSGIApplication([
     ('/api/site/stats.json', SiteStatsHandler),
     ('/api/site/info.json', SiteInfoHandler),
     ('/api/nodes/all.json', NodesAllHandler),
@@ -345,6 +344,8 @@ def main():
     ('/api/currency.json', CurrencyHandler)
     ],
                                          debug=True)
+
+def main():
     util.run_wsgi_app(application)
 
 

@@ -104,14 +104,14 @@ class ImagesUploadRulesHandler(webapp.RequestHandler):
         output = template.render(path, template_values)
         self.response.out.write(output)
         
-
-def main():
-    application = webapp.WSGIApplication([
+application = webapp.WSGIApplication([
     ('/images/upload', ImagesUploadHandler),
     ('/images/upload/rules', ImagesUploadRulesHandler),
     ('/images/?', ImagesHomeHandler)
     ],
                                          debug=True)
+
+def main():
     util.run_wsgi_app(application)
 
 

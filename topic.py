@@ -1228,8 +1228,7 @@ class PageHitHandler(webapp.RequestHandler):
             page.hits = page.hits + 1
             page.put()
 
-def main():
-    application = webapp.WSGIApplication([
+application = webapp.WSGIApplication([
     ('/new/(.*)', NewTopicHandler),
     ('/t/([0-9]+)', TopicHandler),
     ('/t/([0-9]+).txt', TopicPlainTextHandler),
@@ -1241,6 +1240,9 @@ def main():
     ('/hit/page/(.*)', PageHitHandler)
     ],
                                          debug=True)
+
+
+def main():
     util.run_wsgi_app(application)
 
 

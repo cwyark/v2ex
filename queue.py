@@ -46,13 +46,13 @@ class MinusStarTopicHandler(webapp.RequestHandler):
             topic.put()
             memcache.set('Topic_' + str(topic.num), topic, 86400)
 
-
-def main():
-    application = webapp.WSGIApplication([
+application = webapp.WSGIApplication([
     ('/add/star/topic/(.*)', AddStarTopicHandler),
     ('/minus/star/topic/(.*)', MinusStarTopicHandler)
     ],
                                          debug=True)
+
+def main():
     util.run_wsgi_app(application)
 
 

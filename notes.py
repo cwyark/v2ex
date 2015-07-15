@@ -272,8 +272,7 @@ class NotesItemEditHandler(webapp.RequestHandler):
         else:
             self.redirect('/signin')
 
-def main():
-    application = webapp.WSGIApplication([
+application = webapp.WSGIApplication([
     ('/notes', NotesHomeHandler),
     ('/notes/new', NotesNewHandler),
     ('/notes/([0-9]+)', NotesItemHandler),
@@ -281,6 +280,8 @@ def main():
     ('/notes/([0-9]+)/edit', NotesItemEditHandler)
     ],
                                          debug=True)
+
+def main():
     util.run_wsgi_app(application)
 
 

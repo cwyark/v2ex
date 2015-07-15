@@ -114,14 +114,15 @@ class FeedNodeHandler(webapp.RequestHandler):
         self.response.headers['Content-type'] = 'application/xml;charset=UTF-8'
         self.response.out.write(output)
 
-def main():
-    application = webapp.WSGIApplication([
+ application = webapp.WSGIApplication([
     ('/index.xml', FeedHomeHandler),
     ('/read.xml', FeedReadHandler),
     ('/feed/v2ex.rss', FeedHomeHandler),
     ('/feed/([0-9a-zA-Z\-\_]+).xml', FeedNodeHandler)
     ],
                                          debug=True)
+
+def main():
     util.run_wsgi_app(application)
 
 

@@ -285,7 +285,7 @@ class SettingsHandler(webapp.RequestHandler):
                 member.password = hashlib.sha1(password_new).hexdigest()
                 member.auth = hashlib.sha1(str(member.num) + ':' + member.password).hexdigest()
                 member.put()
-                self.response.headers['Set-Cookie'] = 'auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/'
+                self.response.headers['Set-Cookie'] = str('auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
                 self.redirect('/settings')
             # Verification: email
             member_email_error = 0
@@ -641,7 +641,7 @@ class SettingsPasswordHandler(webapp.RequestHandler):
                 memcache.set(member.auth, member.num, 86400 * 14)
                 memcache.set('Member_' + str(member.num), member, 86400 * 14)
                 self.session['message'] = '密码已成功更新，下次请用新密码登录'
-                self.response.headers['Set-Cookie'] = 'auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/'
+                self.response.headers['Set-Cookie'] = str('auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
                 self.redirect('/settings')
             else:
                 if browser['ios']:
@@ -886,8 +886,7 @@ class MemberUnblockHandler(webapp.RequestHandler):
                     memcache.set('Member_' + str(member.num), member, 86400)
         self.redirect(go)
 
-def main():
-    application = webapp.WSGIApplication([
+application = webapp.WSGIApplication([
     ('/member/([a-z0-9A-Z\_\-]+)', MemberHandler),
     ('/member/([a-z0-9A-Z\_\-]+).json', MemberApiHandler),
     ('/settings', SettingsHandler),
@@ -897,6 +896,8 @@ def main():
     ('/unblock/(.*)', MemberUnblockHandler)
     ],
                                          debug=True)
+
+def main():
     util.run_wsgi_app(application)
 
 

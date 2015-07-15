@@ -87,13 +87,13 @@ class SSOX0Handler(webapp.RequestHandler):
         else:
             self.response.out.write(failed)
             
-
-def main():
-    application = webapp.WSGIApplication([
+application = webapp.WSGIApplication([
     ('/sso/v0', SSOV0Handler),
     ('/sso/x0', SSOX0Handler)
     ],
                                          debug=True)
+
+def main():
     util.run_wsgi_app(application)
 
 

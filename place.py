@@ -141,12 +141,13 @@ class PlaceMessageRemoveHandler(webapp.RequestHandler):
                         counter.put()
         self.redirect(go)
 
-def main():
-    application = webapp.WSGIApplication([
+application = webapp.WSGIApplication([
     ('/place/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})', PlaceHandler),
     ('/remove/place_message/(.*)', PlaceMessageRemoveHandler)
     ],
                                          debug=True)
+
+def main():
     util.run_wsgi_app(application)
 
 

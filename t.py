@@ -357,8 +357,8 @@ class TwitterApiCheatSheetHandler(webapp.RequestHandler):
         output = template.render(path, template_values)
         self.response.out.write(output)
         
-def main():
-    application = webapp.WSGIApplication([
+
+application = webapp.WSGIApplication([
     ('/twitter/?', TwitterHomeHandler),
     ('/twitter/mentions/?', TwitterMentionsHandler),
     ('/twitter/inbox/?', TwitterDMInboxHandler),
@@ -370,6 +370,7 @@ def main():
     ('/twitter/api/?', TwitterApiCheatSheetHandler)
     ],
                                          debug=True)
+def main():
     util.run_wsgi_app(application)
 
 

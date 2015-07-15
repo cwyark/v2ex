@@ -206,8 +206,7 @@ class UnfollowMemberHandler(webapp.RequestHandler):
                             memcache.set('Member::' + str(one.username_lower), one, 86400)
         self.redirect(go)
 
-def main():
-    application = webapp.WSGIApplication([
+application = webapp.WSGIApplication([
     ('/favorite/node/([a-zA-Z0-9]+)', FavoriteNodeHandler),
     ('/unfavorite/node/([a-zA-Z0-9]+)', UnfavoriteNodeHandler),
     ('/favorite/topic/([0-9]+)', FavoriteTopicHandler),
@@ -216,6 +215,8 @@ def main():
     ('/unfollow/([0-9]+)', UnfollowMemberHandler)
     ],
                                          debug=True)
+
+def main():
     util.run_wsgi_app(application)
 
 

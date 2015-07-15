@@ -32,13 +32,13 @@ class NodeAvatarHandler(webapp.RequestHandler):
             self.response.out.write(avatar.content)
         else:
             self.error(404)
-            
-def main():
-    application = webapp.WSGIApplication([
+           
+application = webapp.WSGIApplication([
     ('/avatar/([0-9]+)/(large|normal|mini)', AvatarHandler),
     ('/navatar/([0-9]+)/(large|normal|mini)', NodeAvatarHandler)
     ],
                                          debug=True)
+def main():
     util.run_wsgi_app(application)
 
 

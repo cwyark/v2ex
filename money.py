@@ -47,11 +47,12 @@ class MoneyDashboardHandler(BaseHandler):
         else:
             self.redirect('/signin')
 
-def main():
-    application = webapp.WSGIApplication([
+application = webapp.WSGIApplication([
     ('/money/dashboard/?', MoneyDashboardHandler)
     ],
                                          debug=True)
+
+def main():
     util.run_wsgi_app(application)
 
 

@@ -119,8 +119,7 @@ class AdvertisersHandler(webapp.RequestHandler):
         output = template.render(path, template_values)
         self.response.out.write(output)
 
-def main():
-    application = webapp.WSGIApplication([
+application = webapp.WSGIApplication([
     ('/about', AboutHandler),
     ('/faq', FAQHandler),
     ('/mission', MissionHandler),
@@ -128,6 +127,8 @@ def main():
     ('/advertisers', AdvertisersHandler)
     ],
                                          debug=True)
+
+def main():
     util.run_wsgi_app(application)
 
 

@@ -88,14 +88,16 @@ class BFBCSPokeHandler(webapp.RequestHandler):
                     self.response.out.write('<strong>RESULT</strong> OK ' + response.content)
             else:
                 self.response.out.write('<strong>RESULT</strong> OK ' + response.content)
-        
+ 
+
+
+application = webapp.WSGIApplication([
+('/time/?', WorldClockHandler),
+('/(md5|sha1)/?', MD5Handler),
+('/bfbcs/poke/(ps3|360|pc)/(.*)', BFBCSPokeHandler)
+],
+                                     debug=True)
 def main():
-    application = webapp.WSGIApplication([
-    ('/time/?', WorldClockHandler),
-    ('/(md5|sha1)/?', MD5Handler),
-    ('/bfbcs/poke/(ps3|360|pc)/(.*)', BFBCSPokeHandler)
-    ],
-                                         debug=True)
     util.run_wsgi_app(application)
 
 
