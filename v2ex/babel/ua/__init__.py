@@ -3,13 +3,14 @@
 import re
 import os
 import logging
+from user_agents import parse
 
 def detect(request):
-    user_agent = request.headers['User-Agent']
-    result = {}
-    result['ua'] = user_agent
-    if (re.search('iPod|iPhone|Android|Opera Mini|BlackBerry|webOS|UCWEB|Blazer|PSP|IEMobile', user_agent)):
-        result['ios'] = True
-    else:
-        result['ios'] = False
-    return result
+    """
+    parse the User-Agent from the browser
+    """
+    ua_string = request.headers['User-Agent']
+    logging.info("User-Agent: " + ua_string)
+    user_agent = parse(ua_string)
+    return user_agent
+

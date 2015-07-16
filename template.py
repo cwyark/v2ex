@@ -51,11 +51,13 @@ class MyNodesHandler(webapp.RequestHandler):
         else:
             self.redirect('/')
 
-def main():
-    application = webapp.WSGIApplication([
+
+application = webapp.WSGIApplication([
     ('/my/nodes', MyNodesHandler)
     ],
                                          debug=True)
+
+def main():
     util.run_wsgi_app(application)
 
 

@@ -58,7 +58,7 @@ class HomeHandler(webapp.RequestHandler):
         if host == 'beta.v2ex.com':
             return self.redirect('http://www.v2ex.com/')
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['site'] = GetSite()
         template_values['canonical'] = 'http://' + site.domain + '/'
@@ -97,7 +97,7 @@ class HomeHandler(webapp.RequestHandler):
             memcache.set('home_nodes_new', nodes_new, 86400)
         template_values['nodes_new'] = nodes_new
         ignored = ['newbie', 'in', 'flamewar', 'pointless', 'tuan', '528491', 'chamber', 'autistic', 'blog', 'love', 'flood', 'beforesunrise', 'diary', 'fanfou', 'closed']
-        if browser['ios']:
+        if user_agent.is_mobile or user_agent.is_tablet:
             home_rendered = memcache.get('home_rendered_mobile')
             if home_rendered is None:
                 latest = memcache.get('q_latest_16')
@@ -188,7 +188,7 @@ class HomeHandler(webapp.RequestHandler):
                 c = c + '</td></tr></table></div>'
                 memcache.set('index_categories', c, 86400)
         template_values['c'] = c
-        if (browser['ios']):
+        if user_agent.is_mobile or user_agent.is_tablet:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'index.html')
         else:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'index.html')
@@ -231,7 +231,7 @@ class PlanesHandler(BaseHandler):
 class RecentHandler(webapp.RequestHandler):
     def get(self):
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['site'] = site
         template_values['rnd'] = random.randrange(1, 100)
@@ -261,7 +261,7 @@ class RecentHandler(webapp.RequestHandler):
             memcache.set('q_recent_50', topics, 80)
             template_values['latest'] = topics
             template_values['latest_total'] = len(topics)
-        if browser['ios']:
+        if user_agent.is_mobile or user_agent.is_tablet:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'recent.html')
         else:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'recent.html')
@@ -275,7 +275,7 @@ class RecentHandler(webapp.RequestHandler):
 class UAHandler(webapp.RequestHandler):
     def get(self):
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['site'] = site
         template_values['system_version'] = SYSTEM_VERSION
@@ -294,7 +294,7 @@ class SigninHandler(webapp.RequestHandler):
     def get(self):
         site = GetSite()
         member = False
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['site'] = site
         template_values['page_title'] = site.title + u' › 登入'
@@ -306,7 +306,7 @@ class SigninHandler(webapp.RequestHandler):
         
         template_values['next'] = self.request.referer
 
-        if browser['ios']:
+        if user_agent.is_mobile or user_agent.is_tablet:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'signin.html')
         else:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signin.html')
@@ -316,7 +316,7 @@ class SigninHandler(webapp.RequestHandler):
     def post(self):
         site = GetSite()
         member = False
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['site'] = site
         template_values['page_title'] = site.title + u' › 登入'
@@ -350,7 +350,7 @@ class SigninHandler(webapp.RequestHandler):
         template_values['p'] = p
         template_values['errors'] = errors
         template_values['error_message'] = error_messages[errors]
-        if browser['ios']:
+        if user_agent.is_mobile or user_agent.is_tablet:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'signin.html')
         else:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signin.html')
@@ -365,7 +365,7 @@ class SignupHandler(webapp.RequestHandler):
             public_key = config.recaptcha_public_key,
             use_ssl = False,
             error = None)
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['site'] = site
         template_values['page_title'] = site.title + u' › 注册'
@@ -374,7 +374,7 @@ class SignupHandler(webapp.RequestHandler):
         template_values['captchahtml'] = chtml
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
-        if browser['ios']:
+        if user_agent.is_mobile or user_agent.is_tablet:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'signup.html')
         else:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signup.html')
@@ -384,7 +384,7 @@ class SignupHandler(webapp.RequestHandler):
     def post(self):
         site = GetSite()
         member = False
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['site'] = site
         template_values['page_title'] = site.title + u' › 注册'
@@ -535,7 +535,7 @@ class SignupHandler(webapp.RequestHandler):
             memcache.delete('member_total')
             self.redirect('/')
         else:
-            if browser['ios']:
+            if user_agent.is_mobile or user_agent.is_tablet:
                 path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'signup.html')
             else:
                 path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signup.html')
@@ -545,7 +545,7 @@ class SignupHandler(webapp.RequestHandler):
 class SignoutHandler(webapp.RequestHandler):
     def get(self):
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         member = False
         template_values = {}
         template_values['site'] = site
@@ -555,7 +555,7 @@ class SignoutHandler(webapp.RequestHandler):
         template_values['l10n'] = l10n
         cookies = Cookies(self, max_age = 86400, path = '/')
         del cookies['auth']
-        if browser['ios']:
+        if user_agent.is_mobile or user_agent.is_tablet:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'signout.html')
         else:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signout.html')
@@ -565,7 +565,7 @@ class SignoutHandler(webapp.RequestHandler):
 class ForgotHandler(webapp.RequestHandler):
     def get(self):
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['rnd'] = random.randrange(1, 100)
         template_values['site'] = site
@@ -581,7 +581,7 @@ class ForgotHandler(webapp.RequestHandler):
     
     def post(self):
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['rnd'] = random.randrange(1, 100)
         template_values['site'] = site
@@ -712,7 +712,7 @@ class PasswordResetHandler(BaseHandler):
 class NodeGraphHandler(BaseHandler):
     def get(self, node_name):
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         self.session = Session()
         template_values = {}
         template_values['site'] = site
@@ -774,7 +774,7 @@ class NodeGraphHandler(BaseHandler):
         if node:
             section = GetKindByNum('Section', node.section_num)
         template_values['section'] = section
-        if browser['ios']:
+        if user_agent.is_mobile or user_agent.is_tablet:
             if (node):
                 path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'node_graph.html')
             else:
@@ -790,7 +790,7 @@ class NodeGraphHandler(BaseHandler):
 class NodeHandler(webapp.RequestHandler):
     def get(self, node_name):
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         self.session = Session()
         template_values = {}
         template_values['site'] = site
@@ -897,7 +897,7 @@ class NodeHandler(webapp.RequestHandler):
             q3 = db.GqlQuery("SELECT * FROM Topic WHERE node_num = :1 ORDER BY last_touched DESC LIMIT " + str(start) + ", " + str(page_size), node.num)
             topics = q3
         template_values['latest'] = topics
-        if browser['ios']:
+        if user_agent.is_mobile or user_agent.is_tablet:
             if (node):
                 path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'node.html')
             else:
@@ -1134,7 +1134,7 @@ class RouterHandler(webapp.RequestHandler):
 class ChangesHandler(webapp.RequestHandler):
     def get(self):
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['site'] = site
         template_values['rnd'] = random.randrange(1, 100)
@@ -1191,7 +1191,7 @@ class ChangesHandler(webapp.RequestHandler):
             memcache.set('q_changes_' + str(page_current), topics, 120)
             template_values['latest'] = topics
             template_values['latest_total'] = len(topics)
-        if browser['ios']:
+        if user_agent.is_mobile or user_agent.is_tablet:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'changes.html')
         else:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'changes.html')

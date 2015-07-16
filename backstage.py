@@ -46,7 +46,7 @@ import config
 class BackstageHomeHandler(webapp.RequestHandler):
     def get(self):
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         member = CheckAuth(self)
         l10n = GetMessages(self, member, site)
         template_values = {}
@@ -93,7 +93,7 @@ class BackstageHomeHandler(webapp.RequestHandler):
                 template_values['minisites'] = q3
                 q4 = db.GqlQuery("SELECT * FROM Node ORDER BY last_modified DESC LIMIT 8")
                 template_values['latest_nodes'] = q4
-                if browser['ios']:
+                if user_agent.is_mobile or user_agent.is_tablet:
                     path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'backstage_home.html')
                 else:
                     path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_home.html')
@@ -788,7 +788,7 @@ class BackstageNewSectionHandler(webapp.RequestHandler):
 class BackstageSectionHandler(webapp.RequestHandler):
     def get(self, section_name):
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['rnd'] = random.randrange(1, 100)
         template_values['site'] = site
@@ -824,7 +824,7 @@ class BackstageSectionHandler(webapp.RequestHandler):
                     template_values['recent_modified'] = q2
                 else:
                     template_values['nodes'] = False
-                if browser['ios']:
+                if user_agent.is_mobile or user_agent.is_tablet:
                     path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'backstage_section.html')
                 else:
                     path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_section.html')
@@ -837,7 +837,7 @@ class BackstageSectionHandler(webapp.RequestHandler):
     
     def post(self, section_name):
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['rnd'] = random.randrange(1, 100)
         template_values['site'] = site
@@ -1101,7 +1101,7 @@ class BackstageNewNodeHandler(webapp.RequestHandler):
 class BackstageNodeHandler(webapp.RequestHandler):
     def get(self, node_name):
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['site'] = site
         template_values['system_version'] = SYSTEM_VERSION
@@ -1154,7 +1154,7 @@ class BackstageNodeHandler(webapp.RequestHandler):
                 template_values['section'] = section
                 if section is not False:
                     template_values['page_title'] = site.title + u' › ' + l10n.backstage.decode('utf-8') + u' › ' + section.title + u' › ' + node.title
-                if browser['ios']:
+                if user_agent.is_mobile or user_agent.is_tablet:
                     path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'backstage_node.html')
                 else:
                     path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_node.html')
@@ -1167,7 +1167,7 @@ class BackstageNodeHandler(webapp.RequestHandler):
     
     def post(self, node_name):
         site = GetSite()
-        browser = detect(self.request)
+        user_agent = detect(self.request)
         template_values = {}
         template_values['site'] = site
         template_values['system_version'] = SYSTEM_VERSION
