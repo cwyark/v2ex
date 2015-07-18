@@ -94,16 +94,10 @@ class NewTopicHandler(webapp.RequestHandler):
             else:
                 template_values['tt'] = ''
             if can_create:
-                if user_agent.is_mobile or user_agent.is_tablet:
-                    if node:
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'new_topic.html')
-                    else:
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'node_not_found.html')
+                if node:
+                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'new_topic.html')
                 else:
-                    if node:
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'new_topic.html')
-                    else:
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'node_not_found.html')
+                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'node_not_found.html')
             else:
                 path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'access_denied.html')
             output = template.render(path, template_values)
@@ -342,10 +336,7 @@ class NewTopicHandler(webapp.RequestHandler):
                     
                     self.redirect('/t/' + str(topic.num) + '#reply0')
                 else:    
-                    if user_agent.is_mobile or user_agent.is_tablet:
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'new_topic.html')
-                    else:
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'new_topic.html')
+                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'new_topic.html')
                     output = template.render(path, template_values)
                     self.response.out.write(output)
             else:
@@ -394,10 +385,7 @@ class TopicHandler(webapp.RequestHandler):
                 template_values['is_admin'] = 0
         topic_num_str = str(topic_num)
         if len(topic_num_str) > 8:
-            if user_agent.is_mobile or user_agent.is_tablet:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'topic_not_found.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic_not_found.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic_not_found.html')
             output = template.render(path, template_values)
             self.response.out.write(output)
             return
@@ -480,15 +468,9 @@ class TopicHandler(webapp.RequestHandler):
             if len(ps) > 1:
                 template_values['ps'] = ps
             replies = False
-            if user_agent.is_mobile or user_agent.is_tablet:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'topic_replies_mobile.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'topic_replies.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'topic_replies.html')
             if filter_mode:
-                if user_agent.is_mobile or user_agent.is_tablet:
-                    r_tag = 'topic_' + str(topic.num) + '_replies_filtered_rendered_ios_' + str(page_current)
-                else:
-                    r_tag = 'topic_' + str(topic.num) + '_replies_filtered_rendered_desktop_' + str(page_current)
+                r_tag = 'topic_' + str(topic.num) + '_replies_filtered_rendered_desktop_' + str(page_current)
                 r = memcache.get(r_tag)
                 if r is None:
                     replies = memcache.get('topic_' + str(topic.num) + '_replies_filtered_compressed_' + str(page_current))
@@ -504,10 +486,7 @@ class TopicHandler(webapp.RequestHandler):
                     memcache.set(r_tag, r, 86400)
             else:    
                 if reply_reversed:
-                    if user_agent.is_mobile or user_agent.is_tablet:
-                        r_tag = 'topic_' + str(topic.num) + '_replies_desc_rendered_ios_' + str(page_current)
-                    else:
-                        r_tag = 'topic_' + str(topic.num) + '_replies_desc_rendered_desktop_' + str(page_current)
+                    r_tag = 'topic_' + str(topic.num) + '_replies_desc_rendered_desktop_' + str(page_current)
                     r = memcache.get(r_tag)
                     if r is None:
                         replies = memcache.get('topic_' + str(topic.num) + '_replies_desc_compressed_' + str(page_current))
@@ -522,10 +501,7 @@ class TopicHandler(webapp.RequestHandler):
                         r = template.render(path, template_values)
                         memcache.set(r_tag, r, 86400)
                 else:
-                    if user_agent.is_mobile or user_agent.is_tablet:
-                        r_tag = 'topic_' + str(topic.num) + '_replies_asc_rendered_ios_' + str(page_current)
-                    else:
-                        r_tag = 'topic_' + str(topic.num) + '_replies_asc_rendered_desktop_' + str(page_current)
+                    r_tag = 'topic_' + str(topic.num) + '_replies_asc_rendered_desktop_' + str(page_current)
                     r = memcache.get(r_tag)
                     if r is None:
                         replies = memcache.get('topic_' + str(topic.num) + '_replies_asc_compressed_' + str(page_current))
@@ -545,15 +521,9 @@ class TopicHandler(webapp.RequestHandler):
                     template_values['favorited'] = True
                 else:
                     template_values['favorited'] = False
-            if user_agent.is_mobile or user_agent.is_tablet:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'topic.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic.html')
         else:
-            if user_agent.is_mobile or user_agent.is_tablet:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'topic_not_found.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic_not_found.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic_not_found.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
         
@@ -616,10 +586,7 @@ class TopicHandler(webapp.RequestHandler):
         template_values['l10n'] = l10n
         topic_num_str = str(topic_num)
         if len(topic_num_str) > 8:
-            if user_agent.is_mobile or user_agent.is_tablet:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'topic_not_found.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic_not_found.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic_not_found.html')
             output = template.render(path, template_values)
             self.response.out.write(output)
             return
@@ -810,10 +777,7 @@ class TopicHandler(webapp.RequestHandler):
                     section = GetKindByNum('Section', node.section_num)
                 template_values['node'] = node
                 template_values['section'] = section
-                if user_agent.is_mobile or user_agent.is_tablet:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'topic.html')
-                else:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic.html')
+                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic.html')
                 output = template.render(path, template_values)
                 self.response.out.write(output)
         else:
@@ -878,10 +842,7 @@ class TopicEditHandler(webapp.RequestHandler):
                         template_values['tt'] = ''
                     q4 = db.GqlQuery("SELECT * FROM Reply WHERE topic_num = :1 ORDER BY created ASC", topic.num)
                     template_values['replies'] = q4
-                    if user_agent.is_mobile or user_agent.is_tablet:
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'edit_topic.html')
-                    else:
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'edit_topic.html')
+                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'edit_topic.html')
                 else:
                     path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'topic_not_found.html')
                 output = template.render(path, template_values)
@@ -1027,10 +988,7 @@ class TopicEditHandler(webapp.RequestHandler):
                                 pass
                         self.redirect('/t/' + str(topic.num) + '#reply' + str(topic.replies))
                     else:
-                        if user_agent.is_mobile or user_agent.is_tablet:
-                            path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'edit_topic.html')
-                        else:
-                            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'edit_topic.html')
+                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'edit_topic.html')
                         output = template.render(path, template_values)
                         self.response.out.write(output)
                 else:

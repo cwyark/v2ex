@@ -132,15 +132,9 @@ class MemberHandler(webapp.RequestHandler):
             template_values['message'] = self.session['message']
             del self.session['message']
         if one is not False: 
-            if user_agent.is_mobile or user_agent.is_tablet:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'member_home.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_home.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_home.html')
         else:
-            if user_agent.is_mobile or user_agent.is_tablet:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'member_not_found.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_not_found.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_not_found.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
         
@@ -231,10 +225,7 @@ class SettingsHandler(webapp.RequestHandler):
             except:
                 blocked = []
             template_values['member_stats_blocks'] = len(blocked)
-            if user_agent.is_mobile or user_agent.is_tablet:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'member_settings.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_settings.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_settings.html')
             output = template.render(path, template_values)
             self.response.out.write(output)
         else:
@@ -582,10 +573,7 @@ class SettingsHandler(webapp.RequestHandler):
                 self.session['message'] = '个人设置成功更新'
                 self.redirect('/settings')
             else:
-                if user_agent.is_mobile or user_agent.is_tablet:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'member_settings.html')
-                else:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_settings.html')
+                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_settings.html')
                 output = template.render(path, template_values)
                 self.response.out.write(output)
         else:
@@ -644,10 +632,7 @@ class SettingsPasswordHandler(webapp.RequestHandler):
                 self.response.headers['Set-Cookie'] = str('auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
                 self.redirect('/settings')
             else:
-                if user_agent.is_mobile or user_agent.is_tablet:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'member_settings_password.html')
-                else:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_settings_password.html')
+                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_settings_password.html')
                 output = template.render(path, template_values)
                 self.response.out.write(output)
         else:
@@ -670,10 +655,7 @@ class SettingsAvatarHandler(webapp.RequestHandler):
                 template_values['message'] = self.session['message']
                 del self.session['message']
             template_values['member'] = member
-            if user_agent.is_mobile or user_agent.is_tablet:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'member_settings_avatar.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_settings_avatar.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_settings_avatar.html')
             output = template.render(path, template_values)
             self.response.out.write(output)
         else:

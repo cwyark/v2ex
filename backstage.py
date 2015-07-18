@@ -93,10 +93,7 @@ class BackstageHomeHandler(webapp.RequestHandler):
                 template_values['minisites'] = q3
                 q4 = db.GqlQuery("SELECT * FROM Node ORDER BY last_modified DESC LIMIT 8")
                 template_values['latest_nodes'] = q4
-                if user_agent.is_mobile or user_agent.is_tablet:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'backstage_home.html')
-                else:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_home.html')
+                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_home.html')
                 output = template.render(path, template_values)
                 self.response.out.write(output)
             else:
@@ -824,10 +821,7 @@ class BackstageSectionHandler(webapp.RequestHandler):
                     template_values['recent_modified'] = q2
                 else:
                     template_values['nodes'] = False
-                if user_agent.is_mobile or user_agent.is_tablet:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'backstage_section.html')
-                else:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_section.html')
+                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_section.html')
                 output = template.render(path, template_values)
                 self.response.out.write(output)
             else:
@@ -1154,10 +1148,7 @@ class BackstageNodeHandler(webapp.RequestHandler):
                 template_values['section'] = section
                 if section is not False:
                     template_values['page_title'] = site.title + u' › ' + l10n.backstage.decode('utf-8') + u' › ' + section.title + u' › ' + node.title
-                if user_agent.is_mobile or user_agent.is_tablet:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'backstage_node.html')
-                else:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_node.html')
+                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_node.html')
                 output = template.render(path, template_values)
                 self.response.out.write(output)
             else:

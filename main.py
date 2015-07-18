@@ -97,44 +97,27 @@ class HomeHandler(webapp.RequestHandler):
             memcache.set('home_nodes_new', nodes_new, 86400)
         template_values['nodes_new'] = nodes_new
         ignored = ['newbie', 'in', 'flamewar', 'pointless', 'tuan', '528491', 'chamber', 'autistic', 'blog', 'love', 'flood', 'beforesunrise', 'diary', 'fanfou', 'closed']
-        if user_agent.is_mobile or user_agent.is_tablet:
-            home_rendered = memcache.get('home_rendered_mobile')
-            if home_rendered is None:
-                latest = memcache.get('q_latest_16')
-                if (latest):
-                    template_values['latest'] = latest
-                else:
-                    q2 = db.GqlQuery("SELECT * FROM Topic ORDER BY last_touched DESC LIMIT 16")
-                    topics = []
-                    for topic in q2:
-                        if topic.node_name not in ignored:
-                            topics.append(topic)
-                    memcache.set('q_latest_16', topics, 600)
-                    latest = topics
-                    template_values['latest'] = latest
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'home_mobile.html')
-                home_rendered = template.render(path, template_values)
-                memcache.set('home_rendered_mobile', home_rendered, 600)
-            template_values['home'] = home_rendered
-        else:
-            home_rendered = memcache.get('home_rendered')
-            if home_rendered is None:
-                latest = memcache.get('q_latest_16')
-                if (latest):
-                    template_values['latest'] = latest
-                else:
-                    q2 = db.GqlQuery("SELECT * FROM Topic ORDER BY last_touched DESC LIMIT 16")
-                    topics = []
-                    for topic in q2:
-                        if topic.node_name not in ignored:
-                            topics.append(topic)
-                    memcache.set('q_latest_16', topics, 600)
-                    latest = topics
-                    template_values['latest'] = latest
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'home.html')
-                home_rendered = template.render(path, template_values)
-                memcache.set('home_rendered', home_rendered, 600)
-            template_values['home'] = home_rendered
+        
+# cache latest topic to save db access resource
+        home_rendered = memcache.get('home_rendered')
+        if home_rendered is None:
+            latest = memcache.get('q_latest_16')
+            if (latest):
+                template_values['latest'] = latest
+            else:
+                q2 = db.GqlQuery("SELECT * FROM Topic ORDER BY last_touched DESC LIMIT 16")
+                topics = []
+                for topic in q2:
+                    if topic.node_name not in ignored:
+                        topics.append(topic)
+                memcache.set('q_latest_16', topics, 600)
+                latest = topics
+                template_values['latest'] = latest
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'home.html')
+            home_rendered = template.render(path, template_values)
+            memcache.set('home_rendered', home_rendered, 600)
+        template_values['home'] = home_rendered
+
         member_total = memcache.get('member_total')
         if member_total is None:
             q3 = db.GqlQuery("SELECT * FROM Counter WHERE name = 'member.total'")
@@ -188,10 +171,7 @@ class HomeHandler(webapp.RequestHandler):
                 c = c + '</td></tr></table></div>'
                 memcache.set('index_categories', c, 86400)
         template_values['c'] = c
-        if user_agent.is_mobile or user_agent.is_tablet:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'index.html')
-        else:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'index.html')
+        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'index.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
 
@@ -261,10 +241,7 @@ class RecentHandler(webapp.RequestHandler):
             memcache.set('q_recent_50', topics, 80)
             template_values['latest'] = topics
             template_values['latest_total'] = len(topics)
-        if user_agent.is_mobile or user_agent.is_tablet:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'recent.html')
-        else:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'recent.html')
+        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'recent.html')
         output = template.render(path, template_values)
         expires_date = datetime.datetime.utcnow() + datetime.timedelta(minutes=2)
         expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
@@ -306,10 +283,7 @@ class SigninHandler(webapp.RequestHandler):
         
         template_values['next'] = self.request.referer
 
-        if user_agent.is_mobile or user_agent.is_tablet:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'signin.html')
-        else:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signin.html')
+        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signin.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
  
@@ -350,10 +324,7 @@ class SigninHandler(webapp.RequestHandler):
         template_values['p'] = p
         template_values['errors'] = errors
         template_values['error_message'] = error_messages[errors]
-        if user_agent.is_mobile or user_agent.is_tablet:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'signin.html')
-        else:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signin.html')
+        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signin.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
         
@@ -374,10 +345,7 @@ class SignupHandler(webapp.RequestHandler):
         template_values['captchahtml'] = chtml
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
-        if user_agent.is_mobile or user_agent.is_tablet:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'signup.html')
-        else:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signup.html')
+        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signup.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
         
@@ -535,10 +503,7 @@ class SignupHandler(webapp.RequestHandler):
             memcache.delete('member_total')
             self.redirect('/')
         else:
-            if user_agent.is_mobile or user_agent.is_tablet:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'signup.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signup.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signup.html')
             output = template.render(path, template_values)
             self.response.out.write(output)
 
@@ -555,10 +520,7 @@ class SignoutHandler(webapp.RequestHandler):
         template_values['l10n'] = l10n
         cookies = Cookies(self, max_age = 86400, path = '/')
         del cookies['auth']
-        if user_agent.is_mobile or user_agent.is_tablet:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'signout.html')
-        else:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signout.html')
+        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signout.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
 
@@ -774,16 +736,11 @@ class NodeGraphHandler(BaseHandler):
         if node:
             section = GetKindByNum('Section', node.section_num)
         template_values['section'] = section
-        if user_agent.is_mobile or user_agent.is_tablet:
-            if (node):
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'node_graph.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'node_not_found.html')
+
+        if (node):
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'node_graph.html')
         else:
-            if (node):
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'node_graph.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'node_not_found.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'node_not_found.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
 
@@ -897,16 +854,11 @@ class NodeHandler(webapp.RequestHandler):
             q3 = db.GqlQuery("SELECT * FROM Topic WHERE node_num = :1 ORDER BY last_touched DESC LIMIT " + str(start) + ", " + str(page_size), node.num)
             topics = q3
         template_values['latest'] = topics
-        if user_agent.is_mobile or user_agent.is_tablet:
-            if (node):
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'node.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'node_not_found.html')
+        
+        if (node):
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'node.html')
         else:
-            if (node):
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'node.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'node_not_found.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'node_not_found.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
 
@@ -1191,10 +1143,7 @@ class ChangesHandler(webapp.RequestHandler):
             memcache.set('q_changes_' + str(page_current), topics, 120)
             template_values['latest'] = topics
             template_values['latest_total'] = len(topics)
-        if user_agent.is_mobile or user_agent.is_tablet:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'changes.html')
-        else:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'changes.html')
+        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'changes.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
 

@@ -55,10 +55,7 @@ class NotesHomeHandler(webapp.RequestHandler):
                 notes_count = q.count()
             if (notes_count > 0):
                 template_values['notes'] = q
-            if user_agent.is_mobile or user_agent.is_tablet:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'notes_home.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'notes_home.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'notes_home.html')
             output = template.render(path, template_values)
             self.response.out.write(output)
         else:
@@ -77,10 +74,7 @@ class NotesNewHandler(webapp.RequestHandler):
         template_values['l10n'] = l10n
         if member:
             template_values['member'] = member
-            if user_agent.is_mobile or user_agent.is_tablet:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'notes_new.html')
-            else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'notes_new.html')
+            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'notes_new.html')
             output = template.render(path, template_values)
             self.response.out.write(output)
         else:
@@ -132,10 +126,7 @@ class NotesNewHandler(webapp.RequestHandler):
                 self.redirect('/notes/' + str(note.num))
             else:
                 template_values['note_content'] = note_content
-                if user_agent.is_mobile or user_agent.is_tablet:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'notes_new.html')
-                else:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'notes_new.html')
+                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'notes_new.html')
                 output = template.render(path, template_values)
                 self.response.out.write(output)
         else:
@@ -159,10 +150,7 @@ class NotesItemHandler(webapp.RequestHandler):
                     template_values['member'] = member
                     template_values['note'] = note
                     template_values['page_title'] = site.title + u' › 记事本 › ' + note.title
-                    if user_agent.is_mobile or user_agent.is_tablet:
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'notes_item.html')
-                    else:
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'notes_item.html')
+                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'notes_item.html')
                     output = template.render(path, template_values)
                     self.response.out.write(output)
                 else:
@@ -215,10 +203,7 @@ class NotesItemEditHandler(webapp.RequestHandler):
                     template_values['member'] = member
                     template_values['note'] = note
                     template_values['note_content'] = note.content
-                    if user_agent.is_mobile or user_agent.is_tablet:
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'notes_edit.html')
-                    else:
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'notes_edit.html')
+                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'notes_edit.html')
                     output = template.render(path, template_values)
                     self.response.out.write(output)
                 else:
@@ -263,10 +248,7 @@ class NotesItemEditHandler(webapp.RequestHandler):
                     self.redirect('/notes')
             else:
                 template_values['note_content'] = note_content
-                if user_agent.is_mobile or user_agent.is_tablet:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'notes_new.html')
-                else:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'notes_new.html')
+                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'notes_new.html')
                 output = template.render(path, template_values)
                 self.response.out.write(output)
         else:
