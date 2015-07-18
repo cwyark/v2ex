@@ -32,7 +32,7 @@
                 {% endifequal %}
                 {% endifequal %}
                 {% endif %}
-                {{ home }}
+                {{ home|safe }}
                 {% if member %}
                 <script type="text/javascript">
                 blocked = [{{ blocked }}];

@@ -82,7 +82,7 @@
                     replies_keys = new Array(); replies_ids = new Array(); replies_parents = new Array();
                 </script>
                 <div id="replies">
-                {{ r }}
+                {{ r|safe }}
                 </div>
                 {% if member %}
                 <script type="text/javascript">
