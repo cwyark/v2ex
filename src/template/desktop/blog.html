@@ -10,7 +10,7 @@
                 <div class="cell">
                     <table cellpadding="0" cellspacing="0" border="0" width="100%">
                         <tr>
-                            <td width="48" valign="top"><a href="/member/{{ member.username }}">{{ one|avatar:"normal"}}</a></td>
+                            <td width="48" valign="top"><a href="/member/{{ member.username }}">{{ one|avatar:"normal"|safe}}</a></td>
                             <td width="10" valign="top"></td>
                             <td width="auto" align="left"><span class="bigger"><a href="/member/{{ one.username }}">{{ one.username }}</a></span>
                                 <div class="sep5"></div>
@@ -56,7 +56,7 @@
                 <div class="cell"><strong class="fade">{{ one.username }} 关注的</strong></div>
                 <div class="inner">
                     {% for friend in friends %}
-                    <div style="display: inline-block; margin: 5px;"><a href="/blog/{{ friend.one.username }}">{{ friend.one|avatar:"normal" }}</a></div>
+                    <div style="display: inline-block; margin: 5px;"><a href="/blog/{{ friend.one.username }}">{{ friend.one|avatar:"normal"|safe }}</a></div>
                     {% endfor %}
                 </div>
             </div>

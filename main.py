@@ -61,7 +61,7 @@ class HomeHandler(webapp.RequestHandler):
         user_agent = detect(self.request)
         template_values = {}
         template_values['site'] = GetSite()
-        template_values['canonical'] = 'http://' + site.domain + '/'
+        template_values['canonical'] = 'http://' + str(site.domain) + '/'
         template_values['rnd'] = random.randrange(1, 100)
         template_values['page_title'] = site.title
         template_values['system_version'] = SYSTEM_VERSION
@@ -742,7 +742,7 @@ class NodeGraphHandler(BaseHandler):
         if node:
             template_values['feed_link'] = '/feed/' + node.name + '.xml'
             template_values['feed_title'] = site.title + u' › ' + node.title
-            template_values['canonical'] = 'http://' + site.domain + '/go/' + node.name
+            template_values['canonical'] = 'http://' + str(site.domain) + '/go/' + node.name
             if node.parent_node_name is None:
                 siblings = []
             else:
@@ -829,7 +829,7 @@ class NodeHandler(webapp.RequestHandler):
         if node:
             template_values['feed_link'] = '/feed/' + node.name + '.xml'
             template_values['feed_title'] = site.title + u' › ' + node.title
-            template_values['canonical'] = 'http://' + site.domain + '/go/' + node.name
+            template_values['canonical'] = 'http://' + str(site.domain) + '/go/' + node.name
             if member:
                 favorited = member.hasFavorited(node)
                 template_values['favorited'] = favorited
@@ -877,7 +877,7 @@ class NodeHandler(webapp.RequestHandler):
                     has_previous = True
                     previous = page - 1    
                 start = (page - 1) * page_size
-                template_values['canonical'] = 'http://' + site.domain + '/go/' + node.name + '?p=' + str(page)
+                template_values['canonical'] = 'http://' + str(site.domain) + '/go/' + node.name + '?p=' + str(page)
         else:
             template_values['page_title'] = site.title + u' › 节点未找到'
         template_values['pagination'] = pagination

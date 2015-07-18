@@ -116,7 +116,7 @@ class NewTopicHandler(webapp.RequestHandler):
         ### BEGIN: CAN CONTINUE
         can_continue = True
         if ('Host' in self.request.headers):
-            if (self.request.headers['Host'] not in ['www.v2ex.com', 'v2ex.appspot.com', 'fast.v2ex.com', 'beta.v2ex.com', 'us.v2ex.com', 'jp.v2ex.com', 'eu.v2ex.com', 'localhost:10000']):
+            if (self.request.headers['Host'] not in ['www.v2ex.com', 'v2ex.appspot.com', 'fast.v2ex.com', 'beta.v2ex.com', 'us.v2ex.com', 'jp.v2ex.com', 'eu.v2ex.com', 'localhost:8080']):
                 can_continue = False
         else:
             can_continue = False
@@ -126,7 +126,7 @@ class NewTopicHandler(webapp.RequestHandler):
             can_continue = False
         if ('Referer' in self.request.headers):
             has_v2ex = False
-            if ('http://localhost:10000' in self.request.headers['Referer']):
+            if ('http://localhost:8080' in self.request.headers['Referer']):
                 has_v2ex = True
             if ('http://www.v2ex.com' in self.request.headers['Referer']):
                 has_v2ex = True
@@ -158,7 +158,7 @@ class NewTopicHandler(webapp.RequestHandler):
         else:
             can_continue = False
         if can_continue is False:
-            return self.redirect('http://' + site.domain + '/')
+            return self.redirect('http://' + str(site.domain) + '/')
         ### END: CAN CONTINUE
         user_agent = detect(self.request)
         template_values = {}
@@ -430,7 +430,7 @@ class TopicHandler(webapp.RequestHandler):
             except:
                 pass
             template_values['page_title'] = site.title + u' › ' + topic.title
-            template_values['canonical'] = 'http://' + site.domain + '/t/' + str(topic.num)
+            template_values['canonical'] = 'http://' + str(site.domain) + '/t/' + str(topic.num)
             if topic.content_rendered is None:
                 path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'topic_content.html')
                 output = template.render(path, {'topic' : topic})
@@ -562,7 +562,7 @@ class TopicHandler(webapp.RequestHandler):
         ### BEGIN: CAN CONTINUE
         can_continue = True
         if ('Host' in self.request.headers):
-            if (self.request.headers['Host'] not in ['www.v2ex.com', 'v2ex.appspot.com', 'fast.v2ex.com', 'beta.v2ex.com', 'us.v2ex.com', 'eu.v2ex.com', 'jp.v2ex.com', 'localhost:10000']):
+            if (self.request.headers['Host'] not in ['www.v2ex.com', 'v2ex.appspot.com', 'fast.v2ex.com', 'beta.v2ex.com', 'us.v2ex.com', 'eu.v2ex.com', 'jp.v2ex.com', 'localhost:8080']):
                 can_continue = False
         else:
             can_continue = False
@@ -572,7 +572,7 @@ class TopicHandler(webapp.RequestHandler):
             can_continue = False
         if ('Referer' in self.request.headers):
             has_v2ex = False
-            if ('http://localhost:10000' in self.request.headers['Referer']):
+            if ('http://localhost:8080' in self.request.headers['Referer']):
                 has_v2ex = True
             if ('http://www.v2ex.com' in self.request.headers['Referer']):
                 has_v2ex = True
@@ -592,7 +592,7 @@ class TopicHandler(webapp.RequestHandler):
                 has_v2ex = True
             if ('http://beta.v2ex.com' in self.request.headers['Referer']):
                 has_v2ex = True
-            if ('http://' + site.domain in self.request.headers['Referer']):
+            if ('http://' + str(site.domain) in self.request.headers['Referer']):
                 has_v2ex = True
             if has_v2ex is False:
                 can_continue = False
@@ -604,7 +604,7 @@ class TopicHandler(webapp.RequestHandler):
         else:
             can_continue = False
         if can_continue is False:
-            return self.redirect('http://' + site.domain + '/')
+            return self.redirect('http://' + str(site.domain) + '/')
         ### END: CAN CONTINUE
         user_agent = detect(self.request)
         template_values = {}
