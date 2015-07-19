@@ -273,7 +273,8 @@ class NewTopicHandler(webapp.RequestHandler):
                         topic.has_content = False
                     path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'topic_content.html')
                     output = template.render(path, {'topic' : topic})
-                    topic.content_rendered = output.decode('utf-8')
+                    print type(output)
+                    topic.content_rendered = output
                     topic.node = node
                     topic.node_num = node.num
                     topic.node_name = node.name
@@ -423,7 +424,7 @@ class TopicHandler(webapp.RequestHandler):
                 path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'topic_content.html')
                 output = template.render(path, {'topic' : topic})
                 topic = db.get(topic.key())
-                topic.content_rendered = output.decode('utf-8')
+                topic.content_rendered = output
                 memcache.delete('Topic_' + str(topic.num))
                 topic.put()
         else:
@@ -966,7 +967,7 @@ class TopicEditHandler(webapp.RequestHandler):
                             topic.has_content = False
                         path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'topic_content.html')
                         output = template.render(path, {'topic' : topic})
-                        topic.content_rendered = output.decode('utf-8')
+                        topic.content_rendered = output
                         if member.level != 0:
                             topic.last_touched = datetime.datetime.now()
                         if site.use_topic_types:
