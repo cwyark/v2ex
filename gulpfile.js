@@ -85,8 +85,8 @@ gulp.task('bower', function(){
 		.pipe(gulp.dest('assets/css'))
 });
 
-gulp.task('serve', ['html', 'image', 'css'], function(){
-	//gulp.watch('src/scss/*.scss', ['style']);
+gulp.task('serve', ['html', 'image', 'css', 'style'], function(){
+	gulp.watch('src/scss/*.scss', ['style']);
 	//gulp.watch('src/js/*.js', ['script', 'bower']);
 	gulp.watch('src/template/**/*.html', ['html']);
 	gulp.watch('src/img/**', ['image']);

@@ -17,11 +17,7 @@ template.register_template_library('v2ex.templatetags.filters')
 class CSSHandler(webapp.RequestHandler):
     def get(self, theme):
         template_values = {}
-        themes = os.listdir(os.path.join(os.path.dirname(__file__), 'tpl', 'themes'))
-        if theme in themes:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'themes', theme, 'style.css')
-        else:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'themes', 'default', 'style.css')
+        path = os.path.join(os.path.dirname(__file__), 'tpl', 'themes', 'default', 'style.css')
         output = template.render(path, template_values)
         expires_date = datetime.datetime.utcnow() + datetime.timedelta(days=7)
         expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")

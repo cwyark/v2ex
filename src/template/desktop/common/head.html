@@ -14,7 +14,15 @@
 		{% endif %}
 	</title>
 
-	<link rel="stylesheet" type="text/css" media="screen"  href="/css/{{ site.theme }}.css?v={{ system_version }}" />
+	<!--<link rel="stylesheet" type="text/css" media="screen"  href="/css/{{ site.theme }}.css?v={{ system_version }}" />-->
+	<link rel="stylesheet" type="text/css" media="screen"  href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.1/themes/basic/assets/fonts/icons.ttf" />
+	<link rel="stylesheet" type="text/css" media="screen"  href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.1/themes/basic/assets/fonts/icons.svg" />
+	<link rel="stylesheet" type="text/css" media="screen"  href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.1/themes/basic/assets/fonts/icons.woff" />
+	<link rel="stylesheet" type="text/css" media="screen"  href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.1/themes/default/assets/fonts/icons.ttf" />
+	<link rel="stylesheet" type="text/css" media="screen"  href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.1/themes/default/assets/fonts/icons.svg" />
+	<link rel="stylesheet" type="text/css" media="screen"  href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.1/themes/default/assets/fonts/icons.woff" />
+	<link rel="stylesheet" type="text/css" media="screen"  href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.0.1/semantic.min.css" />
+	<link rel="stylesheet" type="text/css" media="screen"  href="/static/css/app.min.css" />
 	<link rel="shortcut icon" href="/favicon.ico" />
 
 	{% if feed_link %}
@@ -27,7 +35,6 @@
 		<link rel="canonical" href="{{ canonical }}" />
 	{% endif %}
 
-	<script src="/static/js/jquery.min.js" type="text/javascript"></script>
 
 	{% if site.analytics %}
 	<!-- Google Analytics -->
@@ -49,4 +56,5 @@
     {% else %}
 		<meta name="description" content="{{ site.title }} - {{ site.description }}" />
     {% endif %}
+	<script src="/static/js/jquery.min.js" type="text/javascript"></script>
 </head>

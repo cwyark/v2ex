@@ -1,54 +1,98 @@
 <div class="box">
     {% if member %}
-    <div class="cell">
-        <table cellpadding="0" cellspacing="0" border="0" width="100%">
-            <tr>
-                <td width="48" valign="top"><a href="/member/{{ member.username }}">{{ member|avatar:"normal"|safe}}</a></td>
-                <td width="10" valign="top"></td>
-                <td width="auto" align="left"><span class="bigger"><a href="/member/{{ member.username }}">{{ member.username }}</a></span>
-                    <div class="sep5"></div>
-                    <span class="fade">{{ member.tagline|escape }}</span>
-                </td>
-            </tr>
-        </table>
-        <div class="sep10"></div>
-        <table cellpadding="0" cellspacing="0" border="0" width="100%">
-            <tr>
-                <td width="33%" align="center"><a href="/my/nodes" class="dark" style="display: block;"><span class="bigger">{{ member.favorited_nodes }}</span><div class="sep3"></div><span class="fade">节点收藏</span></a></td>
-                <td width="34%" style="border-left: 1px solid rgba(100, 100, 100, 0.4); border-right: 1px solid rgba(100, 100, 100, 0.4);" align="center"><a href="/my/topics" class="dark" style="display: block;"><span class="bigger">{{ member.favorited_topics }}</span><div class="sep3"></div><span class="fade">主题收藏</span></a></td>
-                <td width="33%" align="center"><a href="/my/following" class="dark" style="display: block;"><span class="bigger">{{ member.favorited_members }}</span><div class="sep3"></div><span class="fade">特别关注</span></a></td>
-            </tr>
-        </table>
+    <div class="ui card">
+		<div class="content">
+			<div class="right floated ui image mini">
+				<a href="/member/{{ member.username }}">{{ member|avatar:"normal"|safe}}</a>
+			</div>
+			<div class="header">
+				<a href="/member/{{ member.username }}">{{ member.username }}</a>
+			</div>
+			<div class="meta">{{ member.tagline|escape }}</div>
+        </div>
+		<div class="content">
+			<div class="ui padding grid">
+				<div class="eight wide column">
+					<a href="/my/nodes" style="display: block; text-align:center;">
+						<div>
+							节点收藏
+						</div>
+						<div class="ui green label circular">{{ member.favorited_nodes }}</div>
+					</a>
+				</div>
+				<div class="eight wide column">
+					<a href="/my/topics" style="display: block;text-align:center;">
+						<div>
+							主题收藏
+						</div>
+						<div class="ui blue label circular">{{ member.favorited_topics }}</div>
+					</a>
+				</div>
+				<div class="eight wide column">
+					<a href="/my/following" style="display: block;text-align:center;">
+						<div>
+							特别关注
+						</div>
+						<div class="ui yellow label circular">{{ member.favorited_members }}</div>
+					</a>
+				</div>
+
+				<div class="eight wide column">
+					<a href="/notifications" style="display: block;text-align:center;">
+						<div>
+							未读提醒
+						</div>
+						<div class="ui red label circular">{{ member.notifications }}</div>
+					</a>
+				</div>
+			</div>
+		</div>
         {% if member.twitter_oauth %}
-        <div class="sep10"></div>
-        <form method="post" action="/twitter/tweet">
-        <textarea class="mlt" maxlength="140" name="status"></textarea>
-        <div class="sep10"></div>
-        <div align="right"><input type="submit" value="Tweet" class="super normal button" /></div>
-        </form>
+			<div class="sep10"></div>
+			<form method="post" action="/twitter/tweet">
+				<textarea class="mlt" maxlength="140" name="status"></textarea>
+				<div class="sep10"></div>
+				<div align="right"><input type="submit" value="Tweet" class="super normal button" /></div>
+			</form>
         {% endif %}
     </div>
-    <div class="inner">{% ifequal member.notifications 0 %}<a href="/notifications" class="fade">{{ member.notifications }} 条未读提醒</a>{% else %}<img src="/static/img/dot_orange.png" align="absmiddle" />&nbsp;<strong><a href="/notifications">{{ member.notifications }} 条未读提醒</a></strong>{% endifequal %}</div>
     {% if member.avatar_large_url %}
     {% else %}
-    <div class="yellow">
-        <span class="fade">有头像才够酷 <a href="/settings/avatar">现在就上传 →</a></span>
-    </div>
+		<div class="yellow">
+			<span class="fade">有头像才够酷 <a href="/settings/avatar">现在就上传 →</a></span>
+		</div>
     {% endif %}
     {% else %}
     <div class="cell">
-        <strong>{{ site.title }} = {{ site.slogan }}</strong>
+        <strong>Please choose a way to sign in</strong>
         {% ifequal site.title 'V2EX' %}
-        <div class="sep5"></div>
-        <span class="fade">V2EX 是一个关于分享和探索的地方</span>
+			<div class="sep5"></div>
+			<span class="fade">V2EX 是一个关于分享和探索的地方</span>
         {% endifequal %}
     </div>
     <div class="inner">
         <div class="sep5"></div>
-        <div align="center"><a href="/signup" class="super normal button">{{ l10n.signup_now }}</a>
-        <div class="sep5"></div>
-        <div class="sep10"></div>
-        {{ l10n.existing_member|safe}}</div>
+		<div align="center">
+			<button class="ui circular facebook icon button">
+				  <i class="facebook icon"></i>
+			</button>
+			<button class="ui circular twitter icon button">
+				  <i class="twitter icon"></i>
+			</button>
+			<a href="/signin">
+				<button class="circular ui icon button">
+					<i class="icon mail"></i>
+				</button>
+			</a>
+			<button class="ui circular linkedin icon button">
+				  <i class="linkedin icon"></i>
+			</button>
+			<button class="ui circular google plus icon button">
+				  <i class="google plus icon"></i>
+			</button>
+			<div class="sep10"></div>
+			{{ l10n.email_ony_member|safe}}
+		</div>
     </div>
     {% endif %}
 </div>
