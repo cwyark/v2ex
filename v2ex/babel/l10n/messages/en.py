@@ -32,7 +32,7 @@ no = 'No'
 password = "Password"
 remember_1_year = "Cookie will be remembered for a year."
 forgot_password = "I Forgot Password"
-existing_member = 'Existing member please <a href="/signin">sign in</a>'
+email_ony_member = 'If you have email only, please <a href="/signup">sign up</a>'
 
 # Messages on /signup
 

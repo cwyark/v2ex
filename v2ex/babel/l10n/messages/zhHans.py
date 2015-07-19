@@ -32,7 +32,7 @@ no = '否'
 password = "密码"
 remember_1_year = "登录后 cookie 会被记住一年"
 forgot_password = "我忘记密码了"
-existing_member = '已注册用户请 <a href="/signin">登入</a>'
+email_ony_member = '电子邮件用户请 <a href="/signup">注册</a>'
 
 # Messages on /signup
 
