@@ -1,0 +1,214 @@
+application: v2ex
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: false
+
+default_expiration: "10d"
+
+derived_file_type:
+- python_precompiled
+
+libraries:
+- name: webapp2
+  version: "latest"
+- name: django
+  version: "latest"
+- name: jinja2
+  version: "latest"
+
+handlers:
+- url: /favicon.ico
+  static_files: static/img/favicon.ico
+  upload: static/img/favicon.ico
+
+- url: /apple-touch-icon.png
+  static_files: static/img/apple-touch-icon.png
+  upload: static/img/apple-touch-icon.png
+    
+- url: /static
+  static_dir: static
+
+- url: /css/.*
+  script: css.application
+
+- url: /blog/([a-zA-Z0-9\_\-]+)
+  script: blog.application
+  
+- url: /entry/([0-9]+)
+  script: blog.application
+
+- url: /settings
+  script: member.application
+
+- url: /settings/.*
+  script: member.application
+
+- url: /member/.*
+  script: member.application
+
+- url: /backstage
+  script: backstage.application
+
+- url: /backstage/.*
+  script: backstage.application
+
+- url: /new/.*
+  script: topic.application
+  
+- url: /t/.*
+  script: topic.application
+
+- url: /r/.*
+  script: topic.application
+  
+- url: /edit/.*
+  script: topic.application
+  
+- url: /delete/.*
+  script: topic.application
+
+- url: /hit/.*
+  script: topic.application
+
+- url: /index/.*
+  script: topic.application
+  
+- url: /(avatar|navatar)/.*
+  script: avatar.application
+
+- url: /index.xml
+  script: feed.application
+  
+- url: /feed/v2ex.rss
+  script: feed.application
+
+- url: /feed/(.+).xml
+  script: feed.application
+
+- url: /about
+  script: page.application
+  
+- url: /faq
+  script: page.application
+
+- url: /mission
+  script: page.application
+
+- url: /advertise
+  script: page.application
+  
+- url: /advertisers
+  script: page.application
+  
+- url: /notes/?
+  script: notes.application
+
+- url: /notes/.*
+  script: notes.application
+
+- url: /api/.*
+  script: api.application
+
+- url: /twitter/?
+  script: t.application
+
+- url: /twitter/.*
+  script: t.application
+
+- url: /time/?
+  script: misc.application
+
+- url: /(md5|sha1)/?
+  script: misc.application
+
+- url: /mapreduce(/.*)?
+  script: mapreduce/main.APP
+  login: admin
+
+- url: /images(/.*)?
+  script: images.application
+
+- url: /d/([0-9]+)?
+  script: images.application
+
+- url: /place/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})
+  script: place.application
+
+- url: /remove/place_message/(.*)
+  script: place.application
+ 
+- url: /_ah/mail/.+
+  script: mail.application
+  login: admin
+
+- url: /_ah/xmpp/.+
+  script: xmpp.application
+  login: admin
+
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  login: admin
+
+- url: /block/(.*)
+  script: member.application
+
+- url: /unblock/(.*)
+  script: member.application
+
+- url: /favorite/(.*)
+  script: favorite.application
+
+- url: /unfavorite/(.*)
+  script: favorite.application
+
+- url: /follow/(.*)
+  script: favorite.application
+
+- url: /unfollow/(.*)
+  script: favorite.application
+
+- url: /my/(.*)
+  script: my.application
+
+- url: /add/star/(.*)
+  script: queue.application
+  login: admin
+
+- url: /minus/star/(.*)
+  script: queue.application
+  login: admin
+
+- url: /money/(.*)
+  script: money.application
+
+- url: /sso/(.*)
+  script: sso.application
+
+- url: /notifications/?
+  script: notifications.application
+
+- url: /n/([a-z0-9]+).xml
+  script: notifications.application
+    
+- url: /notifications/(.*)
+  script: notifications.application
+
+- url: /bfbcs/poke/(ps3|360|pc)/(.*)
+  script: misc.application
+
+- url: /.*
+  script: main.application
+
+inbound_services:
+- mail
+- xmpp_message
+
+skip_files:
+- node_modules
+- bower_components
+- ^(.*/)?#.*#$
+- ^(.*/)?.*~$
+- ^(.*/)?.*\.py[co]$
+- ^(.*/)?.*/RCS/.*$
+- ^(.*/)?\..*$
