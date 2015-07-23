@@ -674,7 +674,7 @@ class BackstageNewSectionHandler(webapp.RequestHandler):
         template_values['l10n'] = l10n
         if (member):
             if (member.level == 0):    
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'backstage_new_section.html')
+                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_new_section.html')
                 output = template.render(path, template_values)
                 self.response.out.write(output)
             else:
@@ -774,7 +774,7 @@ class BackstageNewSectionHandler(webapp.RequestHandler):
                     counter.put()
                     self.redirect('/backstage')
                 else:    
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'backstage_new_section.html')
+                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_new_section.html')
                     output = template.render(path, template_values)
                     self.response.out.write(output)
             else:
@@ -973,7 +973,7 @@ class BackstageNewNodeHandler(webapp.RequestHandler):
                     template_values['section'] = q[0]
                 else:
                     template_values['section'] = False
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'backstage_new_node.html')
+                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_new_node.html')
                 output = template.render(path, template_values)
                 self.response.out.write(output)
             else:
@@ -1083,7 +1083,7 @@ class BackstageNewNodeHandler(webapp.RequestHandler):
                     memcache.delete('home_nodes_new')
                     self.redirect('/backstage/node/' + node.name)
                 else:    
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'backstage_new_node.html')
+                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_new_node.html')
                     output = template.render(path, template_values)
                     self.response.out.write(output)
             else:
@@ -1310,7 +1310,7 @@ class BackstageNodeHandler(webapp.RequestHandler):
                     memcache.delete('home_nodes_new')
                     self.redirect('/backstage/section/' + section.name)
                 else:    
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'backstage_node.html')
+                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_node.html')
                     output = template.render(path, template_values)
                     self.response.out.write(output)
             else:
