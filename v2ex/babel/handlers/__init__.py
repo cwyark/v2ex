@@ -112,11 +112,15 @@ class BaseHandler(webapp.RequestHandler):
                     from v2ex.babel.l10n.messages import en as messages
                 if self.member.l10n == 'zh-Hans':
                     from v2ex.babel.l10n.messages import zhHans as messages
+                if self.member.l10n == 'zh-Hant':
+                    from v2ex.babel.l10n.messages import zhHant as messages
             else:
                 if self.site.l10n == 'en':
                     from v2ex.babel.l10n.messages import en as messages
                 if self.site.l10n == 'zh-Hans':
                     from v2ex.babel.l10n.messages import zhHans as messages
+                if self.site.l10n == 'zh-Hant':
+                    from v2ex.babel.l10n.messages import zhHant as messages
             self._l10n = messages
         return self._l10n
     
