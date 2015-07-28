@@ -12,10 +12,9 @@
             <div class="box">
                 <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ l10n.signup }}</span></div>
                 <div class="inner">
-                    <form action="/signup" method="post">
+                    <form action="/signup" method="post" class="ui form">
         			{% if errors %}
-        			<strong>{{ l10n.resolve_errors }}</strong>
-        			<div class="sep10"></div>
+        			<label class="ui message">{{ l10n.resolve_errors }}</label>
         			<ul>
         				{% if member_username_error %}
         				<li>{{ member_username_error_message }}</li>
@@ -30,57 +29,33 @@
         				<li>{{ recaptcha_error_message }}</li>
                         {% endif %}
         			</ul>
-        			<div class="sep10"></div>
         			{% endif %}
         			<script type="text/javascript">
                     var RecaptchaOptions = {
                         theme : 'blackglass'
                     };
                     </script>
-        			<table cellpadding="5" cellspacing="0" border="0">
-        			    <tr>
+        			    <div class="field">
+							<label>{{ l10n.username }}</label>
+							<input type="text" class="sl" name="username" value="{{ member_username|escape }}" />
+							<div class="sep5"></div><span class="fade">请使用半角的 a-z 或数字 0-9</span>
+        			    </div>
+        			    <div class="field">
+							<label>{{ l10n.password }}</label>
+							<input type="password" class="sl" name="password" value="{{ member_password|escape }}" />
+        			    </div>
+        			    <div class="field">
         			        <td width="80" align="right" valign="top">
-        			            <div class="sep5"></div>
-        			            {{ l10n.username }}
-        			        </td>
-        			        <td width="200" align="left">
-        			            <input type="text" class="sl" name="username" value="{{ member_username|escape }}" />
-        			            <div class="sep5"></div><span class="fade">请使用半角的 a-z 或数字 0-9</span>
-        			        </td>
-        			    </tr>
-        			    <tr>
-        			        <td width="80" align="right">
-        			            {{ l10n.password }}
-        			        </td>
-        			        <td width="200" align="left">
-        			            <input type="password" class="sl" name="password" value="{{ member_password|escape }}" />
-        			        </td>
-        			    </tr>
-        			    <tr>
-        			        <td width="80" align="right" valign="top">
-        			            <div class="sep5"></div>
-        			            {{ l10n.email }}
-        			        </td>
-        			        <td width="200" align="left">
+								<label>{{ l10n.email }}</label>
         			            <input type="text" class="sl" name="email" value="{{ member_email|escape }}" />
         			            <div class="sep5"></div><span class="fade">请使用真实邮箱注册</span>
-        			        </td>
-        			    </tr>
-        			    <tr>
-        			        <td width="80" align="right">
-        			        </td>
-        			        <td width="200" align="left">
-        			            {{ captchahtml|safe}}
-        			        </td>
-        			    </tr>
-        			    <tr>
-        			        <td width="80" align="right">
-        			        </td>
-        			        <td width="200" align="left">
-        			            <input type="submit" value="{{ l10n.signup }}" class="super normal button" />
-        			        </td>
-        			    </tr>
-        			</table>
+        			    </div>
+        			    <div class="field">
+							{{ captchahtml|safe}}
+        			    </div>
+        			    <div class="field">
+							<input type="submit" value="{{ l10n.signup }}" class="ui button" />
+        			    </div>
                     </form>
                 </div>
             </div>
