@@ -135,12 +135,20 @@ a.dark:hover {
 /* IDs */
 
 #Top {
-	height: 40px;
+	height:100px;
+}
+
+#top_class {
+	height:30px;
+	background-color:#F8F8F8;
+	position:fixed;
+	z-index:2;
+	width:100%;
 }
 
 #TopMain {
 	width: 960px;
-	height: 40px;
+	height: 80px;
 	text-align: center;
 	margin: 0px auto 0px auto;
 }
@@ -195,7 +203,7 @@ a.dark:hover {
 }
 
 #Wrapper {
-	background-color: #E9E9E9;
+	background-color:#F9F9F9;
 }
 
 #Main {

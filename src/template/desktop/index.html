@@ -28,6 +28,12 @@
             {% include 'rightbar/goodies.html' %}
         </div>
         <div id="Content">
+			<div class="ui top attached tabular menu">
+				<div class="active item">Latest</div>
+				<div class="item">Hottest</div>
+				<div class="item">Featured</div>
+				<div class="item">Ask and Answer</div>
+			</div>
             <div class="box" id="topics_index">
                 {% if member %}
 					{% if member.show_home_top %}

@@ -14,11 +14,28 @@ var gulp = require('gulp'),
 	mainBowerFiles = require('main-bower-files'),
 	gulpFilter = require('gulp-filter'),
 	livereload = require('gulp-livereload');
+	pngquant = require('imagemin-pngquant');
 
+
+gulp.task('copy', function(){
+	return gulp.src('src/template/feed/*.xml')
+				.pipe(gulp.dest('tpl/feed'))
+});
 
 gulp.task('image', function(){
 	return gulp.src('src/img/**/**')
+		.pipe(imagemin({
+			progressive: true,
+			svgoPlugins: [{removeViewBox: false}],
+			use: [pngquant()]
+		}))
 		.pipe(gulp.dest('static/img'))
+});
+
+gulp.task('html', function(){
+	return gulp.src('src/template/**/*.html')
+		.pipe(htmlmin({collapseWhitespace: true}))
+		.pipe(gulp.dest('tpl'))
 });
 
 gulp.task('css', function(){
@@ -59,13 +76,6 @@ gulp.task('script', function(){
 		.pipe(notify({message: 'Script Task Complete'}));
 });
 
-
-gulp.task('html', function(){
-	return gulp.src('src/template/**/*.html')
-		.pipe(htmlmin({collapseWhitespace: true}))
-		.pipe(gulp.dest('tpl'))
-});
-
 gulp.task('clean', function(){
 	return gulp.src(['static', 'tpl'], {read:false})
 		.pipe(clean());
@@ -85,14 +95,13 @@ gulp.task('bower', function(){
 		.pipe(gulp.dest('assets/css'))
 });
 
-gulp.task('serve', ['html', 'image', 'css', 'style'], function(){
+gulp.task('serve', ['html', 'image', 'css', 'style', 'copy', 'script'], function(){
 	gulp.watch('src/scss/*.scss', ['style']);
-	//gulp.watch('src/js/*.js', ['script', 'bower']);
+	gulp.watch('src/js/*.js', ['script']);
 	gulp.watch('src/template/**/*.html', ['html']);
 	gulp.watch('src/img/**', ['image']);
 	gulp.watch('src/css/**', ['css']);
 });
-
 
 
 gulp.task('default', ['clean'], function(){

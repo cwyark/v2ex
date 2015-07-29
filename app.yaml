@@ -10,6 +10,8 @@ derived_file_type:
 - python_precompiled
 
 libraries:
+- name: PIL
+  version: "latest"
 - name: webapp2
   version: "latest"
 - name: django
