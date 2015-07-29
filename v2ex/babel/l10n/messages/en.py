@@ -115,7 +115,7 @@ personal_records = "Personal Records"
 blocked = "Blocked"
 updated_every_4_hours = "Updated Every 4 Hours"
 show_home_top = "Show Site Header"
-show_quick_post = "Show Quick Post"
+show_quick_post = "Show Quick Ask"
 do_show = "Show"
 do_not_show = "Do Not Show"
 
@@ -157,3 +157,10 @@ site_theme = 'Theme'
 enable_topic_types = 'Enable Topic Types'
 topic_types = 'Topic Types'
 topic_types_explained = 'One type per line, use colon to separate name and color'
+
+# Messages on footer
+about = 'About Us'
+FAQ = 'FAQ'
+our_vision = 'Our Vision'
+advertisment = 'Advertisment'
+index = 'Home Page'

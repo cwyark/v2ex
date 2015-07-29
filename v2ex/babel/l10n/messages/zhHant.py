@@ -115,7 +115,7 @@ personal_records = "個人紀錄"
 blocked = "封鎖"
 updated_every_4_hours = "以上資料約 4 小時更新一次"
 show_home_top = "首頁訊息"
-show_quick_post = "快速發表"
+show_quick_post = "快速發問"
 do_show = "顯示"
 do_not_show = "不顯示"
 
@@ -157,3 +157,10 @@ site_theme = '網站外表主题'
 enable_topic_types = '開啟話題類型'
 topic_types = '話題類型'
 topic_types_explained = '每行一個，使用 : 區分名字和顏色'
+
+# Messages on footer
+about = '關於'
+FAQ = 'FAQ'
+our_vision = '願景'
+advertisment = '廣告刊登'
+index = '首頁'

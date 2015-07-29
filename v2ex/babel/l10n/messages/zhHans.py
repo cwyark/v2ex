@@ -115,7 +115,7 @@ personal_records = "个人纪录"
 blocked = "屏蔽"
 updated_every_4_hours = "以上数据大约每 4 小时更新一次"
 show_home_top = "首页头部信息"
-show_quick_post = "快捷发布"
+show_quick_post = "快捷发問"
 do_show = "显示"
 do_not_show = "不显示"
 
@@ -157,3 +157,11 @@ site_theme = '站点皮肤主题'
 enable_topic_types = '开启主题类型'
 topic_types = '主题类型'
 topic_types_explained = '每行一个，使用 : 分割名字和颜色'
+
+
+# Messages on footer
+about = '關於'
+FAQ = 'FAQ'
+our_vision = '願景'
+advertisment = '廣告刊登'
+index = '首頁'

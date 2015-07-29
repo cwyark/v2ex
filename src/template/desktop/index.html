@@ -9,6 +9,8 @@
         <div id="Rightbar">
             {% include 'rightbar/user.html' %}
             <div class="sep20"></div>
+            {% include 'rightbar/ads.html' %}
+            <div class="sep20"></div>
             <div class="box">
 				<div class="cell">
 					<span class="fade">{{ l10n.hottest_nodes|safe }}</span>
@@ -22,8 +24,6 @@
             <div class="sep20"></div>
             {% include 'rightbar/stats.html' %}
             {% include 'rightbar/recent_nodes.html' %}
-            <div class="sep20"></div>
-            {% include 'rightbar/ads.html' %}
             <div class="sep20"></div>
             {% include 'rightbar/goodies.html' %}
         </div>

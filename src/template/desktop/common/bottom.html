@@ -1,66 +1,35 @@
 <div id="Bottom">
     <div id="BottomMain">
-		<div class="fr" align="right">
-			<table cellpadding="10" cellspacing="0" border="0">
-				<tr>
-					<td>
-						<a href="http://www.linode.com/?r=af313ea8a6bb6f99aff800c67349cabbfee2682f" target="_blank">
-							<img src="http://static.v2ex.com/logos/linode.png" border="0" alt="Linode" width="120" />
-						</a>
-					</td>
-					<td>
-						<a href="https://www.upyun.com/?utm_source=upyun-v2ex&utm_medium=ad&utm_campaign=upyun&md=upyun-v2ex" target="_blank">
-							<img src="http://static.v2ex.com/logos/upyun.jpg" border="0" width="120" />
-						</a>
-					</td>
-				</tr>
-			</table>
-        </div>
-
         <strong>
-			<a href="/about" class="dark">关于</a>
+			<a href="/about" class="dark">{{l10n.about}}</a>
 		</strong>
 		&nbsp; | &nbsp;
 		<strong>
-			<a href="/faq" class="dark">FAQ</a>
+			<a href="/faq" class="dark">{{l10n.FAQ}}</a>
 		</strong>
 		&nbsp; | &nbsp;
 		<strong>
-			<a href="/mission" class="dark">我们的愿景</a>
+			<a href="/mission" class="dark">{{l10n.our_vision}}</a>
 		</strong>
 		&nbsp; | &nbsp;
 		<strong>
-			<a href="/advertise" class="dark">广告投放</a>
+			<a href="/advertise" class="dark">{{l10n.advertisment}}</a>
 		</strong>
 		&nbsp; | &nbsp;
-		<!--
-		   -<strong>
-		   -    <a href="https://workspace.v2ex.com/" class="dark" target="_blank">{{ l10n.workspace }}</a>
-		   -</strong>
-		   -&nbsp; | &nbsp;
-		   -<strong>
-		   -    <a href="http://www.v2ex.com/gadgetlab" class="dark">Gadget Lab</a>
-		   -</strong>
-		   -&nbsp; | &nbsp;
-		   -<strong>
-		   -    <a href="http://livid.v2ex.com/" class="dark" target="_blank">博客</a>
-		   -</strong>
-		   -&nbsp; | &nbsp;
-		   -->
 		<strong>
-			<a href="http://www.v2ex.com/start" class="dark" target="_blank">上网首页</a>
+			<a href="/" class="dark" target="_blank">{{l10n.index}}</a>
 		</strong>
 
         <div class="sep10"></div>
         <div class="sep5"></div>
         <span class="fade">{{ site.description }}</span>
         <div class="sep3"></div>
-        <span class="fade">Lovingly made by <a href="http://www.olivida.com/" target="_blank" class="dark"><strong>OLIVIDA</strong></a></span>
-        <div class="sep10"></div>
+		<div class="ui horizontal divider">
+		    IO.Tea
+		 </div>
         <div class="sep5"></div>
-        <small>VERSION: {{ system_version }}<br />♥ Do have a faith in what you're doing.</small>
+		<strong>Io.Tea is a community running on Google App Engine and it is a fork from v2ex. The source code's copyright is owned by the creater of v2ex: <a href="http://www.olivida.com/" target="_blank">OLIVIDA</a></strong>
     </div>
-
     {% if site.analytics %}
 		<script type="text/javascript">
 			var _gaq = _gaq || [];
