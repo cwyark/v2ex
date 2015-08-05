@@ -15,7 +15,7 @@
 				<div class="eight wide column">
 					<a href="/my/nodes" style="display: block; text-align:center;">
 						<div>
-							节点收藏
+							主題收藏
 						</div>
 						<div class="ui green label circular">{{ member.favorited_nodes }}</div>
 					</a>
@@ -23,7 +23,7 @@
 				<div class="eight wide column">
 					<a href="/my/topics" style="display: block;text-align:center;">
 						<div>
-							主题收藏
+							話題收藏
 						</div>
 						<div class="ui blue label circular">{{ member.favorited_topics }}</div>
 					</a>
@@ -31,7 +31,7 @@
 				<div class="eight wide column">
 					<a href="/my/following" style="display: block;text-align:center;">
 						<div>
-							特别关注
+							特別關注
 						</div>
 						<div class="ui yellow label circular">{{ member.favorited_members }}</div>
 					</a>
@@ -40,7 +40,7 @@
 				<div class="eight wide column">
 					<a href="/notifications" style="display: block;text-align:center;">
 						<div>
-							未读提醒
+							未讀提醒
 						</div>
 						<div class="ui red label circular">{{ member.notifications }}</div>
 					</a>
@@ -59,7 +59,7 @@
     {% if member.avatar_large_url %}
     {% else %}
 		<div class="yellow">
-			<span class="fade">有头像才够酷 <a href="/settings/avatar">现在就上传 →</a></span>
+			<span class="fade">上傳您的頭像 <a href="/settings/avatar">上傳 →</a></span>
 		</div>
     {% endif %}
     {% else %}

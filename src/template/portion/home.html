@@ -30,9 +30,9 @@
 							<a href="/member/{{ topic.created_by|escape }}" class="dark">{{ topic.created_by|escape }}</a>
 						</strong>
 						{% if topic.content_length%}
-							&nbsp;•&nbsp; {{ topic.content_length }} 个字符
+							&nbsp;•&nbsp; {{ topic.content_length }} 個字
 						{% endif %}
-						&nbsp;•&nbsp; {{ topic.hits }} 次点击
+						&nbsp;•&nbsp; {{ topic.hits }} 次點擊
 						<div class="sep5"></div>
 						{{ topic.last_touched|timesince }} ago
 						{% if topic.last_reply_by %}

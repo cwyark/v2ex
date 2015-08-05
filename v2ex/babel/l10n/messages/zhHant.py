@@ -20,7 +20,7 @@ chevron = '<span class="chevron">&nbsp;›&nbsp;</span>'
 resolve_errors = "請解決以下錯誤再繼續"
 failed_signin = "用戶名與密碼不否配"
 delete = '刪除'
-submit = '提交'
+submit = '送出'
 save = '保存'
 create = '建立'
 back_to = '返回'
@@ -49,16 +49,16 @@ signin_again = '重新登入'
 # Messages on /
 
 signup_now = "現在註冊"
-hottest_nodes = '最熱節點'
-new_nodes = '最近新增節點'
+hottest_nodes = '最熱主題'
+new_nodes = '最近新增主題'
 community_stats = '社群運行狀態'
 total_members = '註冊會員總人數'
 total_topics = '話題總數目'
 total_replies = '回復總數目'
-recent_visited_nodes = '最近訪問的節點'
+recent_visited_nodes = '最近訪問的主題'
 rss_subscribe = '訂閱RSS用以追蹤社群最新動態'
 more_recent_topics = '更多新話題'
-nodes_portal = '節點導航'
+nodes_portal = '主題導航'
 
 # Messages on /t/
 

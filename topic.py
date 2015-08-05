@@ -62,6 +62,14 @@ class NewTopicHandler(webapp.RequestHandler):
         member = CheckAuth(self)
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
+        hottest = memcache.get('index_hottest_sidebar')
+        if hottest is None:
+            qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
+            hottest = u''
+            for node in qhot:
+                hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
+            memcache.set('index_hottest_sidebar', hottest, 86400)
+        template_values['index_hottest_sidebar'] = hottest
         template_values['page_title'] = site.title + u' › ' + l10n.create_new_topic.decode('utf-8')
         can_create = False
         if site.topic_create_level > 999:
@@ -373,6 +381,14 @@ class TopicHandler(webapp.RequestHandler):
         template_values['member'] = member
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
+        hottest = memcache.get('index_hottest_sidebar')
+        if hottest is None:
+            qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
+            hottest = u''
+            for node in qhot:
+                hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
+            memcache.set('index_hottest_sidebar', hottest, 86400)
+        template_values['index_hottest_sidebar'] = hottest
         if member is not False:
             try:
                 blocked = pickle.loads(member.blocked.encode('utf-8'))
@@ -797,6 +813,14 @@ class TopicEditHandler(webapp.RequestHandler):
         member = CheckAuth(self)
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
+        hottest = memcache.get('index_hottest_sidebar')
+        if hottest is None:
+            qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
+            hottest = u''
+            for node in qhot:
+                hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
+            memcache.set('index_hottest_sidebar', hottest, 86400)
+        template_values['index_hottest_sidebar'] = hottest
         topic = False
         topic = GetKindByNum('Topic', int(topic_num))
         if topic:
@@ -1085,6 +1109,14 @@ class ReplyEditHandler(webapp.RequestHandler):
         member = CheckAuth(self)
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
+        hottest = memcache.get('index_hottest_sidebar')
+        if hottest is None:
+            qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
+            hottest = u''
+            for node in qhot:
+                hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
+            memcache.set('index_hottest_sidebar', hottest, 86400)
+        template_values['index_hottest_sidebar'] = hottest
         if member:
             if member.level == 0:
                 template_values['page_title'] = site.title + u' › 编辑回复'

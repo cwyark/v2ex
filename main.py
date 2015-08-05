@@ -772,6 +772,14 @@ class NodeHandler(webapp.RequestHandler):
         template_values['can_manage'] = can_manage
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n    
+        hottest = memcache.get('index_hottest_sidebar')
+        if hottest is None:
+            qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
+            hottest = u''
+            for node in qhot:
+                hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
+            memcache.set('index_hottest_sidebar', hottest, 86400)
+        template_values['index_hottest_sidebar'] = hottest
         node = GetKindByName('Node', node_name)
         template_values['node'] = node
         pagination = False

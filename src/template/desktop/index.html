@@ -29,10 +29,7 @@
         </div>
         <div id="Content">
 			<div class="ui top attached tabular menu">
-				<div class="active item">Latest</div>
-				<div class="item">Hottest</div>
-				<div class="item">Featured</div>
-				<div class="item">Ask and Answer</div>
+				<div class="active item"><a href="/?sort=latest">All</a></div>
 			</div>
             <div class="box" id="topics_index">
                 {% if member %}
@@ -47,8 +44,8 @@
 					{% ifequal member.show_quick_post 1 %}
 						<div class="cell">
 							<div class="fr fade">
-								快速發問將會把文章發表至<strong>問答專區</strong>，请在 120 字内描述你的问题，或者，也可以使用
-								<a href="/new/qna">详细提问模式</a>
+								快速發問將會把文章發表至<strong>問答專區</strong>，請在 120 字內描述您的問題，也可以使用
+								<a href="/new/qna">發表文章</a>發問
 							</div>
 							<span class="bigger snow">
 								<strong style="font-family: 'Arial Black'; letter-spacing: -1.5px;">快速發問</strong> 
@@ -102,7 +99,7 @@
             <div class="box">
                 <div class="cell">
 					<div class="fr">
-						<a href="/planes">浏览全部节点</a>
+						<a href="/planes">瀏覽全部分類</a>
 					</div>
 					<span class="fade">
 						<strong>{{ site.title }}</strong> / {{ l10n.nodes_portal }}
