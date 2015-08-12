@@ -13,39 +13,5 @@
   ],
   "devDependencies": {},
   "dependencies": {
-    "angularjs": "~1.3.15",
-    "semantic": "~2.0.3"
-  },
-  "overrides": {
-    "highchart-ng": {
-      "main": [
-        "dist/**/**"
-      ]
-    },
-    "startbootstrap-sb-admin-2": {
-      "main": [
-        "dist/**/**"
-      ]
-    },
-    "metisMenu": {
-      "main": [
-        "dist/**/**"
-      ]
-    },
-    "bootstrap": {
-      "main": [
-        "dist/**/**"
-      ]
-    },
-    "angularjs": {
-      "main": [
-        "angular.min.js"
-      ]
-    },
-    "jquery": {
-      "main": [
-        "dist/jquery.min.js"
-      ]
-    }
   }
 }
