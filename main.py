@@ -8,7 +8,6 @@ import time
 import datetime
 import hashlib
 import urllib
-import string
 import random
 import pickle
 import math
@@ -49,28 +48,30 @@ template.register_template_library('v2ex.templatetags.filters')
 
 import config
 
+
 class HomeHandler(webapp.RequestHandler):
-    def head(self):
-        pass
-        
     def get(self):
-        host = self.request.headers['Host']
-        if host == 'beta.v2ex.com':
-            return self.redirect('http://www.v2ex.com/')
-        site = GetSite()
-        user_agent = detect(self.request)
+        member = CheckAuth(self)
+
         template_values = {}
-        template_values['site'] = GetSite()
+        user_agent = detect(self.request)
+        template_values['user_agent'] = user_agent
+
+        site = GetSite()
+        template_values['site'] = site
+
+        l10n = GetMessages(self, member, site)
+        template_values['l10n'] = l10n
+
         template_values['canonical'] = 'http://' + str(site.domain) + '/'
         template_values['rnd'] = random.randrange(1, 100)
         template_values['page_title'] = site.title
         template_values['system_version'] = SYSTEM_VERSION
-        member = CheckAuth(self)
+
         if member:
-            if member.my_home != None and len(member.my_home) > 0:
+            if member.my_home is not None and len(member.my_home) > 0:
                 return self.redirect(member.my_home)
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
+
         if member:
             self.response.headers['Set-Cookie'] = str('auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
             template_values['member'] = member
@@ -80,146 +81,67 @@ class HomeHandler(webapp.RequestHandler):
                 blocked = []
             if (len(blocked) > 0):
                 template_values['blocked'] = ','.join(map(str, blocked))
+
         if member:
             recent_nodes = memcache.get('member::' + str(member.num) + '::recent_nodes')
             if recent_nodes:
                 template_values['recent_nodes'] = recent_nodes
-        nodes_new = []
-        nodes_new = memcache.get('home_nodes_new')
-        if nodes_new is None:
-            nodes_new = []
-            qnew = db.GqlQuery("SELECT * FROM Node ORDER BY created DESC LIMIT 10")
-            if (qnew.count() > 0):
-                i = 0
-                for node in qnew:
-                    nodes_new.append(node)
-                    i = i + 1
-            memcache.set('home_nodes_new', nodes_new, 86400)
-        template_values['nodes_new'] = nodes_new
-        ignored = ['newbie', 'in', 'flamewar', 'pointless', 'tuan', '528491', 'chamber', 'autistic', 'blog', 'love', 'flood', 'beforesunrise', 'diary', 'fanfou', 'closed']
-        
+
+        template_values['nodes_new'] = GetNewNode()
+
 # cache latest topic to save db access resource
         home_rendered = memcache.get('home_rendered')
+
         if home_rendered is None:
-            latest = memcache.get('q_latest_16')
-            if (latest):
-                template_values['latest'] = latest
-            else:
-                q2 = db.GqlQuery("SELECT * FROM Topic ORDER BY last_touched DESC LIMIT 16")
-                topics = []
-                for topic in q2:
-                    if topic.node_name not in ignored:
-                        topics.append(topic)
-                memcache.set('q_latest_16', topics, 600)
-                latest = topics
-                template_values['latest'] = latest
+            ignored = ['newbie', 'in', 'flamewar', 'pointless', 'tuan', '528491', 'chamber', 'autistic', 'blog', 'love', 'flood', 'beforesunrise', 'diary', 'fanfou', 'closed']     
+
+            template_values['latest'] = GetLatestTopic(ignored, 16)
+
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'home.html')
+
             home_rendered = template.render(path, template_values)
             memcache.set('home_rendered', home_rendered, 600)
         template_values['home'] = home_rendered
 
-        member_total = memcache.get('member_total')
-        if member_total is None:
-            q3 = db.GqlQuery("SELECT * FROM Counter WHERE name = 'member.total'")
-            if (q3.count() > 0):
-                member_total = q3[0].value
-            else:
-                member_total = 0
-            memcache.set('member_total', member_total, 3600)
-        template_values['member_total'] = member_total
-        topic_total = memcache.get('topic_total')
-        if topic_total is None:
-            q4 = db.GqlQuery("SELECT * FROM Counter WHERE name = 'topic.total'")
-            if (q4.count() > 0):
-                topic_total = q4[0].value
-            else:
-                topic_total = 0
-            memcache.set('topic_total', topic_total, 3600)
-        template_values['topic_total'] = topic_total
-        reply_total = memcache.get('reply_total')
-        if reply_total is None:
-            q5 = db.GqlQuery("SELECT * FROM Counter WHERE name = 'reply.total'")
-            if (q5.count() > 0):
-                reply_total = q5[0].value
-            else:
-                reply_total = 0
-            memcache.set('reply_total', reply_total, 3600)
-        template_values['reply_total'] = reply_total
-        hottest = memcache.get('index_hottest_sidebar')
-        if hottest is None:
-            qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
-            hottest = u''
-            for node in qhot:
-                hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
-            memcache.set('index_hottest_sidebar', hottest, 86400)
-        template_values['index_hottest_sidebar'] = hottest
-        c = memcache.get('index_categories')
-        if c is None:
-            c = ''
-            i = 0
-            if site.home_categories is not None:
-                categories = site.home_categories.split("\n")
-            else:
-                categories = []
-            for category in categories:
-                category = category.strip()
-                i = i + 1
-                c = c + '<div class="cell"><table cellpadding="0" cellspacing="0" border="0"><tr><td align="right" width="60"><span class="fade">' + category + '</span></td><td style="line-height: 200%; padding-left: 10px;">'
-                qx = db.GqlQuery("SELECT * FROM Node WHERE category = :1 ORDER BY topics DESC", category)
-                for node in qx:
-                    c = c + '<a href="/go/' + node.name + '" style="font-size: 14px;">' + node.title + '</a>&nbsp; &nbsp; '
-                c = c + '</td></tr></table></div>'
-                memcache.set('index_categories', c, 86400)
-        template_values['c'] = c
+        template_values['member_total'] = GetTotalMemberNum()
+        template_values['topic_total'] = GetTotalTopicNum()
+        template_values['reply_total'] = GetTotalReplyNum()
+        template_values['index_hottest_sidebar'] = GetIndexHottestSidebar()
+        template_values['c'] = GetIndexCategory(site)
+
         path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'index.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
 
+
 class PlanesHandler(BaseHandler):
     def get(self):
-        c = 0
-        c = memcache.get('planes_c')
-        s = ''
-        s = memcache.get('planes')
-        if (s == None):
-            c = 0
-            s = ''
-            q = db.GqlQuery("SELECT * FROM Section ORDER BY nodes DESC")
-            if (q.count() > 0):
-                for section in q:
-                    q2 = db.GqlQuery("SELECT * FROM Node WHERE section_num = :1 ORDER BY topics DESC", section.num)
-                    n = ''
-                    if (q2.count() > 0):
-                        nodes = []
-                        i = 0
-                        for node in q2:
-                            nodes.append(node)
-                            i = i + 1
-                        random.shuffle(nodes)
-                        for node in nodes:
-                            fs = random.randrange(12, 16)
-                            n = n + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
-                            c = c + 1
-                    s = s + '<div class="sep20"></div><div class="box"><div class="cell"><div class="fr"><strong class="snow">' + section.title_alternative + u'</strong><small class="snow"> • ' + str(section.nodes) + ' nodes</small></div>' + section.title + '</div><div class="inner" align="center">' + n + '</div></div>'
-            memcache.set('planes', s, 86400)
-            memcache.set('planes_c', c, 86400)
+        (c, s) = GetAllSectionAndNodes()
         self.values['c'] = c
         self.values['s'] = s
         self.values['page_title'] = self.site.title.decode('utf-8') + u' › ' + self.l10n.planes.decode('utf-8')
         self.finalize(template_name='planes')
-        
+
+
 class RecentHandler(webapp.RequestHandler):
     def get(self):
-        site = GetSite()
-        user_agent = detect(self.request)
+
+        member = CheckAuth(self)
+
         template_values = {}
+        user_agent = detect(self.request)
+        template_values['user_agent'] = user_agent
+
+        site = GetSite()
         template_values['site'] = site
+
         template_values['rnd'] = random.randrange(1, 100)
         template_values['system_version'] = SYSTEM_VERSION
-        template_values['page_title'] = site.title + u' › 最近的 50 个主题'
-        member = CheckAuth(self)
+        template_values['page_title'] = site.title + u' › 最近50個話題'
+
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
+
         if member:
             template_values['member'] = member
             try:
@@ -228,79 +150,68 @@ class RecentHandler(webapp.RequestHandler):
                 blocked = []
             if (len(blocked) > 0):
                 template_values['blocked'] = ','.join(map(str, blocked))
-        latest = memcache.get('q_recent_50')
-        if (latest):
-            template_values['latest'] = latest
-        else:
-            q2 = db.GqlQuery("SELECT * FROM Topic ORDER BY last_touched DESC LIMIT 16,50")
-            topics = []
-            IGNORED_RECENT = ['flamewar', 'pointless', 'in', 'autistic', 'chamber', 'flood', 'diary', 'fanfou']
-            for topic in q2:
-                if topic.node_name not in IGNORED_RECENT:
-                    topics.append(topic)
-            memcache.set('q_recent_50', topics, 80)
-            template_values['latest'] = topics
-            template_values['latest_total'] = len(topics)
+
+        latest = GetLatestTopic(ignore_topic=[], number=50)
+        template_values['latest'] = latest
+        template_values['latest_total'] = len(latest)
+
         path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'recent.html')
         output = template.render(path, template_values)
+
         expires_date = datetime.datetime.utcnow() + datetime.timedelta(minutes=2)
         expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
         self.response.headers.add_header("Expires", expires_str)
         self.response.headers['Cache-Control'] = 'max-age=120, must-revalidate'
         self.response.out.write(output)
 
-class UAHandler(webapp.RequestHandler):
-    def get(self):
-        site = GetSite()
-        user_agent = detect(self.request)
-        template_values = {}
-        template_values['site'] = site
-        template_values['system_version'] = SYSTEM_VERSION
-        member = CheckAuth(self)
-        template_values['member'] = member
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
-        template_values['ua'] = os.environ['HTTP_USER_AGENT']
-        template_values['page_title'] = site.title + u' › 用户代理字符串'
-        path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'ua.html')
-        output = template.render(path, template_values)
-        self.response.out.write(output)
 
-        
 class SigninHandler(webapp.RequestHandler):
     def get(self):
-        site = GetSite()
         member = False
-        user_agent = detect(self.request)
+
         template_values = {}
+        user_agent = detect(self.request)
+
+        template_values['user_agent'] = user_agent
+        site = GetSite()
+
         template_values['site'] = site
         template_values['page_title'] = site.title + u' › 登入'
         template_values['system_version'] = SYSTEM_VERSION
+
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
+
         errors = 0
         template_values['errors'] = errors
-        
+
         template_values['next'] = self.request.referer
 
         path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signin.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
- 
+
     def post(self):
-        site = GetSite()
+
         member = False
-        user_agent = detect(self.request)
         template_values = {}
+
+        user_agent = detect(self.request)
+        template_values['user_agent'] = user_agent
+
+        site = GetSite()
         template_values['site'] = site
+
         template_values['page_title'] = site.title + u' › 登入'
         template_values['system_version'] = SYSTEM_VERSION
+
         u = self.request.get('u').strip()
         p = self.request.get('p').strip()
+
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
         errors = 0
-        error_messages = ['', '请输入用户名和密码', '你输入的用户名或密码不正确']
+        error_messages = ['', '請輸入用戶名稱及密碼', '您輸入的使用者名稱或密碼不正確']
         if (len(u) > 0 and len(p) > 0):
             p_sha1 = hashlib.sha1(p).hexdigest()
             if '@' in u:
@@ -327,36 +238,46 @@ class SigninHandler(webapp.RequestHandler):
         path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signin.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
-        
+
+
 class SignupHandler(webapp.RequestHandler):
     def get(self):
-        site = GetSite()
         member = False
         chtml = captcha.displayhtml(
-            public_key = config.recaptcha_public_key,
-            use_ssl = False,
-            error = None)
-        user_agent = detect(self.request)
+            public_key=config.recaptcha_public_key,
+            use_ssl=False,
+            error=None)
         template_values = {}
+
+        user_agent = detect(self.request)
+        template_values['user_agent'] = user_agent
+
+        site = GetSite()
         template_values['site'] = site
         template_values['page_title'] = site.title + u' › 注册'
         template_values['system_version'] = SYSTEM_VERSION
         template_values['errors'] = 0
+
         template_values['captchahtml'] = chtml
+
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
         path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'signup.html')
         output = template.render(path, template_values)
         self.response.out.write(output)
-        
+
     def post(self):
         site = GetSite()
         member = False
-        user_agent = detect(self.request)
         template_values = {}
+
+        user_agent = detect(self.request)
+        template_values['user_agent'] = user_agent
+
         template_values['site'] = site
         template_values['page_title'] = site.title + u' › 注册'
         template_values['system_version'] = SYSTEM_VERSION
+
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
         errors = 0
@@ -1104,7 +1025,6 @@ class ChangesHandler(webapp.RequestHandler):
         template_values['member'] = member
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
-        
         topic_total = memcache.get('topic_total')
         if topic_total is None:
             q2 = db.GqlQuery("SELECT * FROM Counter WHERE name = 'topic.total'")
@@ -1114,7 +1034,6 @@ class ChangesHandler(webapp.RequestHandler):
                 topic_total = 0
             memcache.set('topic_total', topic_total, 600)
         template_values['topic_total'] = topic_total
-        
         page_size = 60
         pages = 1
         if topic_total > page_size:
@@ -1156,24 +1075,25 @@ class ChangesHandler(webapp.RequestHandler):
         self.response.out.write(output)
 
 application = webapp.WSGIApplication([
-('/', HomeHandler),
-('/planes/?', PlanesHandler),
-('/recent', RecentHandler),
-('/ua', UAHandler),
-('/signin', SigninHandler),
-('/signup', SignupHandler),
-('/signout', SignoutHandler),
-('/forgot', ForgotHandler),
-('/reset/([0-9]+)', PasswordResetHandler),
-('/go/([a-zA-Z0-9]+)/graph', NodeGraphHandler),
-('/go/([a-zA-Z0-9]+)', NodeHandler),
-('/n/([a-zA-Z0-9]+).json', NodeApiHandler),
-('/q/(.*)', SearchHandler),
-('/_dispatcher', DispatcherHandler),
-('/changes', ChangesHandler),
-('/(.*)', RouterHandler)
-],
-                                     debug=True)
+    ('/', HomeHandler),
+    ('/planes/?', PlanesHandler),
+    ('/recent', RecentHandler),
+    ('/signin', SigninHandler),
+    ('/signup', SignupHandler),
+    ('/signout', SignoutHandler),
+    ('/forgot', ForgotHandler),
+    ('/reset/([0-9]+)', PasswordResetHandler),
+    ('/go/([a-zA-Z0-9]+)/graph', NodeGraphHandler),
+    ('/go/([a-zA-Z0-9]+)', NodeHandler),
+    ('/n/([a-zA-Z0-9]+).json', NodeApiHandler),
+    ('/q/(.*)', SearchHandler),
+    ('/_dispatcher', DispatcherHandler),
+    ('/changes', ChangesHandler),
+    ('/(.*)', RouterHandler)
+    ],
+    debug=True
+)
+
 
 def main():
     util.run_wsgi_app(application)

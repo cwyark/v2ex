@@ -2,7 +2,7 @@
 # "da" means Data Access, this file contains various quick (or dirty) methods for accessing data.
 
 import hashlib
-import logging
+import random
 import zlib
 import pickle
 
@@ -155,3 +155,126 @@ def GetUnpacked(data):
 def GetPacked(data):
     s = pickle.dumps(data)
     return zlib.compress(s)
+
+
+def GetNewNode():
+    nodes_new = []
+    nodes_new = memcache.get('home_nodes_new')
+    if nodes_new is None:
+        nodes_new = []
+        qnew = db.GqlQuery("SELECT * FROM Node ORDER BY created DESC LIMIT 10")
+        if (qnew.count() > 0):
+            for node in qnew:
+                nodes_new.append(node)
+        memcache.set('home_nodes_new', nodes_new, 86400)
+    return nodes_new
+
+
+def GetTotalMemberNum():
+    member_total = memcache.get('member_total')
+    if member_total is None:
+        q3 = db.GqlQuery("SELECT * FROM Counter WHERE name = 'member.total'")
+        if (q3.count() > 0):
+            member_total = q3[0].value
+        else:
+            member_total = 0
+        memcache.set('member_total', member_total, 3600)
+    return member_total
+
+
+def GetTotalTopicNum():
+    topic_total = memcache.get('topic_total')
+    if topic_total is None:
+        q4 = db.GqlQuery("SELECT * FROM Counter WHERE name = 'topic.total'")
+        if (q4.count() > 0):
+            topic_total = q4[0].value
+        else:
+            topic_total = 0
+        memcache.set('topic_total', topic_total, 3600)
+    return topic_total
+
+
+def GetTotalReplyNum():
+    reply_total = memcache.get('reply_total')
+    if reply_total is None:
+        q5 = db.GqlQuery("SELECT * FROM Counter WHERE name = 'reply.total'")
+        if (q5.count() > 0):
+            reply_total = q5[0].value
+        else:
+            reply_total = 0
+        memcache.set('reply_total', reply_total, 3600)
+    return reply_total
+
+
+def GetIndexHottestSidebar():
+    hottest = memcache.get('index_hottest_sidebar')
+    if hottest is None:
+        qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
+        hottest = u''
+        for node in qhot:
+            hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
+        memcache.set('index_hottest_sidebar', hottest, 86400)
+    return hottest
+
+def GetIndexCategory(site):
+    c = memcache.get('index_categories')
+    if c is None:
+        c = ''
+        if site.home_categories is not None:
+            categories = site.home_categories.split("\n")
+        else:
+            categories = []
+        for category in categories:
+            category = category.strip()
+            c = c + '<div class="cell"><table cellpadding="0" cellspacing="0" border="0"><tr><td align="right" width="60"><span class="fade">' + category + '</span></td><td style="line-height: 200%; padding-left: 10px;">'
+            qx = db.GqlQuery("SELECT * FROM Node WHERE category = :1 ORDER BY topics DESC", category)
+            for node in qx:
+                c = c + '<a href="/go/' + node.name + '" style="font-size: 14px;">' + node.title + '</a>&nbsp; &nbsp; '
+            c = c + '</td></tr></table></div>'
+            memcache.set('index_categories', c, 86400)
+    return c
+
+
+def GetLatestTopic(ignore_topic, number):
+    latest = memcache.get('q_latest_%d' % number)
+
+    if not latest:
+        q2 = db.GqlQuery("SELECT * FROM Topic ORDER BY last_touched DESC LIMIT %d" % number)
+        topics = []
+        for topic in q2:
+            if topic.node_name not in ignore_topic:
+                topics.append(topic)
+        memcache.set('q_latest_%d' % number, topics, 600)
+        latest = topics
+    return latest
+
+
+def GetAllSectionAndNodes():
+    c = 0
+    c = memcache.get('planes_c')
+    s = ''
+    s = memcache.get('planes')
+
+    if s is None:
+        c = 0
+        s = ''
+        q = db.GqlQuery("SELECT * FROM Section ORDER BY nodes DESC")
+        if (q.count() > 0):
+            for section in q:
+                q2 = db.GqlQuery("SELECT * FROM Node WHERE section_num = :1 ORDER BY topics DESC", section.num)
+                n = ''
+                if (q2.count() > 0):
+                    nodes = []
+                    i = 0
+                    for node in q2:
+                        nodes.append(node)
+                        i = i + 1
+                    random.shuffle(nodes)
+                    for node in nodes:
+                        n = n + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
+                        c = c + 1
+                s = s + '<div class="sep20"></div><div class="box"><div class="cell"><div class="fr"><strong class="snow">' + section.title_alternative + u'</strong><small class="snow"> • ' + str(section.nodes) + ' nodes</small></div>' + section.title + '</div><div class="inner" align="center">' + n + '</div></div>'
+        memcache.set('planes', s, 86400)
+        memcache.set('planes_c', c, 86400)
+
+    return (c, s)
