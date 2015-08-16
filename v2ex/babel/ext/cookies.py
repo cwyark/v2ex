@@ -1,6 +1,8 @@
 import UserDict
 from Cookie import BaseCookie
+
 class Cookies(UserDict.DictMixin):
+
     def __init__(self,handler,**policy):
         self.response = handler.response
         self._in = handler.request.cookies
@@ -8,19 +10,24 @@ class Cookies(UserDict.DictMixin):
         if 'secure' not in policy and handler.request.environ.get('HTTPS', '').lower() in ['on', 'true']:
             policy['secure']=True
         self._out = {}
+
     def __getitem__(self, key):
         if key in self._out:
             return self._out[key]
         if key in self._in:
             return self._in[key]
         raise KeyError(key)
+
     def __setitem__(self, key, item):
         self._out[key] = item
         self.set_cookie(key, item, **self.policy)
+
     def __contains__(self, key):
         return key in self._in or key in self._out
+
     def keys(self):
         return self._in.keys() + self._out.keys()
+
     def __delitem__(self, key):
         if key in self._out:
             del self._out[key]

@@ -18,8 +18,10 @@ var gulp = require('gulp'),
 
 
 gulp.task('copy', function(){
-	return gulp.src('src/template/feed/*.xml')
+    gulp.src('src/template/feed/*.xml')
 				.pipe(gulp.dest('tpl/feed'))
+    gulp.src('src/template/mail/*.txt')
+				.pipe(gulp.dest('tpl/mail'))
 });
 
 gulp.task('image', function(){

@@ -10,12 +10,12 @@ from google.appengine.api import memcache
 from v2ex.babel.ext.cookies import Cookies
 
 def CheckAuth(handler):
-    ip = GetIP(handler)
+    ip = handler.request.remote_addr
     cookies = handler.request.cookies
     if 'auth' in cookies:
         auth = cookies['auth']
         member_num = memcache.get(auth)
-        if (member_num > 0):
+        if member_num > 0:
             member = memcache.get('Member_' + str(member_num))
             if member is None:
                 q = db.GqlQuery("SELECT * FROM Member WHERE num = :1", member_num)
@@ -24,7 +24,7 @@ def CheckAuth(handler):
                     memcache.set(auth, member.num)
                     memcache.set('Member_' + str(member_num), member)
                 else:
-                    member = False
+                    member = None
             if member:
                 member.ip = ip
             return member
@@ -38,9 +38,10 @@ def CheckAuth(handler):
                 member.ip = ip
                 return member
             else:
-                return False
+                return None
     else:
-        return False
+        return None
+
 
 def DoAuth(request, destination, message = None):
     if message != None:
@@ -48,9 +49,3 @@ def DoAuth(request, destination, message = None):
     else:
         request.session['message'] = u'请首先登入或注册'
     return request.redirect('/signin?destination=' + destination)
-
-def GetIP(handler):
-    if 'X-Real-IP' in handler.request.headers:
-        return handler.request.headers['X-Real-IP']
-    else:
-        return handler.request.remote_addr

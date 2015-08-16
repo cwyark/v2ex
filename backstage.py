@@ -1080,7 +1080,7 @@ class BackstageNewNodeHandler(webapp.RequestHandler):
                     node.put()
                     counter.put()
                     memcache.delete('index_categories')
-                    memcache.delete('home_nodes_new')
+                    memcache.delete('nodes_new')
                     self.redirect('/backstage/node/' + node.name)
                 else:    
                     path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_new_node.html')
@@ -1307,7 +1307,7 @@ class BackstageNodeHandler(webapp.RequestHandler):
                     memcache.delete('Node_' + str(node.num))
                     memcache.delete('Node::' + node.name)
                     memcache.delete('index_categories')
-                    memcache.delete('home_nodes_new')
+                    memcache.delete('nodes_new')
                     self.redirect('/backstage/section/' + section.name)
                 else:    
                     path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_node.html')
@@ -1664,8 +1664,7 @@ class BackstageMoveTopicHandler(webapp.RequestHandler):
                             memcache.delete('Node::' + str(node_old.name))
                             memcache.delete('Node::' + str(node_new.name))
                             memcache.delete('q_latest_16')
-                            memcache.delete('home_rendered')
-                            memcache.delete('home_rendered_mobile')
+                            memcache.delete('homepage_cache')
                             self.redirect('/t/' + str(topic.num))
                         else:
                             errors = errors + 1

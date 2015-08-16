@@ -315,8 +315,7 @@ class NewTopicHandler(webapp.RequestHandler):
                     memcache.delete('Node_' + str(topic.node_num))
                     memcache.delete('Node::' + str(node.name))
                     memcache.delete('q_latest_16')
-                    memcache.delete('home_rendered')
-                    memcache.delete('home_rendered_mobile')
+                    memcache.delete('homepage_cache')
                     try:
                         taskqueue.add(url='/index/topic/' + str(topic.num))
                     except:
@@ -753,8 +752,7 @@ class TopicHandler(webapp.RequestHandler):
                 
                 memcache.delete('member::' + str(member.num) + '::participated')
                 memcache.delete('q_latest_16')
-                memcache.delete('home_rendered')
-                memcache.delete('home_rendered_mobile')
+                memcache.delete('homepage_cache')
                 if topic.replies < 50:
                     if config.fts_enabled:
                         try:
@@ -1004,8 +1002,7 @@ class TopicEditHandler(webapp.RequestHandler):
                         topic.put()
                         memcache.delete('Topic_' + str(topic.num))
                         memcache.delete('q_latest_16')
-                        memcache.delete('home_rendered')
-                        memcache.delete('home_rendered_mobile')
+                        memcache.delete('homepage_cache')
                         if topic.replies < 50:
                             try:
                                 taskqueue.add(url='/index/topic/' + str(topic.num))
@@ -1062,8 +1059,7 @@ class TopicDeleteHandler(webapp.RequestHandler):
                         counter2.value = counter2.value - 1
                         counter2.put()
                     memcache.delete('q_latest_16')
-                    memcache.delete('home_rendered')
-                    memcache.delete('home_rendered_mobile')
+                    memcache.delete('homepage_cache')
         self.redirect('/')
                     
 

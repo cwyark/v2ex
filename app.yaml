@@ -1,10 +1,8 @@
 application: v2ex
-version: 1
+version: alpha
 runtime: python27
 api_version: 1
 threadsafe: false
-
-default_expiration: "10d"
 
 derived_file_type:
 - python_precompiled

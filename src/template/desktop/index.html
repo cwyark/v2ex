@@ -9,8 +9,6 @@
         <div id="Rightbar">
             {% include 'rightbar/user.html' %}
             <div class="sep20"></div>
-            {% include 'rightbar/ads.html' %}
-            <div class="sep20"></div>
             <div class="box">
 				<div class="cell">
 					<span class="fade">{{ l10n.hottest_nodes|safe }}</span>
@@ -19,18 +17,17 @@
 					{{ index_hottest_sidebar|safe }}
 				</div>
             </div>
+            {% include 'rightbar/recent_nodes.html' %}
             <div class="sep20"></div>
             {% include 'rightbar/latest_nodes.html' %}
             <div class="sep20"></div>
+            {% include 'rightbar/ads.html' %}
+            <div class="sep20"></div>
             {% include 'rightbar/stats.html' %}
-            {% include 'rightbar/recent_nodes.html' %}
             <div class="sep20"></div>
             {% include 'rightbar/goodies.html' %}
         </div>
         <div id="Content">
-			<div class="ui top attached tabular menu">
-				<div class="active item"><a href="/?sort=latest">All</a></div>
-			</div>
             <div class="box" id="topics_index">
                 {% if member %}
 					{% if member.show_home_top %}

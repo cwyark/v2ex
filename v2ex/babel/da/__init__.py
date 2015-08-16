@@ -156,17 +156,16 @@ def GetPacked(data):
     s = pickle.dumps(data)
     return zlib.compress(s)
 
-
-def GetNewNode():
+def GetSiteRecentNewNodes():
     nodes_new = []
-    nodes_new = memcache.get('home_nodes_new')
+    nodes_new = memcache.get('nodes_new')
     if nodes_new is None:
         nodes_new = []
         qnew = db.GqlQuery("SELECT * FROM Node ORDER BY created DESC LIMIT 10")
         if (qnew.count() > 0):
             for node in qnew:
                 nodes_new.append(node)
-        memcache.set('home_nodes_new', nodes_new, 86400)
+        memcache.set('nodes_new', nodes_new, 86400)
     return nodes_new
 
 
@@ -235,15 +234,14 @@ def GetIndexCategory(site):
     return c
 
 
-def GetLatestTopic(ignore_topic, number):
+def GetLatestTopic(number):
     latest = memcache.get('q_latest_%d' % number)
 
     if not latest:
         q2 = db.GqlQuery("SELECT * FROM Topic ORDER BY last_touched DESC LIMIT %d" % number)
         topics = []
         for topic in q2:
-            if topic.node_name not in ignore_topic:
-                topics.append(topic)
+            topics.append(topic)
         memcache.set('q_latest_%d' % number, topics, 600)
         latest = topics
     return latest
@@ -278,3 +276,7 @@ def GetAllSectionAndNodes():
         memcache.set('planes_c', c, 86400)
 
     return (c, s)
+
+
+def GetMemberRecentNodes(member_num):
+    return memcache.get('member::' + str(member_num) + '::recent_nodes')
