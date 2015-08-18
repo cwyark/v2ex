@@ -51,37 +51,36 @@ import config
 
 class HomeHandler(BaseHandler):
     def get(self):
-        if self.member:
+        if self.is_member:
             if self.member.my_home is not None and len(self.member.my_home) > 0:
                 return self.redirect(self.member.my_home)
 
-            recent_nodes = GetMemberRecentNodes(self.member.num)
-            if recent_nodes:
-                self.template_values['recent_nodes'] = recent_nodes
+            member_recent_nodes = GetMemberRecentNodes(self.member.num)
+            if member_recent_nodes:
+                self.template_values['member_recent_nodes'] = member_recent_nodes
 
 # cache latest topic to save db access resource
-        homepage_cache = memcache.get('homepage_cache')
-        if homepage_cache is None:
-            self.template_values['latest'] = GetLatestTopic(16)
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop/common', 'home.html')
-            homepage_cache = template.render(path, self.template_values)
-            memcache.set('homepage_cache', homepage_cache, 600)
+        site_landingpagecache = GetSiteLandingPageCache()
+        if site_landingpagecache is None:
+            self.template_values['site_latest_topics'] = GetLatestTopic(16)
+            site_landingpagecache = self.render(template_name='landingpage', template_root='cache', template_type='html')
+            SetSiteLandingPageCache(site_landingpagecache)
 
-        self.template_values['home'] = homepage_cache
-        self.template_values['nodes_new'] = GetSiteRecentNewNodes()
-        self.template_values['member_total'] = GetTotalMemberNum()
-        self.template_values['topic_total'] = GetTotalTopicNum()
-        self.template_values['reply_total'] = GetTotalReplyNum()
-        self.template_values['index_hottest_sidebar'] = GetIndexHottestSidebar()
-        self.template_values['c'] = GetIndexCategory(self.site)
+        self.template_values['site_landingpagecache'] = site_landingpagecache
+        self.template_values['site_new_nodes'] = GetSiteRecentNewNodes()
+        self.template_values['site_total_member_number'] = GetTotalMemberNum()
+        self.template_values['site_total_topic_number'] = GetTotalTopicNum()
+        self.template_values['site_total_reply_number'] = GetTotalReplyNum()
+        self.template_values['site_hottest_nodes'] = GetSiteHottestNode()
+        self.template_values['site_index_category'] = GetIndexCategory(self.site)
         self.finalize(template_name='index')
 
 
 class PlanesHandler(BaseHandler):
     def get(self):
-        (c, s) = GetAllSectionAndNodes()
-        self.template_values['c'] = c
-        self.template_values['s'] = s
+        (planes_counter, planes) = GetAllSectionAndNodes()
+        self.template_values['planes_counter'] = planes_counter
+        self.template_values['planes'] = planes
         self.finalize(template_name='planes')
 
 
@@ -90,7 +89,6 @@ class RecentHandler(BaseHandler):
         latest = GetLatestTopic(number=50)
         self.template_values['latest'] = latest
         self.template_values['latest_total'] = len(latest)
-
         expires_date = datetime.datetime.utcnow() + datetime.timedelta(minutes=2)
         expires_str = expires_date.strftime("%d %b %Y %H:%M:%S GMT")
         self.response.headers.add_header("Expires", expires_str)
@@ -500,7 +498,7 @@ class NodeHandler(BaseHandler):
                 can_manage = True
         self.template_values['can_create'] = can_create
         self.template_values['can_manage'] = can_manage
-        self.template_values['index_hottest_sidebar'] = GetIndexHottestSidebar()
+        self.template_values['site_hottest_nodes'] = GetSiteHottestNode()
         node = GetKindByName('Node', node_name)
         self.template_values['node'] = node
         pagination = False
@@ -519,21 +517,21 @@ class NodeHandler(BaseHandler):
             if self.member:
                 favorited = self.member.hasFavorited(node)
                 self.template_values['favorited'] = favorited
-                recent_nodes = memcache.get('member::' + str(member.num) + '::recent_nodes')
-                recent_nodes_ids = memcache.get('member::' + str(member.num) + '::recent_nodes_ids')
+                recent_nodes = memcache.get('member::' + str(self.member.num) + '::recent_nodes')
+                recent_nodes_ids = memcache.get('member::' + str(self.member.num) + '::recent_nodes_ids')
                 if recent_nodes and recent_nodes_ids:
                     if (node.num in recent_nodes_ids) is not True:
                         recent_nodes.insert(0, node)
                         recent_nodes_ids.insert(0, node.num)
-                        memcache.set('member::' + str(member.num) + '::recent_nodes', recent_nodes, 7200)
-                        memcache.set('member::' + str(member.num) + '::recent_nodes_ids', recent_nodes_ids, 7200)
+                        memcache.set('member::' + str(self.member.num) + '::recent_nodes', recent_nodes, 7200)
+                        memcache.set('member::' + str(self.member.num) + '::recent_nodes_ids', recent_nodes_ids, 7200)
                 else:
                     recent_nodes = []
                     recent_nodes.append(node)
                     recent_nodes_ids = []
                     recent_nodes_ids.append(node.num)
-                    memcache.set('member::' + str(member.num) + '::recent_nodes', recent_nodes, 7200)
-                    memcache.set('member::' + str(member.num) + '::recent_nodes_ids', recent_nodes_ids, 7200)
+                    memcache.set('member::' + str(self.member.num) + '::recent_nodes', recent_nodes, 7200)
+                    memcache.set('member::' + str(self.member.num) + '::recent_nodes_ids', recent_nodes_ids, 7200)
                 self.template_values['recent_nodes'] = recent_nodes
             self.template_values['page_title'] = self.site.title + u' › ' + node.title
             # Pagination

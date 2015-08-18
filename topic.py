@@ -62,14 +62,14 @@ class NewTopicHandler(webapp.RequestHandler):
         member = CheckAuth(self)
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
-        hottest = memcache.get('index_hottest_sidebar')
+        hottest = memcache.get('site_hottest_nodes')
         if hottest is None:
             qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
             hottest = u''
             for node in qhot:
                 hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
-            memcache.set('index_hottest_sidebar', hottest, 86400)
-        template_values['index_hottest_sidebar'] = hottest
+            memcache.set('site_hottest_nodes', hottest, 86400)
+        template_values['site_hottest_nodes'] = hottest
         template_values['page_title'] = site.title + u' › ' + l10n.create_new_topic.decode('utf-8')
         can_create = False
         if site.topic_create_level > 999:
@@ -315,7 +315,7 @@ class NewTopicHandler(webapp.RequestHandler):
                     memcache.delete('Node_' + str(topic.node_num))
                     memcache.delete('Node::' + str(node.name))
                     memcache.delete('q_latest_16')
-                    memcache.delete('homepage_cache')
+                    memcache.delete('Site::LandingPageCache')
                     try:
                         taskqueue.add(url='/index/topic/' + str(topic.num))
                     except:
@@ -380,14 +380,14 @@ class TopicHandler(webapp.RequestHandler):
         template_values['member'] = member
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
-        hottest = memcache.get('index_hottest_sidebar')
+        hottest = memcache.get('site_hottest_nodes')
         if hottest is None:
             qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
             hottest = u''
             for node in qhot:
                 hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
-            memcache.set('index_hottest_sidebar', hottest, 86400)
-        template_values['index_hottest_sidebar'] = hottest
+            memcache.set('site_hottest_nodes', hottest, 86400)
+        template_values['site_hottest_nodes'] = hottest
         if member is not False:
             try:
                 blocked = pickle.loads(member.blocked.encode('utf-8'))
@@ -752,7 +752,7 @@ class TopicHandler(webapp.RequestHandler):
                 
                 memcache.delete('member::' + str(member.num) + '::participated')
                 memcache.delete('q_latest_16')
-                memcache.delete('homepage_cache')
+                memcache.delete('Site::LandingPageCache')
                 if topic.replies < 50:
                     if config.fts_enabled:
                         try:
@@ -811,14 +811,14 @@ class TopicEditHandler(webapp.RequestHandler):
         member = CheckAuth(self)
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
-        hottest = memcache.get('index_hottest_sidebar')
+        hottest = memcache.get('site_hottest_nodes')
         if hottest is None:
             qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
             hottest = u''
             for node in qhot:
                 hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
-            memcache.set('index_hottest_sidebar', hottest, 86400)
-        template_values['index_hottest_sidebar'] = hottest
+            memcache.set('site_hottest_nodes', hottest, 86400)
+        template_values['site_hottest_nodes'] = hottest
         topic = False
         topic = GetKindByNum('Topic', int(topic_num))
         if topic:
@@ -1002,7 +1002,7 @@ class TopicEditHandler(webapp.RequestHandler):
                         topic.put()
                         memcache.delete('Topic_' + str(topic.num))
                         memcache.delete('q_latest_16')
-                        memcache.delete('homepage_cache')
+                        memcache.delete('Site::LandingPageCache')
                         if topic.replies < 50:
                             try:
                                 taskqueue.add(url='/index/topic/' + str(topic.num))
@@ -1059,7 +1059,7 @@ class TopicDeleteHandler(webapp.RequestHandler):
                         counter2.value = counter2.value - 1
                         counter2.put()
                     memcache.delete('q_latest_16')
-                    memcache.delete('homepage_cache')
+                    memcache.delete('Site::LandingPageCache')
         self.redirect('/')
                     
 
@@ -1105,14 +1105,14 @@ class ReplyEditHandler(webapp.RequestHandler):
         member = CheckAuth(self)
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
-        hottest = memcache.get('index_hottest_sidebar')
+        hottest = memcache.get('site_hottest_nodes')
         if hottest is None:
             qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
             hottest = u''
             for node in qhot:
                 hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
-            memcache.set('index_hottest_sidebar', hottest, 86400)
-        template_values['index_hottest_sidebar'] = hottest
+            memcache.set('site_hottest_nodes', hottest, 86400)
+        template_values['site_hottest_nodes'] = hottest
         if member:
             if member.level == 0:
                 template_values['page_title'] = site.title + u' › 编辑回复'

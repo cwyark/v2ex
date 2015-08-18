@@ -84,11 +84,27 @@ class BaseHandler(webapp.RequestHandler):
         
         Mobile optimized templates are optional. Default to False.
         """
-        path = os.path.join('tpl', template_root, template_name + '.' + template_type)
-        output = template.render(path, self.template_values)
+        output = self.render(template_name=template_name, template_root=template_root,template_type=template_type)
         self.response.out.write(output)
     
+    def render(self, template_name, template_root='desktop', template_type='html'):
+        path = os.path.join('tpl', template_root, template_name + '.' + template_type)
+        return template.render(path, self.template_values)
+
+
     def escape(self, text):
         text = text.replace('<', '&lt;')
         text = text.replace('>', '&gt;')
         return text
+
+    @property
+    def is_member(self):
+        """
+        return
+            True:   this member is verified
+            False:  this member is not verified or none
+        """
+        if self.member is not None:
+            return True
+        else:
+            return False

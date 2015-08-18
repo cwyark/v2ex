@@ -50,9 +50,9 @@
                             {% if show_block %}
                             <div class="sep10"></div>
                             {% if one_is_blocked %}
-                            <input type="button" value="撤销屏蔽" class="positive ui button" onclick="recordOutboundLink(this, 'Social Graph', 'unblock'); location.href = '/unblock/{{ one.key }}?t={{ member.created_ts }}';" />
+								<a href="/unblock/{{ one.num }}?t={{ member.created_ts }}" class="negative ui button" onClick="recordOutboundLink(this, 'Social Graph', 'unblock');">撤销屏蔽</a>
                             {% else %}
-                            <input type="button" value="屏蔽此人" class="negative ui button" onclick="recordOutboundLink(this, 'Social Graph', 'block'); location.href = '/block/{{ one.key }}?t={{ member.created_ts }}';" />
+								<a href="/block/{{ one.num }}?t={{ member.created_ts }}" class="positive ui button" onClick="recordOutboundLink(this, 'Social Graph', 'block');">屏蔽此人</a>
                             {% endif %}
                             {% endif %}
                             {% if show_extra_options %}

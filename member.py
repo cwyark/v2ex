@@ -53,14 +53,14 @@ class MemberHandler(webapp.RequestHandler):
         member = CheckAuth(self)
         template_values['member'] = member
         template_values['show_extra_options'] = False
-        hottest = memcache.get('index_hottest_sidebar')
+        hottest = memcache.get('site_hottest_nodes')
         if hottest is None:
             qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
             hottest = u''
             for node in qhot:
                 hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
-            memcache.set('index_hottest_sidebar', hottest, 86400)
-        template_values['index_hottest_sidebar'] = hottest
+            memcache.set('site_hottest_nodes', hottest, 86400)
+        template_values['site_hottest_nodes'] = hottest
         if member:
             if member.num == 1:
                 template_values['show_extra_options'] = True
@@ -177,14 +177,14 @@ class SettingsHandler(webapp.RequestHandler):
         member = CheckAuth(self)
         l10n = GetMessages(self, member, site)
         template_values['l10n'] = l10n
-        hottest = memcache.get('index_hottest_sidebar')
+        hottest = memcache.get('site_hottest_nodes')
         if hottest is None:
             qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
             hottest = u''
             for node in qhot:
                 hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
-            memcache.set('index_hottest_sidebar', hottest, 86400)
-        template_values['index_hottest_sidebar'] = hottest
+            memcache.set('site_hottest_nodes', hottest, 86400)
+        template_values['site_hottest_nodes'] = hottest
         template_values['page_title'] = site.title + u' › ' + l10n.settings.decode('utf-8')
         if (member):
             template_values['member'] = member

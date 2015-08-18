@@ -156,17 +156,29 @@ def GetPacked(data):
     s = pickle.dumps(data)
     return zlib.compress(s)
 
+def GetSiteHottestNode():
+    site_hottest_nodes = memcache.get('site_hottest_nodes')
+    if site_hottest_nodes is None:
+        site_hottest_nodes = []
+        qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
+        if qhot.count() > 0:
+            for node in qhot:
+                site_hottest_nodes.append(node)
+        memcache.set('site_hottest_nodes', site_hottest_nodes, 86400)
+    return site_hottest_nodes
+
+
+
 def GetSiteRecentNewNodes():
-    nodes_new = []
-    nodes_new = memcache.get('nodes_new')
-    if nodes_new is None:
-        nodes_new = []
+    site_new_nodes = memcache.get('site_new_nodes')
+    if site_new_nodes is None:
+        site_new_nodes = []
         qnew = db.GqlQuery("SELECT * FROM Node ORDER BY created DESC LIMIT 10")
-        if (qnew.count() > 0):
+        if qnew.count() > 0:
             for node in qnew:
-                nodes_new.append(node)
-        memcache.set('nodes_new', nodes_new, 86400)
-    return nodes_new
+                site_new_nodes.append(node)
+        memcache.set('site_new_nodes', site_new_nodes, 86400)
+    return site_new_nodes
 
 
 def GetTotalMemberNum():
@@ -204,19 +216,8 @@ def GetTotalReplyNum():
         memcache.set('reply_total', reply_total, 3600)
     return reply_total
 
-
-def GetIndexHottestSidebar():
-    hottest = memcache.get('index_hottest_sidebar')
-    if hottest is None:
-        qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
-        hottest = u''
-        for node in qhot:
-            hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
-        memcache.set('index_hottest_sidebar', hottest, 86400)
-    return hottest
-
 def GetIndexCategory(site):
-    c = memcache.get('index_categories')
+    c = memcache.get('site_index_category')
     if c is None:
         c = ''
         if site.home_categories is not None:
@@ -230,7 +231,7 @@ def GetIndexCategory(site):
             for node in qx:
                 c = c + '<a href="/go/' + node.name + '" style="font-size: 14px;">' + node.title + '</a>&nbsp; &nbsp; '
             c = c + '</td></tr></table></div>'
-            memcache.set('index_categories', c, 86400)
+            memcache.set('site_index_category', c, 86400)
     return c
 
 
@@ -245,7 +246,6 @@ def GetLatestTopic(number):
         memcache.set('q_latest_%d' % number, topics, 600)
         latest = topics
     return latest
-
 
 def GetAllSectionAndNodes():
     c = 0
@@ -280,3 +280,10 @@ def GetAllSectionAndNodes():
 
 def GetMemberRecentNodes(member_num):
     return memcache.get('member::' + str(member_num) + '::recent_nodes')
+
+
+def GetSiteLandingPageCache():
+    return memcache.get('Site::LandingPageCache')
+
+def SetSiteLandingPageCache(site_landingpagecache):
+    memcache.set('Site::LandingPageCache', site_landingpagecache, 600)

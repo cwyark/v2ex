@@ -58,7 +58,7 @@
 					{% endifequal %}
                 {% endif %}
 
-                {{ site_landingpagecache|safe }}
+                {{ home|safe }}
 
                 {% if member %}
 					<script type="text/javascript">
@@ -96,7 +96,7 @@
 						<strong>{{ site.title }}</strong> / {{ l10n.nodes_portal }}
 					</span>
 				</div>
-                {{ site_index_category|safe }}
+                {{ c|safe }}
             </div>
         </div>
 		<div class="c"></div>

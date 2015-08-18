@@ -1079,8 +1079,8 @@ class BackstageNewNodeHandler(webapp.RequestHandler):
                     node.title_alternative = node_title_alternative
                     node.put()
                     counter.put()
-                    memcache.delete('index_categories')
-                    memcache.delete('nodes_new')
+                    memcache.delete('site_index_category')
+                    memcache.delete('site_new_nodes')
                     self.redirect('/backstage/node/' + node.name)
                 else:    
                     path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_new_node.html')
@@ -1306,8 +1306,8 @@ class BackstageNodeHandler(webapp.RequestHandler):
                     node.put()
                     memcache.delete('Node_' + str(node.num))
                     memcache.delete('Node::' + node.name)
-                    memcache.delete('index_categories')
-                    memcache.delete('nodes_new')
+                    memcache.delete('site_index_category')
+                    memcache.delete('site_new_nodes')
                     self.redirect('/backstage/section/' + section.name)
                 else:    
                     path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_node.html')
@@ -1664,7 +1664,7 @@ class BackstageMoveTopicHandler(webapp.RequestHandler):
                             memcache.delete('Node::' + str(node_old.name))
                             memcache.delete('Node::' + str(node_new.name))
                             memcache.delete('q_latest_16')
-                            memcache.delete('homepage_cache')
+                            memcache.delete('Site::LandingPageCache')
                             self.redirect('/t/' + str(topic.num))
                         else:
                             errors = errors + 1
@@ -1940,7 +1940,7 @@ class BackstageSiteHandler(webapp.RequestHandler):
                     site.theme = site_theme
                     site.data_migration_mode = template_values['site_data_migration_mode']
                     site.put()
-                    memcache.delete('index_categories')
+                    memcache.delete('site_index_category')
                     template_values['message'] = l10n.site_settings_updated;
                     template_values['site'] = site
                     memcache.delete('site')

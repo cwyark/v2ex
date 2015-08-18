@@ -1,9 +1,9 @@
 <div class="box">
-    <div class="cell"><div class="fr"><a href="/changes">全站最新更改记录</a></div>
-        <span class="fade">{{ l10n.new_nodes }}</span>
+    <div class="cell">
+        <span class="fade">{{ l10n.hottest_nodes }}</span>
     </div>
     <div class="inner">
-        {% for node in site_new_nodes %}
+        {% for node in site_hottest_nodes %}
             <a href="/go/{{ node.name }}" class="item_node">
                 {{ node.title|escape }}
             </a>
