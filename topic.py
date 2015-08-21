@@ -37,6 +37,7 @@ from v2ex.babel.da import *
 from v2ex.babel.l10n import *
 from v2ex.babel.ext.cookies import Cookies
 from v2ex.babel.ext.sessions import Session
+from v2ex.babel.handlers import BaseHandler
 
 from django.utils import simplejson as json
 
@@ -354,56 +355,40 @@ class NewTopicHandler(webapp.RequestHandler):
         else:
             self.redirect('/signin')
 
-class TopicHandler(webapp.RequestHandler):
+class TopicHandler(BaseHandler):
     def get(self, topic_num):
-        site = GetSite()
-        user_agent = detect(self.request)
-        template_values = {}
-        template_values['site'] = site
-        template_values['rnd'] = random.randrange(1, 100)
         reply_reversed = self.request.get('r')
+
         if reply_reversed == '1':
             reply_reversed = True
         else:
             reply_reversed = False
+
         filter_mode = self.request.get('f')
         if filter_mode == '1':
             filter_mode = True
         else:
             filter_mode = False
-        template_values['reply_reversed'] = reply_reversed
-        template_values['filter_mode'] = filter_mode
-        template_values['system_version'] = SYSTEM_VERSION
+        self.template_values['reply_reversed'] = reply_reversed
+        self.template_values['filter_mode'] = filter_mode
         errors = 0
-        template_values['errors'] = errors
-        member = CheckAuth(self)
-        template_values['member'] = member
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
-        hottest = memcache.get('site_hottest_nodes')
-        if hottest is None:
-            qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
-            hottest = u''
-            for node in qhot:
-                hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
-            memcache.set('site_hottest_nodes', hottest, 86400)
-        template_values['site_hottest_nodes'] = hottest
-        if member is not False:
+        self.template_values['errors'] = errors
+        hottest = GetSiteHottestNode()
+        self.template_values['site_hottest_nodes'] = hottest
+        if self.is_member:
             try:
                 blocked = pickle.loads(member.blocked.encode('utf-8'))
             except:
                 blocked = []
             if (len(blocked) > 0):
-                template_values['blocked'] = ','.join(map(str, blocked))
-            if member.level == 0:
-                template_values['is_admin'] = 1
+                self.template_values['blocked'] = ','.join(map(str, blocked))
+            if self.member.level == 0:
+                self.template_values['is_admin'] = 1
             else:
-                template_values['is_admin'] = 0
+                self.template_values['is_admin'] = 0
         topic_num_str = str(topic_num)
         if len(topic_num_str) > 8:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic_not_found.html')
-            output = template.render(path, template_values)
-            self.response.out.write(output)
+            self.finalize(template_name='topic_not_found')
             return
         topic = False
         topic = memcache.get('Topic_' + str(topic_num))
@@ -416,15 +401,15 @@ class TopicHandler(webapp.RequestHandler):
         can_move = False
         if topic:
             if topic.content:
-                template_values['page_description'] = topic.content[:60] + ' - ' + topic.member.username
+                self.template_values['page_description'] = topic.content[:60] + ' - ' + topic.member.username
             else:
-                template_values['page_description'] = topic.title[:60] + ' - ' + topic.member.username
-            template_values['page_description'] = template_values['page_description'].replace("\r\n", " ")
-            if member:
-                if member.level == 0:
+                self.template_values['page_description'] = topic.title[:60] + ' - ' + topic.member.username
+            self.template_values['page_description'] = self.template_values['page_description'].replace("\r\n", " ")
+            if self.is_member:
+                if self.member.level == 0:
                     can_edit = True
                     can_move = True
-                if topic.member_num == member.num:
+                if topic.member_num == self.member.num:
                     now = datetime.datetime.now()
                     if (now - topic.created).seconds < 300:
                         can_edit = True
@@ -433,8 +418,8 @@ class TopicHandler(webapp.RequestHandler):
                 taskqueue.add(url='/hit/topic/' + str(topic.key()))
             except:
                 pass
-            template_values['page_title'] = site.title + u' › ' + topic.title
-            template_values['canonical'] = 'http://' + str(site.domain) + '/t/' + str(topic.num)
+            self.template_values['page_title'] = self.site.title + u' › ' + topic.title
+            self.template_values['canonical'] = 'http://' + str(self.site.domain) + '/t/' + str(topic.num)
             if topic.content_rendered is None:
                 path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'topic_content.html')
                 output = template.render(path, {'topic' : topic})
@@ -443,18 +428,18 @@ class TopicHandler(webapp.RequestHandler):
                 memcache.delete('Topic_' + str(topic.num))
                 topic.put()
         else:
-            template_values['page_title'] = site.title + u' › 主题未找到'
-        template_values['topic'] = topic
-        template_values['can_edit'] = can_edit
-        template_values['can_move'] = can_move
+            self.template_values['page_title'] = site.title + u' › 主题未找到'
+        self.template_values['topic'] = topic
+        self.template_values['can_edit'] = can_edit
+        self.template_values['can_move'] = can_move
         if (topic):
             node = False
             section = False
             node = GetKindByNum('Node', topic.node_num)
             if (node):
                 section = GetKindByNum('Section', node.section_num)
-            template_values['node'] = node
-            template_values['section'] = section
+            self.template_values['node'] = node
+            self.template_values['section'] = section
             
             page_size = TOPIC_PAGE_SIZE
             pages = 1
@@ -472,17 +457,17 @@ class TopicHandler(webapp.RequestHandler):
             except:
                 page_current = pages
             page_start = (page_current - 1) * page_size
-            template_values['pages'] = pages
-            template_values['page_current'] = page_current
+            self.template_values['pages'] = pages
+            self.template_values['page_current'] = page_current
             
-            template_values['ps'] = False
+            self.template_values['ps'] = False
             i = 1
             ps = []
             while i <= pages:
                 ps.append(i)
                 i = i + 1
             if len(ps) > 1:
-                template_values['ps'] = ps
+                self.template_values['ps'] = ps
             replies = False
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'topic_replies.html')
             if filter_mode:
@@ -496,8 +481,8 @@ class TopicHandler(webapp.RequestHandler):
                         memcache.set('topic_' + str(topic.num) + '_replies_filtered_compressed_' + str(page_current), GetPacked(replies), 7200)
                     else:
                         replies = GetUnpacked(replies)
-                    template_values['replies'] = replies
-                    template_values['replies_count'] = replies.count()
+                    self.template_values['replies'] = replies
+                    self.template_values['replies_count'] = replies.count()
                     r = template.render(path, template_values)
                     memcache.set(r_tag, r, 86400)
             else:    
@@ -527,21 +512,19 @@ class TopicHandler(webapp.RequestHandler):
                             memcache.set('topic_' + str(topic.num) + '_replies_asc_compressed_' + str(page_current), GetPacked(q4), 86400)
                         else:
                             replies = GetUnpacked(replies)
-                        template_values['replies'] = replies
-                        template_values['replies_count'] = replies.count()
-                        r = template.render(path, template_values)
+                        self.template_values['replies'] = replies
+                        self.template_values['replies_count'] = replies.count()
+                        r = template.render(path, self.template_values)
                         memcache.set(r_tag, r, 86400)
-            template_values['r'] = r
-            if topic and member:
+            self.template_values['r'] = r
+            if topic and self.is_member:
                 if member.hasFavorited(topic):
-                    template_values['favorited'] = True
+                    self.template_values['favorited'] = True
                 else:
-                    template_values['favorited'] = False
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic.html')
+                    self.template_values['favorited'] = False
+            self.finalize(template_name='topic')
         else:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic_not_found.html')
-        output = template.render(path, template_values)
-        self.response.out.write(output)
+            self.finalize(template_name='topic_not_found')
         
     def post(self, topic_num):
         site = GetSite()
