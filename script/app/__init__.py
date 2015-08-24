@@ -5,6 +5,15 @@ from google.appengine.ext import webapp
 from . import main, topic, mail, avatar, template, feed, member, place, misc, notes, backstage, money, my, t, images, favorite, queue, sso, notifications, page, blog, xmpp, api, css
 
 config = {}
+config['webapp2_extras.i18n'] = {
+    'translations_path': 'locale',
+}
+config['webapp2_extras.jinja2'] = {
+    'environment_args': {
+        'extensions': ['jinja2.ext.i18n']
+    }
+}
+
 routes = [
     ('/', main.HomeHandler),
     ('/planes/?', main.PlanesHandler),

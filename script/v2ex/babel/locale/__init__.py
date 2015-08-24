@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import logging
+from webapp2_extras import i18n
 
 # About language detecting logic:
 #
@@ -13,23 +14,29 @@ import logging
 def GetMessages(handler, member=None, site=False):
     if member is not None:
         if member.l10n == 'en':
-            from v2ex.babel.l10n.messages import en as messages
+            i18n.get_i18n().set_locale('en')
+            from v2ex.babel.locale.messages import en as messages
             return messages
         if member.l10n == 'zh-Hans':
-            from v2ex.babel.l10n.messages import zhHans as messages
+            i18n.get_i18n().set_locale('zh_Hans')
+            from v2ex.babel.locale.messages import zhHans as messages
             return messages
         if member.l10n == 'zh-Hant':
-            from v2ex.babel.l10n.messages import zhHant as messages
+            i18n.get_i18n().set_locale('zh_Hant')
+            from v2ex.babel.locale.messages import zhHant as messages
             return messages
     else:
         if site.l10n == 'en':
-            from v2ex.babel.l10n.messages import en as messages
+            from v2ex.babel.locale.messages import en as messages
+            i18n.get_i18n().set_locale('en')
             return messages
         if site.l10n == 'zh-Hans':
-            from v2ex.babel.l10n.messages import zhHans as messages
+            i18n.get_i18n().set_locale('zh_Hans')
+            from v2ex.babel.locale.messages import zhHans as messages
             return messages
         if site.l10n == 'zh-Hant':
-            from v2ex.babel.l10n.messages import zhHant as messages
+            i18n.get_i18n().set_locale('zh_Hant')
+            from v2ex.babel.locale.messages import zhHant as messages
             return messages
 
 def GetSupportedLanguages():

@@ -14,7 +14,7 @@ from v2ex.babel.ext.cookies import Cookies
 from v2ex.babel import SYSTEM_VERSION
 from v2ex.babel.ua import detect
 from v2ex.babel.da import GetSite
-from v2ex.babel.l10n import GetMessages
+from v2ex.babel.locale import GetMessages
 from v2ex.babel.security import CheckAuth
 
 class BaseHandler(webapp.RequestHandler):

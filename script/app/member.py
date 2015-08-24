@@ -29,7 +29,7 @@ from v2ex.babel import Counter
 from v2ex.babel.security import *
 from v2ex.babel.ua import *
 from v2ex.babel.da import *
-from v2ex.babel.l10n import *
+from v2ex.babel.locale import *
 from v2ex.babel.ext.cookies import Cookies
 from v2ex.babel.ext.sessions import Session
 from v2ex.babel.ext.upyun import UpYun, md5, md5file
