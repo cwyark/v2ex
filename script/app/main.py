@@ -32,6 +32,7 @@ from v2ex.babel import PasswordResetToken
 from v2ex.babel import SYSTEM_VERSION
 
 from v2ex.babel.security import *
+from v2ex.babel.security.form_validate import *
 from v2ex.babel.ua import *
 from v2ex.babel.da import *
 from v2ex.babel.locale import *
@@ -110,36 +111,22 @@ class SigninHandler(BaseHandler):
         if self.member is not None:
             self.abort(404)
 
-        u = self.request.get('u').strip()
-        p = self.request.get('p').strip()
+        u = self.request.get('username').strip()
+        p = self.request.get('password').strip()
 
-        errors = 0
-        error_messages = ['', '請輸入用戶名稱及密碼', '您輸入的使用者名稱或密碼不正確']
-
-        if (len(u) > 0 and len(p) > 0):
-            p_sha1 = hashlib.sha1(p).hexdigest()
-            if '@' in u:
-                q = db.GqlQuery("SELECT * FROM Member WHERE email = :1 AND password = :2", u.lower(), p_sha1)
+        form = SignInForm(self.request.POST)
+        if form.validate() is True:
+            self.response.headers['Set-Cookie'] = str('auth=' + form.member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
+            next = self.request.get('next').strip()
+            host = self.request.host + '/'
+            if next.rfind(host)>0 and not next.rfind('/sign'):
+                self.redirect(next)
             else:
-                q = db.GqlQuery("SELECT * FROM Member WHERE username_lower = :1 AND password = :2", u.lower(), p_sha1)
-            if (q.count() == 1):
-                member = q[0]
-                self.response.headers['Set-Cookie'] = str('auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
-                next = self.request.get('next').strip()
-                host = self.request.host + '/'
-                if next.rfind(host)>0 and not next.rfind('/sign'):
-                    self.redirect(next)
-                else:
-                    self.redirect('/')
-            else:
-                errors = 2
-        else:
-            errors = 1
+                self.redirect('/')
 
         self.template_values['u'] = u
         self.template_values['p'] = p
-        self.template_values['errors'] = errors
-        self.template_values['error_message'] = error_messages[errors]
+        self.template_values['error_message'] = form.errors
         self.finalize(template_name='signin')
 
 

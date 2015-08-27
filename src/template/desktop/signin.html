@@ -1,46 +1,47 @@
-{% include 'common/head.html' %}
-<body>
-    {% include 'common/top.html' %}
-    <div id="Wrapper">
-    <div id="Main">
-        <div id="Sidebar">   
-        </div>
-        <div id="Rightbar">
-            {% include 'rightbar/user.html' %}
-        </div>
-        <div id="Content">
-            <div class="box">
-                <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a><span class="chevron">&nbsp;›&nbsp;</span> {{ l10n.signin }}</span></div>
-                <div class="inner">
-                    <form action="/signin" method="post" class="ui form">
-        			{% if errors %}
-        			<div class="ui message">{{ error_message }}</div>
-        			{% endif %}
-        			    <div class="field">
-							<label>{{ l10n.username }}</label>
-							<input type="text" class="sl" name="u" value="{{ u|escape }}" />
-        			    </div>
-        			    <div class="field">
-							<label>{{ l10n.password }}</label>
-							<input type="password" class="sl" name="p" value="{{ p|escape }}" />
-        			    </div>
-        			    <div class="field">
-							<input type="hidden" value="{{ next }}" name="next" />
-							<input type="submit" value="{{ l10n.signin }}" class="ui button" />
-        			    </div>
-        			    <div class="field">
-							<span class="fade">{{ l10n.remember_1_year }}</span>
-        			    </div>
-        			    <div class="field">
-							<span class="fade"><a href="/forgot">{{ l10n.forgot_password }}</a></span>
-        			    </div>
-                    </form>
-                </div>
+{% extends 'common/base.html' %}
+{% block content %}
+    <div id="Content">
+        <div class="box">
+            <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a><span class="chevron">&nbsp;›&nbsp;</span> {{ l10n.signin }}</span></div>
+            <div class="inner">
+                <form action="/signin" method="post" class="ui form">
+                    {% if error_message|length %}
+                        <div class="ui icon message">
+                            <i class="warning  circle icon"></i>
+                            <div class="content">
+                                <div class="header">
+                                    <p>Wait a Second</p>
+                                </div>
+                                <ul>
+                                    {% for key, value in error_message.iteritems %}
+                                        {% for m in value %}
+                                            <li>{{ m }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="field">
+                        <label>{{ l10n.username }}</label>
+                        <input type="text" class="sl" name="username" value="{{ u|escape }}" />
+                    </div>
+                    <div class="field">
+                        <label>{{ l10n.password }}</label>
+                        <input type="password" class="sl" name="password" value="{{ p|escape }}" />
+                    </div>
+                    <div class="field">
+                        <input type="hidden" value="{{ next }}" name="next" />
+                        <input type="submit" value="{{ l10n.signin }}" class="ui button" />
+                    </div>
+                    <div class="field">
+                        <span class="fade">{{ l10n.remember_1_year }}</span>
+                    </div>
+                    <div class="field">
+                        <span class="fade"><a href="/forgot">{{ l10n.forgot_password }}</a></span>
+                    </div>
+                </form>
             </div>
         </div>
-    <div class="c"></div>
     </div>
-    </div>
-    {% include 'common/bottom.html' %}
-</body>
-</html>
+{% endblock %}
