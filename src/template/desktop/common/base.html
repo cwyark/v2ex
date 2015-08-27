@@ -4,30 +4,30 @@
     <div id="Wrapper">
     <div id="Main">
         <div id="Sidebar">
-            {% block sidebar_content %}
-            {% endblock %}
+            
         </div>
         <div class="ui grid">
             <div class="eleven wide column">
-                {% block body_content %}
-                {% endblock %}
+                {% block content %}
+                {% endblock%}
+                <div class="c"></div>
             </div>
             <div class="five wide column">
-            <div id="Rightbar">
-                {% include 'rightbar/user.html' %}
-                <div class="sep20"></div>
-                {% include 'rightbar/hottest_nodes.html' %}
-                <div class="sep20"></div>
-                {% include 'rightbar/recent_nodes.html' %}
-                <div class="sep20"></div>
-                {% include 'rightbar/latest_nodes.html' %}
-                <div class="sep20"></div>
-                {% include 'rightbar/ads.html' %}
-                <div class="sep20"></div>
-                {% include 'rightbar/stats.html' %}
-                <div class="sep20"></div>
-                {% include 'rightbar/goodies.html' %}
-            </div>
+                <div id="Rightbar">
+                    {% include 'rightbar/user.html' %}
+                    <div class="sep20"></div>
+                    {% include 'rightbar/hottest_nodes.html' %}
+                    <div class="sep20"></div>
+                    {% include 'rightbar/recent_nodes.html' %}
+                    <div class="sep20"></div>
+                    {% include 'rightbar/latest_nodes.html' %}
+                    <div class="sep20"></div>
+                    {% include 'rightbar/ads.html' %}
+                    <div class="sep20"></div>
+                    {% include 'rightbar/stats.html' %}
+                    <div class="sep20"></div>
+                    {% include 'rightbar/goodies.html' %}
+                </div>
             </div>
         </div>
     </div>

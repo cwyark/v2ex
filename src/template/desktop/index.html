@@ -1,107 +1,81 @@
-{% include 'common/head.html' %}
-<body>
-    {% include 'common/top.html' %}
-    <div id="Wrapper">
-    <div id="Main">
-        <div id="Sidebar">
-            
-        </div>
-        <div id="Rightbar">
-            {% include 'rightbar/user.html' %}
-            <div class="sep20"></div>
-            {% include 'rightbar/hottest_nodes.html' %}
-            <div class="sep20"></div>
-            {% include 'rightbar/recent_nodes.html' %}
-            <div class="sep20"></div>
-            {% include 'rightbar/latest_nodes.html' %}
-            <div class="sep20"></div>
-            {% include 'rightbar/ads.html' %}
-            <div class="sep20"></div>
-            {% include 'rightbar/stats.html' %}
-            <div class="sep20"></div>
-            {% include 'rightbar/goodies.html' %}
-        </div>
-        <div id="Content">
-            <div class="box" id="topics_index">
-                {% if member %}
-					{% if member.show_home_top %}
-						{{ site.home_top|safe }}
-					{% endif %}
-				{% else %}
-					{{ site.home_top|safe }}
-				{% endif %}
+{% extends 'common/base.html' %}            
+{% block content %}
+<div class="box" id="topics_index">
+    {% if member %}
+        {% if member.show_home_top %}
+            {{ site.home_top|safe }}
+        {% endif %}
+    {% else %}
+        {{ site.home_top|safe }}
+    {% endif %}
 
-                {% if member %}
-					{% ifequal member.show_quick_post 1 %}
-						<div class="cell">
-							<div class="fr fade">
-								快速發問將會把文章發表至<strong>問答專區</strong>，請在 120 字內描述您的問題，也可以使用
-								<a href="/new/qna">發表文章</a>發問
-							</div>
-							<span class="bigger snow">
-								<strong style="font-family: 'Arial Black'; letter-spacing: -1.5px;">快速發問</strong> 
-							</span>
-							<div class="sep3"></div>
-							<form method="post" action="/new/qna" class="ui form">
-								<textarea class="mll short" name="title"></textarea>
-								<div class="sep5"></div>
-								<div align="right">
-									<div class="fl">
-										<a href="/t/10686" class="node"> 提问指南</a>
-										<span class="snow"> • </span>
-										<a href="/go/guide" class="node">本站规则指南</a>
-									</div>
-									<button class="ui grey button" type="submit">送出</button>
-								</div>
-							</form>
-						</div>
-					{% endifequal %}
-                {% endif %}
-
-                {{ site_landingpagecache|safe }}
-
-                {% if member %}
-					<script type="text/javascript">
-					blocked = [{{ blocked }}];
-					$("#topics_index").children('.cell').each( function(index) {
-						for (i in blocked) {
-							if ($(this).hasClass('from_' + blocked[i])) {
-								$(this).css('display', 'none');
-							}
-						}
-						{% if member %}
-						if ($(this).hasClass('from_{{ member.num }}')) {
-							$(this).find('a.count').addClass('count_orange');
-						} else {
-							$(this).find('a.count').addClass('count_livid');
-						}
-						{% else %}
-						$(this).find('a.count').addClass('count_livid');
-						{% endif %}
-					});
-					</script>
-                {% endif %}
-
-                <div class="inner">
-        		    <span class="chevron">»</span> <a href="/recent">{{ l10n.more_recent_topics }}</a>
-        		</div>
+    {% if member %}
+        {% ifequal member.show_quick_post 1 %}
+            <div class="cell">
+                <div class="fr fade">
+                    快速發問將會把文章發表至<strong>問答專區</strong>，請在 120 字內描述您的問題，也可以使用
+                    <a href="/new/qna">發表文章</a>發問
+                </div>
+                <span class="bigger snow">
+                    <strong style="font-family: 'Arial Black'; letter-spacing: -1.5px;">快速發問</strong> 
+                </span>
+                <div class="sep3"></div>
+                <form method="post" action="/new/qna" class="ui form">
+                    <textarea class="mll short" name="title"></textarea>
+                    <div class="sep5"></div>
+                    <div align="right">
+                        <div class="fl">
+                            <a href="/t/10686" class="node"> 提问指南</a>
+                            <span class="snow"> • </span>
+                            <a href="/go/guide" class="node">本站规则指南</a>
+                        </div>
+                        <button class="ui grey button" type="submit">送出</button>
+                    </div>
+                </form>
             </div>
-            <div class="sep20"></div>
-            <div class="box">
-                <div class="cell">
-					<div class="fr">
-						<a href="/planes">瀏覽全部分類</a>
-					</div>
-					<span class="fade">
-						<strong>{{ site.title }}</strong> / {{ l10n.nodes_portal }}
-					</span>
-				</div>
-                {{ site_index_category|safe }}
+        {% endifequal %}
+    {% endif %}
+
+    {{ site_landingpagecache|safe }}
+
+    {% if member %}
+        <script type="text/javascript">
+            blocked = [{{ blocked }}];
+            $("#topics_index").children('.cell').each( function(index) {
+                for (i in blocked) {
+                    if ($(this).hasClass('from_' + blocked[i])) {
+                        $(this).css('display', 'none');
+                    }
+                }
+                {% if member %}
+                if ($(this).hasClass('from_{{ member.num }}')) {
+                    $(this).find('a.count').addClass('count_orange');
+                } else {
+                    $(this).find('a.count').addClass('count_livid');
+                }
+                {% else %}
+                $(this).find('a.count').addClass('count_livid');
+                {% endif %}
+            });
+        </script>
+    {% endif %}
+
+    <div class="inner">
+        <span class="chevron">»</span> <a href="/recent">{{ l10n.more_recent_topics }}</a>
+    </div>
+</div>
+        <div class="sep20"></div>
+        <div class="box">
+            <div class="cell">
+                <div class="fr">
+                    <a href="/planes">瀏覽全部分類</a>
+                </div>
+                <span class="fade">
+                    <strong>{{ site.title }}</strong> / {{ l10n.nodes_portal }}
+                </span>
             </div>
+            {{ site_index_category|safe }}
         </div>
-		<div class="c"></div>
     </div>
-    </div>
-    {% include 'common/bottom.html' %}
-</body>
-</html>
+
+{% endblock %}
