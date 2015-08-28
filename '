@@ -153,19 +153,45 @@ class SignupHandler(BaseHandler):
         member_email = self.request.get('email').strip()
      
         form = SignUpForm(self.request.POST)
-        form_result = form.validate()
-
         form_recaptcha = RecaptchaFrom(self.request.POST, request = self.request, recaptcha_public_key=config.recaptcha_public_key, recaptcha_private_key=config.recaptcha_private_key)
-        form_recaptcha_result = form_recaptcha.validate()
 
-        if form_result and form_recaptcha_result:
+        if form_recaptcha.validate() and form.validate():
+            member = Member()
+            q = db.GqlQuery('SELECT * FROM Counter WHERE name = :1', 'member.max')
+            if (q.count() == 1):
+                counter = q[0]
+                counter.value = counter.value + 1
+            else:
+                counter = Counter()
+                counter.name = 'member.max'
+                counter.value = 1
+            q2 = db.GqlQuery('SELECT * FROM Counter WHERE name = :1', 'member.total')
+            if (q2.count() == 1):
+                counter2 = q2[0]
+                counter2.value = counter2.value + 1
+            else:
+                counter2 = Counter()
+                counter2.name = 'member.total'
+                counter2.value = 1
 
-            counter_max = AddMemberNumberMax()
-            counter_total = AddMemberNumberTotal()
-            member = UpdateMember(number = counter_max.value, username = form.username.data, password = form.password.data, email = form.email.data, l10n = self.site.l10n)
-
+            member.num = counter.value
+            member.username = member_username
+            member.username_lower = member_username.lower()
+            member.password = hashlib.sha1(member_password).hexdigest()
+            member.email = member_email.lower()
+            member.auth = hashlib.sha1(str(member.num) + ':' + member.password).hexdigest()
+            member.l10n = self.site.l10n
+            member.newbie = 1
+            member.noob = 0
+            if member.num == 1:
+                member.level = 0
+            else:
+                member.level = 1000
+            member.put()
+            counter.put()
+            counter2.put()
             self.response.headers['Set-Cookie'] = str('auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
-
+            memcache.delete('member_total')
             self.redirect('/')
         else:
             self.template_values['error_message'] = form.errors
@@ -179,7 +205,7 @@ class SignupHandler(BaseHandler):
 
 class SignoutHandler(BaseHandler):
     def get(self):
-        if not self.is_member:
+        if self.member is None:
             self.redirect("/")
         cookies = Cookies(self, max_age = 86400, path = '/')
         del cookies['auth']
@@ -191,39 +217,56 @@ class ForgotHandler(BaseHandler):
         self.finalize(template_name='forgot')
 
     def post(self):
-        form = ForgotForm(self.request.POST)
-        if form.validate():
-            form_passwordreset = PasswordResetForm(self.request.POST)
-            if form_passwordreset.validate():
-                one = form.member
+        # Verification: username & email
+        username = self.request.get('username').strip().lower()
+        email = self.request.get('email').strip().lower()
+        q = db.GqlQuery("SELECT * FROM Member WHERE username_lower = :1 AND email = :2", username, email)
+
+        if q.count() == 1:
+            one = q[0]
+            q2 = db.GqlQuery("SELECT * FROM PasswordResetToken WHERE timestamp > :1 AND email = :2", (int(time.time()) - 86400), email)
+            if q2.count() > 2:
+                error_message = '您不能再24小時內重複2次設定密碼。'
+                self.template_values['errors'] = 1
+                self.template_values['error_message'] = error_message
+                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'forgot.html')
+                output = template.render(path, self.template_values)
+                self.response.out.write(output)
+            else:
                 token = ''.join([str(random.randint(0, 9)) for i in range(32)])
-                AddPasswordResetToken(member=one, token=token)
-                self.template_values['site'] = self.site
-                self.template_values['one'] = one
-                self.template_values['host'] = self.request.headers['Host']
-                self.template_values['token'] = token
-                self.template_values['ua'] = self.request.headers['User-Agent']
-                self.template_values['ip'] = self.request.remote_addr
-                output = self.render(template_name='reset_password', template_root='mail', template_type='txt')
+                prt = PasswordResetToken()
+                prt.token = token
+                prt.member = one
+                prt.email = one.email
+                prt.timestamp = int(time.time())
+                prt.put()
+
+                mail_template_values = {}
+                mail_template_values['site'] = self.site
+                mail_template_values['one'] = one
+                mail_template_values['host'] = self.request.headers['Host']
+                mail_template_values['token'] = token
+                mail_template_values['ua'] = self.request.headers['User-Agent']
+                mail_template_values['ip'] = self.request.remote_addr
+                path = os.path.join(os.path.dirname(__file__), 'tpl', 'mail', 'reset_password.txt')
+                output = template.render(path, mail_template_values)
                 result = mail.send_mail(sender="cwyark@gmail.com",
                               to=one.email,
                               subject="=?UTF-8?B?" + base64.b64encode((u"[" + self.site.title + u"] 重新设置密码").encode('utf-8')) + "?=",
                               body=output)
-                self.template_values['forgot_sent'] = 1
-                self.finalize(template_name='forgot')
-            else:
-                self.template_values['error_message'] = form_passwordreset.errors
-                self.finalize(template_name='forgot')
+                self.finalize(template_name='forgot_sent')
         else:
-            self.template_values['error_message'] = form.errors
+            error_message = '無法找到相符合的用戶名稱或電子郵件'
+            self.template_values['errors'] = 1
+            self.template_values['error_message'] = error_message
             self.finalize(template_name='forgot')
 
 
 class PasswordResetHandler(BaseHandler):
-    def get(self, token):
-        if self.is_member:
-            self.abort(404)
 
+    def get(self, token):
+        if self.member is not None:
+            self.abort(404)
         token = str(token.strip().lower())
         q = db.GqlQuery("SELECT * FROM PasswordResetToken WHERE token = :1 AND valid = 1", token)
         if q.count() == 1:

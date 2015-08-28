@@ -4,24 +4,32 @@
         <div class="box">
             <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ l10n.signup }}</span></div>
             <div class="inner">
-                <form action="/signup" method="post" class="ui form">
-                {% if errors %}
-                <label class="ui message">{{ l10n.resolve_errors }}</label>
-                <ul>
-                    {% if member_username_error %}
-                    <li>{{ member_username_error_message }}</li>
-                    {% endif %}
-                    {% if member_password_error %}
-                    <li>{{ member_password_error_message }}</li>
-                    {% endif %}
-                    {% if member_email_error %}
-                    <li>{{ member_email_error_message }}</li>
-                    {% endif %}
-                    {% if recaptcha_error %}
-                    <li>{{ recaptcha_error_message }}</li>
-                    {% endif %}
-                </ul>
+                {% if error_message|length or recaptcha_error_message|length %}
+                    <div class="ui icon message">
+                        <i class="warning circle icon"></i>
+                        <div class="content">
+                            <div class="header">{{ l10n.resolve_errors }}</div>
+                            <ul>
+                                {% if error_message %}
+                                    {% for key, value in error_message.iteritems %}
+                                        {% for m in value %}
+                                            <li> {{ m }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endif %}
+                                {% if recaptcha_error_message %}
+                                    {% for key, value in recaptcha_error_message.iteritems %}
+                                        {% for m in value %}
+                                            <li> {{ m }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
                 {% endif %}
+
+                <form action="/signup" method="post" class="ui form">
                 <script type="text/javascript">
                 var RecaptchaOptions = {
                     theme : 'blackglass'

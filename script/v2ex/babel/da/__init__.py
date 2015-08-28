@@ -287,3 +287,66 @@ def GetSiteLandingPageCache():
 
 def SetSiteLandingPageCache(site_landingpagecache):
     memcache.set('Site::LandingPageCache', site_landingpagecache, 600)
+
+
+
+def AddMemberNumberMax():
+    q = db.GqlQuery('SELECT * FROM Counter WHERE name = :1', 'member.max')
+    if (q.count() == 1):
+        counter = q[0]
+        counter.value += 1
+    else:
+        counter = Counter()
+        counter.name = 'member.max'
+        counter.value = 1
+    counter.put()
+    memcache.delete('member_max')
+    return counter
+   
+
+def AddMemberNumberTotal():
+    q = db.GqlQuery('SELECT * FROM Counter WHERE name = :1', 'member.total')
+    if (q.count() == 1):
+        counter = q[0]
+        counter.value += 1
+    else:
+        counter = Counter()
+        counter.name = 'member.total'
+        counter.value = 1
+    counter.put()
+    memcache.delete('member_total')
+    return counter
+
+
+def UpdateMember(number, username, password, email, l10n):
+    q = db.GqlQuery('SELECT * FROM Member WHERE num = :1', number)
+    if q.count() == 0:
+        member =  Member()
+        member.num = number
+        member.username = username
+        member.username_lower = username.lower()
+        member.password = hashlib.sha1(password).hexdigest()
+        member.email = email
+        member.auth = hashlib.sha1(str(number) + ':' + member.password).hexdigest()
+        member.l10n = l10n
+        member.newbie = 1
+        member.noob = 0
+        if member.num == 1:
+            member.level = 0
+        else:
+            member.level = 1000
+        member.put()
+    else:
+        member = None
+
+    return member
+
+
+def AddPasswordResetToken(member, token):
+    prt = PasswordResetToken()
+    prt.token = token
+    prt.member = member
+    prt.email = member.email
+    prt.timestamp = int(time.time())
+    prt.put()   
+    return prt
