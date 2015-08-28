@@ -1,3 +1,5 @@
+import re
+
 from google.appengine.ext import db
 from wtforms import Form, StringField, FormField, validators, SubmitField, ValidationError, Field
 import hashlib
@@ -31,3 +33,32 @@ class SignInForm(UserPasswordForm):
         else:
             self.username.errors.append("Username is not exist")
             return False
+
+
+class SignUpForm(UserPasswordForm):
+    email = StringField('email', [validators.Email(message="this email is not in a valid format"), validators.Required(message="email is required")])
+
+    def __init__(self, *args, **kwargs):
+        UserPasswordForm.__init__(self, *args, **kwargs)
+        self.member = None
+    
+    def validate(self):
+        rv = Form.validate(self)
+        if not rv:
+            return False
+
+        if re.search('^[a-zA-Z0-9\_]+$', self.username.data):
+            q = db.GqlQuery('SELECT __key__ FROM Member WHERE username_lower = :1', self.username.data.lower())
+            if q.count() > 0:
+                self.username.errors.append("this username has been taken")
+                return False
+        else:
+            self.username.errors.append("this username is not a effective format")
+            return False
+        
+        q = db.GqlQuery('SELECT __key__ FROM Member WHERE email = :1', self.email.data)
+        if q.count() > 0:
+            self.email.errors.append("this email has been taken")
+            return False
+
+        return True
