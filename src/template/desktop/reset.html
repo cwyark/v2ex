@@ -1,0 +1,53 @@
+{% extends 'common/base.html' %}
+{% block content %}
+{% if reset_password == 1 %}
+    <div id="Content">
+        <div class="box">
+            <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> 登入</span></div>
+            <div class="inner">
+                 {% if errors %}
+                    <strong>{{ error_message }}</strong>
+                    <div class="sep10"></div>
+                {% else %}
+                    你现在正在重新设置第 {{ token.member.num }} 号成员 <a href="/member/{{ token.member.username }}">{{ token.member.username }}</a> 的登入密码。
+                <div class="sep10"></div>
+                {% endif %}
+                <form action="/reset/{{ token.token }}" method="post" class="ui form">
+                    <div class="field">
+                        <label>新密码</label>
+                        <input type="password" class="sl" name="new_password" value="{{ new_password|escape }}" />
+                    </div>
+                    <div class="field">
+                        <label>请再输入一次</label>
+                        <input type="password" class="sl" name="new_password_again" value="{{ new_password_again|escape }}" />
+                    </div>
+                    <div class="field">
+                        <input type="submit" value="继续" class="ui button" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% if reset_password_ok == 1 %}
+<div id="Content">
+    <div class="box">
+        <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> 重新设置密码完成</span></div>
+        <div class="inner">你已经成功设置了你在 {{ site.title }} 的密码。
+        <div class="sep10"></div>
+        <a href="/signin">现在就登入</a></div>
+    </div>
+</div>
+{% endif %}
+{% if token_not_found == 1 %}
+<div id="Content">
+    <div class="box">
+        <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> 令牌无效</span></div>
+        <div class="inner">
+            你输入了一个无效的令牌。
+        <div class="sep10"></div>
+        <a href="/forgot">重新开始密码重设流程</a></div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -5,7 +5,7 @@ import hashlib
 import random
 import zlib
 import pickle
-
+import time
 from google.appengine.ext import db
 from google.appengine.api import memcache
 
@@ -17,6 +17,7 @@ from v2ex.babel import Topic
 from v2ex.babel import Reply
 from v2ex.babel import Place
 from v2ex.babel import Site
+from v2ex.babel import PasswordResetToken
 
 def GetKindByNum(kind, num):
     K = str(kind.capitalize())
@@ -350,3 +351,11 @@ def AddPasswordResetToken(member, token):
     prt.timestamp = int(time.time())
     prt.put()   
     return prt
+
+
+def CheckTokenExist(token):
+    q = db.GqlQuery("SELECT * FROM PasswordResetToken WHERE token = :1 AND valid = 1", token)
+    if q.count() == 1:
+        return q.get()
+    else:
+        return None

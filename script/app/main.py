@@ -225,17 +225,19 @@ class PasswordResetHandler(BaseHandler):
             self.abort(404)
 
         token = str(token.strip().lower())
-        q = db.GqlQuery("SELECT * FROM PasswordResetToken WHERE token = :1 AND valid = 1", token)
-        if q.count() == 1:
-            prt = q[0]
+        prt = CheckTokenExist(token)
+        if prt is not None:
             self.template_values['token'] = prt
-            self.finalize(template_name='reset_password')
+            self.template_values['reset_password'] = 1
+            self.finalize(template_name='reset')
         else:
-            self.finalize(template_name='token_not_found')
+            self.template_values['token_not_found'] = 1
+            self.finalize(template_name='reset')
     
     def post(self, token):
-        if self.member is not None:
+        if self.is_member:
             self.abort(404)
+
         token = str(token.strip().lower())
         q = db.GqlQuery("SELECT * FROM PasswordResetToken WHERE token = :1 AND valid = 1", token)
         if q.count() == 1:
@@ -264,13 +266,16 @@ class PasswordResetHandler(BaseHandler):
                 one.put()
                 prt.valid = 0
                 prt.put()
+                self.template_values['reset_password_ok'] = 1
                 self.finalize(template_name='reset_password_ok')
             else:
                 self.template_values['errors'] = errors
                 self.template_values['error_message'] = error_message
-                self.finalize(template_name='reset_password')
+                self.template_values['reset_password'] = 1
+                self.finalize(template_name='reset')
         else:
-            self.finalize(template_name='token_not_found')
+            self.template_values['token_not_found'] = 1
+            self.finalize(template_name='reset')
 
 
 class NodeGraphHandler(BaseHandler):
