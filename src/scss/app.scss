@@ -139,12 +139,16 @@ a.dark:hover {
 }
 
 #top_class {
-	height:80px;
-	background-color:#F8F8F8;
+	height:50px;
+	background-color:#FFFFFF;
 	position:fixed;
 	z-index:2;
 	width:100%;
     padding: 0px 200px 0px 200px;
+    border-bottom-style:solid;
+    border-bottom-color:#A0A0A0;
+    border-bottom-width:thin;
+
 }
 
 #TopMain {
@@ -221,16 +225,16 @@ a.dark:hover {
 
 #Rightbar {
     /*
-	 *float: right;
-	 *width: 272px;
-	 *padding: 10px 0px 10px 10px;
+     *float: right;
+     *width: 272px;
+     *padding: 10px 0px 10px 10px;
      */
 }
 
 #Content {
     /*
-	 *margin: 0px 282px 0px 0px;
-	 *padding: 10px;
+     *margin: 0px 282px 0px 0px;
+     *padding: 10px;
      */
 }
 

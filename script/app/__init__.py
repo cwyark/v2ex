@@ -29,7 +29,7 @@ routes = [
     ('/q/(.*)', main.SearchHandler),
     ('/_dispatcher', main.DispatcherHandler),
     ('/changes', main.ChangesHandler),
-    ('/(.*)', main.RouterHandler),
+    # ('/(.*)', main.RouterHandler),
 
     ('/new/(.*)', topic.NewTopicHandler),
     ('/t/([0-9]+)', topic.TopicHandler),

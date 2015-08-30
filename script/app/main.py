@@ -334,9 +334,10 @@ class NodeGraphHandler(BaseHandler):
         self.template_values['section'] = section
 
         if (node):
+            self.template_values['node_found'] = 1
             self.finalize(template_name='node_graph')
         else:
-            self.finalize(template_name='node_not_found')
+            self.finalize(template_name='node_graph')
 
 class NodeHandler(BaseHandler):
     def get(self, node_name):
