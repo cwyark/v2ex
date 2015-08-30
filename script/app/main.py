@@ -441,9 +441,10 @@ class NodeHandler(BaseHandler):
         self.template_values['latest'] = topics
         
         if (node):
+            self.template_values['node_found'] = 1
             self.finalize(template_name='node')
         else:
-            self.finalize(template_name='node_not_found')
+            self.finalize(template_name='node')
 
 class NodeApiHandler(BaseHandler):
     def get(self, node_name):

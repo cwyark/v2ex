@@ -42,17 +42,10 @@ import config
 
 template.register_template_library('v2ex.templatetags.filters')
 
-class MemberHandler(webapp.RequestHandler):
+class MemberHandler(BaseHandler):
     def get(self, member_username):
-        site = GetSite()
-        user_agent = detect(self.request)
         self.session = Session()
-        template_values = {}
-        template_values['site'] = site
-        template_values['system_version'] = SYSTEM_VERSION
-        member = CheckAuth(self)
-        template_values['member'] = member
-        template_values['show_extra_options'] = False
+        self.template_values['show_extra_options'] = False
         hottest = memcache.get('site_hottest_nodes')
         if hottest is None:
             qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
@@ -60,20 +53,18 @@ class MemberHandler(webapp.RequestHandler):
             for node in qhot:
                 hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
             memcache.set('site_hottest_nodes', hottest, 86400)
-        template_values['site_hottest_nodes'] = hottest
-        if member:
-            if member.num == 1:
-                template_values['show_extra_options'] = True
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
+        self.template_values['site_hottest_nodes'] = hottest
+        if self.is_member:
+            if self.member.num == 1:
+                self.template_values['show_extra_options'] = True
         one = False
         one = GetMemberByUsername(member_username)
         if one is not False:
             if one.followers_count is None:
                 one.followers_count = 0
-            template_values['one'] = one
-            template_values['page_title'] = site.title + u' › ' + one.username
-            template_values['canonical'] = 'http://' + site.domain + '/member/' + one.username
+            self.template_values['one'] = one
+            self.template_values['page_title'] = self.site.title + u' › ' + one.username
+            self.template_values['canonical'] = 'http://' + self.site.domain + '/member/' + one.username
             if one.github:
                 github = memcache.get('Member::' + one.username_lower + '::github')
                 if github is None:
@@ -82,22 +73,22 @@ class MemberHandler(webapp.RequestHandler):
                         github = response.content
                         memcache.set('Member::' + one.username_lower + '::github', github, 86400)
                 if github is not None:
-                    template_values['github_repos'] = sorted(json.loads(github), key=lambda x:x['stargazers_count'], reverse=True)
+                    self.template_values['github_repos'] = sorted(json.loads(github), key=lambda x:x['stargazers_count'], reverse=True)
         if one is not False:
             member_blog = memcache.get('member::' + str(one.num) + '::blog')
             if member_blog == None:
                 blog = db.GqlQuery("SELECT * FROM Topic WHERE node_name = :1 AND member_num = :2 ORDER BY created DESC LIMIT 1", 'blog', one.num)
                 if blog.count() > 0:
-                    template_values['blog'] = blog[0]
+                    self.template_values['blog'] = blog[0]
                     memcache.set('member::' + str(one.num) + '::blog', blog[0], 7200)
             else:
-                template_values['blog'] = member_blog
+                self.template_values['blog'] = member_blog
             member_topics = memcache.get('member::' + str(one.num) + '::topics')
             if member_topics != None:
-                template_values['topics'] = member_topics
+                self.template_values['topics'] = member_topics
             else:
                 q2 = db.GqlQuery("SELECT * FROM Topic WHERE member_num = :1 ORDER BY created DESC LIMIT 10", one.num)
-                template_values['topics'] = q2
+                self.template_values['topics'] = q2
                 memcache.set('member::' + str(one.num) + '::topics', q2, 7200)
             replies = memcache.get('member::' + str(one.num) + '::participated')
             
@@ -116,35 +107,33 @@ class MemberHandler(webapp.RequestHandler):
                 if len(replies) > 0:
                     memcache.set('member::' + str(one.num) + '::participated', replies, 7200)
             if len(replies) > 0:
-                template_values['replies'] = replies
-        template_values['show_block'] = False
-        template_values['show_follow'] = False
-        template_values['favorited'] = False
-        if one and member:
-            if one.num != member.num:
-                template_values['show_follow'] = True
-                template_values['show_block'] = True
+                self.template_values['replies'] = replies
+        self.template_values['show_block'] = False
+        self.template_values['show_follow'] = False
+        self.template_values['favorited'] = False
+        if one and self.is_member:
+            if one.num != self.member.num:
+                self.template_values['show_follow'] = True
+                self.template_values['show_block'] = True
                 try:
                     blocked = pickle.loads(member.blocked.encode('utf-8'))
                 except:
                     blocked = []
                 if one.num in blocked:
-                    template_values['one_is_blocked'] = True
+                    self.template_values['one_is_blocked'] = True
                 else:
-                    template_values['one_is_blocked'] = False
+                    self.template_values['one_is_blocked'] = False
                 if member.hasFavorited(one):
-                    template_values['favorited'] = True
+                    self.template_values['favorited'] = True
                 else:
-                    template_values['favorited'] = False
+                    self.template_values['favorited'] = False
         if 'message' in self.session:
-            template_values['message'] = self.session['message']
+            self.template_values['message'] = self.session['message']
             del self.session['message']
         if one is not False: 
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_home.html')
+            self.finalize(template_name='member_home')
         else:
             path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_not_found.html')
-        output = template.render(path, template_values)
-        self.response.out.write(output)
         
 class MemberApiHandler(webapp.RequestHandler):
     def get(self, member_username):
@@ -166,17 +155,9 @@ class MemberApiHandler(webapp.RequestHandler):
         else:
             self.error(404)
 
-class SettingsHandler(webapp.RequestHandler):
+class SettingsHandler(BaseHandler):
     def get(self):
-        site = GetSite()
-        user_agent = detect(self.request)
         self.session = Session()
-        template_values = {}
-        template_values['site'] = site
-        template_values['system_version'] = SYSTEM_VERSION
-        member = CheckAuth(self)
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
         hottest = memcache.get('site_hottest_nodes')
         if hottest is None:
             qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
@@ -184,66 +165,63 @@ class SettingsHandler(webapp.RequestHandler):
             for node in qhot:
                 hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
             memcache.set('site_hottest_nodes', hottest, 86400)
-        template_values['site_hottest_nodes'] = hottest
-        template_values['page_title'] = site.title + u' › ' + l10n.settings.decode('utf-8')
-        if (member):
-            template_values['member'] = member
-            template_values['member_username'] = member.username
-            template_values['member_email'] = member.email
-            if (member.website == None):
-                member.website = ''
-            template_values['member_website'] = member.website
-            if (member.twitter == None):
-                member.twitter = ''
-            template_values['member_twitter'] = member.twitter
-            if (member.location == None):
-                member.location = ''
-            if member.psn is None:
-                member.psn = ''
-            template_values['member_psn'] = member.psn
-            if (member.my_home == None):
-                member.my_home = ''
-            template_values['member_my_home'] = member.my_home
-            template_values['member_btc'] = member.btc
-            if member.github:
-                template_values['member_github'] = member.github
+        self.template_values['site_hottest_nodes'] = hottest
+        self.template_values['page_title'] = self.site.title + u' › ' + self.l10n.settings.decode('utf-8')
+        if (self.is_member):
+            self.template_values['member_username'] = self.member.username
+            self.template_values['member_email'] = self.member.email
+            if (self.member.website == None):
+                self.member.website = ''
+            self.template_values['member_website'] = self.member.website
+            if (self.member.twitter == None):
+                self.member.twitter = ''
+            self.template_values['member_twitter'] = self.member.twitter
+            if (self.member.location == None):
+                self.member.location = ''
+            if self.member.psn is None:
+                self.member.psn = ''
+            self.template_values['member_psn'] = self.member.psn
+            if (self.member.my_home == None):
+                self.member.my_home = ''
+            self.template_values['member_my_home'] = self.member.my_home
+            self.template_values['member_btc'] = self.member.btc
+            if self.member.github:
+                self.template_values['member_github'] = self.member.github
             else:
-                template_values['member_github'] = u''
-            template_values['member_location'] = member.location
-            if (member.tagline == None):
-                member.tagline = ''
-            template_values['member_tagline'] = member.tagline
-            if (member.bio == None):
-                member.bio = ''
-            template_values['member_bio'] = member.bio
-            template_values['member_show_home_top'] = member.show_home_top
-            template_values['member_show_quick_post'] = member.show_quick_post
-            if member.l10n is None:
-                member.l10n = 'en'
-            template_values['member_l10n'] = member.l10n
-            s = GetLanguageSelect(member.l10n)
-            template_values['s'] = s
-            if member.twitter_sync == 1:
-                template_values['member_twitter_sync'] = 1
-            if member.use_my_css == 1:
-                template_values['member_use_my_css'] = 1
-            if (member.my_css == None):
-                member.my_css = ''
-            template_values['member_my_css'] = member.my_css
+                self.template_values['member_github'] = u''
+            self.template_values['member_location'] = self.member.location
+            if (self.member.tagline == None):
+                self.member.tagline = ''
+            self.template_values['member_tagline'] = self.member.tagline
+            if (self.member.bio == None):
+                self.member.bio = ''
+            self.template_values['member_bio'] = self.member.bio
+            self.template_values['member_show_home_top'] = self.member.show_home_top
+            self.template_values['member_show_quick_post'] = self.member.show_quick_post
+            if self.member.l10n is None:
+                self.member.l10n = 'en'
+            self.template_values['member_l10n'] = self.member.l10n
+            s = GetLanguageSelect(self.member.l10n)
+            self.template_values['s'] = s
+            if self.member.twitter_sync == 1:
+                self.template_values['member_twitter_sync'] = 1
+            if self.member.use_my_css == 1:
+                self.template_values['member_use_my_css'] = 1
+            if (self.member.my_css == None):
+                self.member.my_css = ''
+            self.template_values['member_my_css'] = self.member.my_css
             if 'message' in self.session:
                 message = self.session['message']
                 del self.session['message']
             else:
                 message = None
-            template_values['message'] = message
+            self.template_values['message'] = message
             try:
                 blocked = pickle.loads(member.blocked.encode('utf-8'))
             except:
                 blocked = []
-            template_values['member_stats_blocks'] = len(blocked)
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_settings.html')
-            output = template.render(path, template_values)
-            self.response.out.write(output)
+            self.template_values['member_stats_blocks'] = len(blocked)
+            self.finalize(template_name='member_settings')
         else:
             self.redirect('/signin')
         
