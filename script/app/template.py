@@ -30,23 +30,13 @@ from v2ex.babel.ua import *
 from v2ex.babel.da import *
 from v2ex.babel.locale import *
 from v2ex.babel.ext.cookies import Cookies
-
+from v2ex.babel.handlers import BaseHandler
 template.register_template_library('v2ex.templatetags.filters')
 
-class MyNodesHandler(webapp.RequestHandler):
+class MyNodesHandler(BaseHandler):
     def get(self):
-        member = CheckAuth(self)
-        if member:
-            site = GetSite()
-            l10n = GetMessages(self, member, site)
-            template_values = {}
-            template_values['site'] = site
-            template_values['member'] = member
-            template_values['l10n'] = l10n
-            template_values['page_title'] = site.title + u' › 我收藏的节点'
-            template_values['rnd'] = random.randrange(1, 100)
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'my_nodes.html')
-            output = template.render(path, template_values)
-            self.response.out.write(output)
+        if self.is_member:
+            self.template_values['page_title'] = self.site.title + u' › 我收藏的节点'
+            self.finalize(template_name='my_nodes')
         else:
             self.redirect('/')

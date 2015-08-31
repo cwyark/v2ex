@@ -41,7 +41,7 @@ template.register_template_library('v2ex.templatetags.filters')
 
 class NotificationsHandler(BaseHandler):
     def get(self):
-        if self.member:
+        if self.is_member:
             if self.member.private_token is None:
                 self.member.private_token = hashlib.sha256(str(self.member.num) + ';' + config.site_key).hexdigest()
                 self.member.put()
@@ -69,9 +69,9 @@ class NotificationsHandler(BaseHandler):
                 self.member.put()
                 memcache.set('Member_' + str(self.member.num), self.member, 86400)
                 memcache.set('nn::' + self.member.username_lower, notifications, 360)
-            self.values['notifications'] = notifications
-            self.set_title(u'提醒系统')
-            self.finalize(template_name='notifications', mobile_optimized=True)
+            self.template_values['notifications'] = notifications
+            self.template_values['page_title'] = self.site.title + u' › 提醒系统'
+            self.finalize(template_name='notifications')
         else:
             self.redirect('/signin')
 

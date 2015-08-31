@@ -33,8 +33,6 @@ class AboutHandler(BaseHandler):
         if note is False:
             note = GetKindByNum('Note', 2)
         self.template_values['note'] = note
-        if self.is_member:
-            self.template_values['member'] = member
         self.template_values['page_title'] = self.site.title + u' › About'
         self.finalize(template_name='about')
         

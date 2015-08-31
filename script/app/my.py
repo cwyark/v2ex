@@ -32,50 +32,34 @@ from v2ex.babel.locale import *
 from v2ex.babel.ext.cookies import Cookies
 from v2ex.babel.ext.sessions import Session
 
+from v2ex.babel.handlers import BaseHandler
+
 template.register_template_library('v2ex.templatetags.filters')
 
-class MyNodesHandler(webapp.RequestHandler):
+class MyNodesHandler(BaseHandler):
     def get(self):
-        member = CheckAuth(self)
-        if member:
-            site = GetSite()
-            l10n = GetMessages(self, member, site)
-            template_values = {}
-            template_values['site'] = site
-            template_values['member'] = member
-            template_values['l10n'] = l10n
-            template_values['page_title'] = site.title + u' › 我收藏的节点'
-            template_values['rnd'] = random.randrange(1, 100)
-            if member.favorited_nodes > 0:
-                template_values['has_nodes'] = True
-                q = db.GqlQuery("SELECT * FROM NodeBookmark WHERE member = :1 ORDER BY created DESC LIMIT 0,15", member)
-                template_values['column_1'] = q
-                if member.favorited_nodes > 15:
-                    q2 = db.GqlQuery("SELECT * FROM NodeBookmark WHERE member = :1 ORDER BY created DESC LIMIT 15,15", member)
-                    template_values['column_2'] = q2
+        if self.is_member:
+            self.template_values['page_title'] = self.site.title + u' › 我收藏的节点'
+            if self.member.favorited_nodes > 0:
+                self.template_values['has_nodes'] = True
+                q = db.GqlQuery("SELECT * FROM NodeBookmark WHERE member = :1 ORDER BY created DESC LIMIT 0,15", self.member)
+                self.template_values['column_1'] = q
+                if self.member.favorited_nodes > 15:
+                    q2 = db.GqlQuery("SELECT * FROM NodeBookmark WHERE member = :1 ORDER BY created DESC LIMIT 15,15", self.member)
+                    self.template_values['column_2'] = q2
             else:
-                template_values['has_nodes'] = False
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'my_nodes.html')
-            output = template.render(path, template_values)
-            self.response.out.write(output)
+                self.template_values['has_nodes'] = False
+            self.finalize(template_name='my_nodes')
         else:
             self.redirect('/')
 
-class MyTopicsHandler(webapp.RequestHandler):
+class MyTopicsHandler(BaseHandler):
     def get(self):
-        member = CheckAuth(self)
-        if member:
-            site = GetSite()
-            l10n = GetMessages(self, member, site)
-            template_values = {}
-            template_values['site'] = site
-            template_values['member'] = member
-            template_values['l10n'] = l10n
-            template_values['page_title'] = site.title + u' › 我收藏的主题'
-            template_values['rnd'] = random.randrange(1, 100)
-            if member.favorited_topics > 0:
-                template_values['has_topics'] = True
-                q = db.GqlQuery("SELECT * FROM TopicBookmark WHERE member = :1 ORDER BY created DESC", member)
+        if self.is_member:
+            self.template_values['page_title'] = self.site.title + u' › 我收藏的主题'
+            if self.member.favorited_topics > 0:
+                self.template_values['has_topics'] = True
+                q = db.GqlQuery("SELECT * FROM TopicBookmark WHERE member = :1 ORDER BY created DESC", self.member)
                 bookmarks = []
                 for bookmark in q:
                     try:
@@ -83,40 +67,28 @@ class MyTopicsHandler(webapp.RequestHandler):
                         bookmarks.append(bookmark)
                     except:
                         bookmark.delete()
-                template_values['bookmarks'] = bookmarks
+                self.template_values['bookmarks'] = bookmarks
             else:
-                template_values['has_topics'] = False
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'my_topics.html')
-            output = template.render(path, template_values)
-            self.response.out.write(output)
+                self.template_values['has_topics'] = False
+            self.finalize(template_name='my_topics')
         else:
             self.redirect('/')
             
-class MyFollowingHandler(webapp.RequestHandler):
+class MyFollowingHandler(BaseHandler):
     def get(self):
-        member = CheckAuth(self)
-        if member:
-            site = GetSite()
-            l10n = GetMessages(self, member, site)
-            template_values = {}
-            template_values['site'] = site
-            template_values['member'] = member
-            template_values['l10n'] = l10n
-            template_values['page_title'] = site.title + u' › 我的特别关注'
-            template_values['rnd'] = random.randrange(1, 100)
-            if member.favorited_members > 0:
-                template_values['has_following'] = True
-                q = db.GqlQuery("SELECT * FROM MemberBookmark WHERE member_num = :1 ORDER BY created DESC", member.num)
-                template_values['following'] = q
+        if self.is_member:
+            self.template_values['page_title'] = self.site.title + u' › 我的特别关注'
+            if self.member.favorited_members > 0:
+                self.template_values['has_following'] = True
+                q = db.GqlQuery("SELECT * FROM MemberBookmark WHERE member_num = :1 ORDER BY created DESC", self.member.num)
+                self.template_values['following'] = q
                 following = []
                 for bookmark in q:
                     following.append(bookmark.one.num)
                 q2 = db.GqlQuery("SELECT * FROM Topic WHERE member_num IN :1 ORDER BY created DESC LIMIT 20", following)
-                template_values['latest'] = q2
+                self.template_values['latest'] = q2
             else:
-                template_values['has_following'] = False
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'my_following.html')
-            output = template.render(path, template_values)
-            self.response.out.write(output)
+                self.template_values['has_following'] = False
+            self.finalize(template_name='my_following')
         else:
             self.redirect('/')

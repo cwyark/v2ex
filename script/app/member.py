@@ -632,26 +632,15 @@ class SettingsPasswordHandler(webapp.RequestHandler):
         else:
             self.redirect('/signin')
 
-class SettingsAvatarHandler(webapp.RequestHandler):
+class SettingsAvatarHandler(BaseHandler):
     def get(self):
-        site = GetSite()
         self.session = Session()
-        user_agent = detect(self.request)
-        template_values = {}
-        template_values['site'] = site
-        template_values['page_title'] = site.title + u' › 头像'
-        template_values['system_version'] = SYSTEM_VERSION
-        member = CheckAuth(self)
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
-        if (member):
+        self.template_values['page_title'] = self.site.title + u' › 头像'
+        if (self.is_member):
             if 'message' in self.session:
-                template_values['message'] = self.session['message']
+                self.template_values['message'] = self.session['message']
                 del self.session['message']
-            template_values['member'] = member
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_settings_avatar.html')
-            output = template.render(path, template_values)
-            self.response.out.write(output)
+            self.finalize(template_name='member_settings_avatar')
         else:
             self.redirect('/signin')
         

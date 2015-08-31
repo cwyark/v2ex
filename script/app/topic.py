@@ -53,16 +53,8 @@ import config
 
 TOPIC_PAGE_SIZE = 100
 
-class NewTopicHandler(webapp.RequestHandler):
+class NewTopicHandler(BaseHandler):
     def get(self, node_name):
-        site = GetSite()
-        user_agent = detect(self.request)
-        template_values = {}
-        template_values['site'] = site
-        template_values['system_version'] = SYSTEM_VERSION
-        member = CheckAuth(self)
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
         hottest = memcache.get('site_hottest_nodes')
         if hottest is None:
             qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
@@ -70,28 +62,25 @@ class NewTopicHandler(webapp.RequestHandler):
             for node in qhot:
                 hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
             memcache.set('site_hottest_nodes', hottest, 86400)
-        template_values['site_hottest_nodes'] = hottest
-        template_values['page_title'] = site.title + u' › ' + l10n.create_new_topic.decode('utf-8')
+        self.template_values['site_hottest_nodes'] = hottest
+        self.template_values['page_title'] = self.site.title + u' › ' + self.l10n.create_new_topic.decode('utf-8')
         can_create = False
-        if site.topic_create_level > 999:
-            if member:
+        if self.site.topic_create_level > 999:
+            if self.is_member:
                 can_create = True
         else:
-            if member:
-                if member.level <= site.topic_create_level:
+            if self.is_member:
+                if self.member.level <= self.site.topic_create_level:
                     can_create = True
-        if (member):
-            template_values['member'] = member
+        if (self.is_member):
             node = GetKindByName('Node', node_name)
             if node is False:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'node_not_found.html')
-                output = template.render(path, template_values)
-                return self.response.out.write(output)
-            template_values['node'] = node
+                return self.finalize(template_name='node_not_found')
+            self.template_values['node'] = node
             section = GetKindByNum('Section', node.section_num)
-            template_values['section'] = section
-            if site.use_topic_types:
-                types = site.topic_types.split("\n")
+            self.template_values['section'] = section
+            if self.site.use_topic_types:
+                types = self.site.topic_types.split("\n")
                 options = '<option value="0">&nbsp;&nbsp;&nbsp;&nbsp;</option>'
                 i = 0
                 for a_type in types:
@@ -99,23 +88,20 @@ class NewTopicHandler(webapp.RequestHandler):
                     detail = a_type.split(':')
                     options = options + '<option value="' + str(i) + '">' + detail[0] + '</option>'
                 tt = '<div class="sep5"></div><table cellpadding="5" cellspacing="0" border="0" width="100%"><tr><td width="60" align="right">Topic Type</td><td width="auto" align="left"><select name="type">' + options + '</select></td></tr></table>'
-                template_values['tt'] = tt
+                self.template_values['tt'] = tt
             else:
-                template_values['tt'] = ''
+                self.template_values['tt'] = ''
             if can_create:
                 if node:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'new_topic.html')
+                    self.finalize(template_name='new_topic')
                 else:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'node_not_found.html')
+                    self.finalize(template_name='node_not_found')
             else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'access_denied.html')
-            output = template.render(path, template_values)
-            self.response.out.write(output)
+                self.finalize(template_name='access_denied')
         else:
             self.redirect('/signin')
 
     def post(self, node_name):
-        site = GetSite()
         ### BEGIN: CAN CONTINUE
         can_continue = True
         if ('Host' in self.request.headers):
@@ -149,7 +135,7 @@ class NewTopicHandler(webapp.RequestHandler):
                 has_v2ex = True
             if ('http://beta.v2ex.com' in self.request.headers['Referer']):
                 has_v2ex = True
-            if ('http://' + str(site.domain) in self.request.headers['Referer']):
+            if ('http://' + str(self.site.domain) in self.request.headers['Referer']):
                 has_v2ex = True
             if has_v2ex is False:
                 can_continue = False
@@ -161,34 +147,26 @@ class NewTopicHandler(webapp.RequestHandler):
         else:
             can_continue = False
         if can_continue is False:
-            return self.redirect('http://' + str(site.domain) + '/')
+            return self.redirect('http://' + str(self.site.domain) + '/')
         ### END: CAN CONTINUE
-        user_agent = detect(self.request)
-        template_values = {}
-        template_values['site'] = site
-        template_values['system_version'] = SYSTEM_VERSION
-        member = CheckAuth(self)
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
-        template_values['page_title'] = site.title + u' › ' + l10n.create_new_topic.decode('utf-8')
+        self.template_values['page_title'] = self.site.title + u' › ' + self.l10n.create_new_topic.decode('utf-8')
         can_create = False
-        if site.topic_create_level > 999:
-            if member:
+        if self.site.topic_create_level > 999:
+            if self.is_member:
                 can_create = True
         else:
-            if member:
-                if member.level <= site.topic_create_level:
+            if self.is_member:
+                if self.member.level <= self.site.topic_create_level:
                     can_create = True
-        if (member):
-            template_values['member'] = member
+        if (self.is_member):
             if can_create:
                 node = False
                 node = GetKindByName('Node', node_name)
-                template_values['node'] = node
+                self.template_values['node'] = node
                 section = False
                 if node:
                     section = GetKindByNum('Section', node.section_num)
-                template_values['section'] = section
+                self.template_values['section'] = section
                 errors = 0
                 # Verification: title
                 topic_title_error = 0
@@ -204,9 +182,9 @@ class NewTopicHandler(webapp.RequestHandler):
                     if (len(topic_title) > 120):
                         errors = errors + 1
                         topic_title_error = 2
-                template_values['topic_title'] = topic_title
-                template_values['topic_title_error'] = topic_title_error
-                template_values['topic_title_error_message'] = topic_title_error_messages[topic_title_error]
+                self.template_values['topic_title'] = topic_title
+                self.template_values['topic_title_error'] = topic_title_error
+                self.template_values['topic_title_error_message'] = topic_title_error_messages[topic_title_error]
                 # Verification: content
                 topic_content_error = 0
                 topic_content_error_messages = ['',
@@ -218,12 +196,12 @@ class NewTopicHandler(webapp.RequestHandler):
                     if (topic_content_length > 200000):
                         errors = errors + 1
                         topic_content_error = 1
-                template_values['topic_content'] = topic_content
-                template_values['topic_content_error'] = topic_content_error
-                template_values['topic_content_error_message'] = topic_content_error_messages[topic_content_error]
+                self.template_values['topic_content'] = topic_content
+                self.template_values['topic_content_error'] = topic_content_error
+                self.template_values['topic_content_error_message'] = topic_content_error_messages[topic_content_error]
                 # Verification: type
-                if site.use_topic_types:
-                    types = site.topic_types.split("\n")
+                if self.site.use_topic_types:
+                    types = self.site.topic_types.split("\n")
                     if len(types) > 0:
                         topic_type = self.request.get('type').strip()
                         try:
@@ -250,10 +228,10 @@ class NewTopicHandler(webapp.RequestHandler):
                         else:
                             options = options + '<option value="' + str(i) + '">' + detail[0] + '</option>'
                     tt = '<div class="sep5"></div><table cellpadding="5" cellspacing="0" border="0" width="100%"><tr><td width="60" align="right">Topic Type</td><td width="auto" align="left"><select name="type">' + options + '</select></td></tr></table>'
-                    template_values['tt'] = tt
+                    self.template_values['tt'] = tt
                 else:
-                    template_values['tt'] = ''
-                template_values['errors'] = errors
+                    self.template_values['tt'] = ''
+                self.template_values['errors'] = errors
                 if (errors == 0):
                     topic = Topic(parent=node)
                     q = db.GqlQuery('SELECT * FROM Counter WHERE name = :1', 'topic.max')
@@ -280,17 +258,16 @@ class NewTopicHandler(webapp.RequestHandler):
                         topic.content_length = topic_content_length
                     else:
                         topic.has_content = False
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'topic_content.html')
+                    path = os.path.join('tpl', 'portion', 'topic_content.html')
                     output = template.render(path, {'topic' : topic})
-                    print type(output)
                     topic.content_rendered = output
                     topic.node = node
                     topic.node_num = node.num
                     topic.node_name = node.name
                     topic.node_title = node.title
-                    topic.created_by = member.username
-                    topic.member = member
-                    topic.member_num = member.num
+                    topic.created_by = self.member.username
+                    topic.member = self.member
+                    topic.member_num = self.member.num
                     topic.last_touched = datetime.datetime.now()
                     ua = self.request.headers['User-Agent']
                     if (re.findall('Mozilla\/5.0 \(iPhone;', ua)):
@@ -303,7 +280,7 @@ class NewTopicHandler(webapp.RequestHandler):
                         topic.source = 'Android'
                     if (re.findall('Mozilla\/5.0 \(PLAYSTATION 3;', ua)):
                         topic.source = 'PS3'
-                    if site.use_topic_types:
+                    if self.site.use_topic_types:
                         if topic_type > 0:
                             topic.type = topic_type_label
                             topic.type_color = topic_type_color          
@@ -323,7 +300,7 @@ class NewTopicHandler(webapp.RequestHandler):
                         pass
                     
                     # Twitter Sync
-                    if member.twitter_oauth == 1 and member.twitter_sync == 1:
+                    if self.member.twitter_oauth == 1 and self.member.twitter_sync == 1:
                         access_token = OAuthToken.from_string(member.twitter_oauth_string)
                         twitter = OAuthApi(CONSUMER_KEY, CONSUMER_SECRET, access_token)
                         status = topic.title + ' #' + topic.node.name + ' http://' + self.request.headers['Host'] + '/t/' + str(topic.num)
@@ -332,9 +309,9 @@ class NewTopicHandler(webapp.RequestHandler):
                         except:
                             logging.error("Failed to sync to Twitter for Topic #" + str(topic.num))
                     # Change newbie status?
-                    if member.newbie == 1:
+                    if self.member.newbie == 1:
                         now = datetime.datetime.now()
-                        created = member.created
+                        created = self.member.created
                         diff = now - created
                         if diff.seconds > (86400 * 60):
                             member.newbie = 0
@@ -345,13 +322,9 @@ class NewTopicHandler(webapp.RequestHandler):
                     
                     self.redirect('/t/' + str(topic.num) + '#reply0')
                 else:    
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'new_topic.html')
-                    output = template.render(path, template_values)
-                    self.response.out.write(output)
+                    self.finalize(template_name='new_topic')
             else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'access_denied.html')
-                output = template.render(path, template_values)
-                self.response.out.write(output)
+                self.finalize(template_name='access_denied')
         else:
             self.redirect('/signin')
 
@@ -469,7 +442,7 @@ class TopicHandler(BaseHandler):
             if len(ps) > 1:
                 self.template_values['ps'] = ps
             replies = False
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'topic_replies.html')
+            path = os.path.join('tpl', 'portion', 'topic_replies.html')
             if filter_mode:
                 r_tag = 'topic_' + str(topic.num) + '_replies_filtered_rendered_desktop_' + str(page_current)
                 r = memcache.get(r_tag)
@@ -518,7 +491,7 @@ class TopicHandler(BaseHandler):
                         memcache.set(r_tag, r, 86400)
             self.template_values['r'] = r
             if topic and self.is_member:
-                if member.hasFavorited(topic):
+                if self.member.hasFavorited(topic):
                     self.template_values['favorited'] = True
                 else:
                     self.template_values['favorited'] = False

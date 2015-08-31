@@ -1825,48 +1825,38 @@ class BackstageRemoveMemcacheHandler(webapp.RequestHandler):
         self.redirect('/backstage')
 
 
-class BackstageMemberHandler(webapp.RequestHandler):
+class BackstageMemberHandler(BaseHandler):
     def get(self, member_username):
-        template_values = {}
-        site = GetSite()
-        member = CheckAuth(self)
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
-        if member:
-            if member.level == 0:
+        if self.is_member:
+            if self.member.level == 0:
                 member_username_lower = member_username.lower()
                 q = db.GqlQuery("SELECT * FROM Member WHERE username_lower = :1", member_username_lower)
                 if (q.count() == 1):
                     one = q[0]
-                    template_values['one'] = one
+                    self.template_values['one'] = one
                     errors = 0
-                    template_values['one_username'] = one.username
-                    template_values['one_email'] = one.email
+                    self.template_values['one_username'] = one.username
+                    self.template_values['one_email'] = one.email
                     if one.avatar_large_url is None:
-                        template_values['one_avatar_large_url'] = ''
+                        self.template_values['one_avatar_large_url'] = ''
                     else:
-                        template_values['one_avatar_large_url'] = one.avatar_large_url
+                        self.template_values['one_avatar_large_url'] = one.avatar_large_url
                     if one.avatar_normal_url is None:
-                        template_values['one_avatar_normal_url'] = ''
+                        self.template_values['one_avatar_normal_url'] = ''
                     else:
-                        template_values['one_avatar_normal_url'] = one.avatar_normal_url
+                        self.template_values['one_avatar_normal_url'] = one.avatar_normal_url
                     if one.avatar_mini_url is None:
-                        template_values['one_avatar_mini_url'] = ''
+                        self.template_values['one_avatar_mini_url'] = ''
                     else:
-                        template_values['one_avatar_mini_url'] = one.avatar_mini_url
+                        self.template_values['one_avatar_mini_url'] = one.avatar_mini_url
                     if one.bio is None:
-                        template_values['one_bio'] = ''
+                        self.template_values['one_bio'] = ''
                     else:
-                        template_values['one_bio'] = one.bio
-                    template_values['one_level'] = one.level
-                    template_values['page_title'] = site.title + u' › ' + l10n.backstage.decode('utf-8') + u' › ' + one.username
-                    template_values['site'] = site
-                    template_values['member'] = member
-                    template_values['system_version'] = SYSTEM_VERSION
-                    template_values['latest_members'] = db.GqlQuery("SELECT * FROM Member ORDER BY created DESC LIMIT 5")
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_member.html')
-                    output = template.render(path, template_values)
-                    self.response.out.write(output)
+                        self.template_values['one_bio'] = one.bio
+                    self.template_values['one_level'] = one.level
+                    self.template_values['page_title'] = self.site.title + u' › ' + self.l10n.backstage.decode('utf-8') + u' › ' + one.username
+                    self.template_values['latest_members'] = db.GqlQuery("SELECT * FROM Member ORDER BY created DESC LIMIT 5")
+                    self.finalize(template_name='backstage_member')
                 else:
                     self.redirect('/backstage')
                 
@@ -1875,27 +1865,22 @@ class BackstageMemberHandler(webapp.RequestHandler):
             
 
     def post(self, member_username):
-        template_values = {}
-        site = GetSite()
-        member = CheckAuth(self)
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
-        if member:
-            if member.level == 0:
+        if self.is_member:
+            if self.member.level == 0:
                 member_username_lower = member_username.lower()
                 q = db.GqlQuery("SELECT * FROM Member WHERE username_lower = :1", member_username_lower)
                 if (q.count() == 1):
                     one = q[0]
-                    template_values['one'] = one
+                    self.template_values['one'] = one
                     errors = 0
                     # Verification: username
                     one_username_error = 0
                     one_username_error_messages = ['',
-                        l10n.username_empty,
-                        l10n.username_too_long,
-                        l10n.username_too_short,
-                        l10n.username_invalid,
-                        l10n.username_taken]
+                        self.l10n.username_empty,
+                        self.l10n.username_too_long,
+                        self.l10n.username_too_short,
+                        self.l10n.username_invalid,
+                        self.l10n.username_taken]
                     one_username = self.request.get('username').strip()
                     if (len(one_username) == 0):
                         errors = errors + 1
@@ -1917,9 +1902,9 @@ class BackstageMemberHandler(webapp.RequestHandler):
                                 else:
                                     errors = errors + 1
                                     one_username_error = 4
-                    template_values['one_username'] = one_username
-                    template_values['one_username_error'] = one_username_error
-                    template_values['one_username_error_message'] = one_username_error_messages[one_username_error]
+                    self.template_values['one_username'] = one_username
+                    self.template_values['one_username_error'] = one_username_error
+                    self.template_values['one_username_error_message'] = one_username_error_messages[one_username_error]
                     # Verification: email
                     one_email_error = 0
                     one_email_error_messages = ['',
@@ -1945,19 +1930,19 @@ class BackstageMemberHandler(webapp.RequestHandler):
                             else:
                                 errors = errors + 1
                                 one_email_error = 3
-                    template_values['one_email'] = one_email.lower()
-                    template_values['one_email_error'] = one_email_error
-                    template_values['one_email_error_message'] = one_email_error_messages[one_email_error]
+                    self.template_values['one_email'] = one_email.lower()
+                    self.template_values['one_email_error'] = one_email_error
+                    self.template_values['one_email_error_message'] = one_email_error_messages[one_email_error]
                     # Verification: avatar
                     one_avatar_large_url = self.request.get('avatar_large_url')
-                    template_values['one_avatar_large_url'] = one_avatar_large_url
+                    self.template_values['one_avatar_large_url'] = one_avatar_large_url
                     one_avatar_normal_url = self.request.get('avatar_normal_url')
-                    template_values['one_avatar_normal_url'] = one_avatar_normal_url
+                    self.template_values['one_avatar_normal_url'] = one_avatar_normal_url
                     one_avatar_mini_url = self.request.get('avatar_mini_url')
-                    template_values['one_avatar_mini_url'] = one_avatar_mini_url
+                    self.template_values['one_avatar_mini_url'] = one_avatar_mini_url
                     # Verification: bio
                     one_bio = self.request.get('bio')
-                    template_values['one_bio'] = one_bio
+                    self.template_values['one_bio'] = one_bio
                     # Verification: level
                     one_level = self.request.get('level')
                     try:
@@ -1967,7 +1952,7 @@ class BackstageMemberHandler(webapp.RequestHandler):
                             one_level = 0
                         else:
                             one_level = 1000
-                    template_values['one_level'] = one_level
+                    self.template_values['one_level'] = one_level
                     if errors == 0:
                         one.username = one_username
                         one.username_lower = one_username.lower()
@@ -1982,14 +1967,9 @@ class BackstageMemberHandler(webapp.RequestHandler):
                         memcache.delete('Member::' + one_username.lower())
                         self.redirect('/backstage')
                     else:
-                        template_values['page_title'] = site.title + u' › ' + l10n.backstage.decode('utf-8') + u' › ' + one.username
-                        template_values['site'] = site
-                        template_values['member'] = member
-                        template_values['system_version'] = SYSTEM_VERSION
+                        self.template_values['page_title'] = self.site.title + u' › ' + self.l10n.backstage.decode('utf-8') + u' › ' + one.username
                         template_values['latest_members'] = db.GqlQuery("SELECT * FROM Member ORDER BY created DESC LIMIT 5")
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_member.html')
-                        output = template.render(path, template_values)
-                        self.response.out.write(output)
+                        self.finalize(template_name='backstage_member')
                 else:
                     self.redirect('/backstage')
 
