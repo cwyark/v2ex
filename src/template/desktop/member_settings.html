@@ -88,22 +88,14 @@
                             <input type="text" class="sl" name="twitter" value="{{ member_twitter|escape }}" />
                     </div>
                     <div class="field">
-                            <label>PSN ID</label>
-                            <input type="text" class="sl" name="psn" value="{{ member_psn|escape }}" />
-                    </div>
-                    <div class="field">
-                        <label>BTC Address<label>
-                        <input type="text" class="sl" name="btc" value="{{ member_btc|escape }}" />
-                    </div>
-                    <div class="field">
-                        <label>GitHub Username</label>
+                        <label>GitHub Account</label>
                         <input type="text" class="sl" name="github" value="{{ member_github|escape }}" />
                     </div>
                     <div class="field">
-                            <label>自定义首页跳转位置<label>
+                            <label>自定義首頁位置<label>
                             <input type="text" class="sl" name="my_home" value="{{ member_my_home|escape }}" />
                     </div>
-                    <div class="three fields">
+                    <div class="two fields">
                         <div class="field">
                             <label>{{ l10n.language }}</label>
                             {{ s|safe }}
@@ -120,18 +112,20 @@
                             {% endif %}
                             </select>
                         </div>
-                        <div class="field">
-                                <label>{{ l10n.show_quick_post }}</label>
-                                <select name="show_quick_post">
-                                {% if member_show_quick_post %}
-                                    <option value="1" selected="selected">{{ l10n.do_show }}</option>
-                                    <option value="0">{{ l10n.do_not_show }}</option>
-                                {% else %}
-                                    <option value="1">{{ l10n.do_show }}</option>
-                                    <option value="0" selected="selected">{{ l10n.do_not_show }}</option>
-                                {% endif %}
-                                </select>
-                        </div>
+                        <!--
+                           -<div class="field">
+                           -        <label>{{ l10n.show_quick_post }}</label>
+                           -        <select name="show_quick_post">
+                           -        {% if member_show_quick_post %}
+                           -            <option value="1" selected="selected">{{ l10n.do_show }}</option>
+                           -            <option value="0">{{ l10n.do_not_show }}</option>
+                           -        {% else %}
+                           -            <option value="1">{{ l10n.do_show }}</option>
+                           -            <option value="0" selected="selected">{{ l10n.do_not_show }}</option>
+                           -        {% endif %}
+                           -        </select>
+                           -</div>
+                           -->
                     </div>
                     {% ifequal member.twitter_oauth 1 %}
                     <div class="field">
