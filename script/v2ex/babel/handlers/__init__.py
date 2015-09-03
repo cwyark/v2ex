@@ -17,6 +17,8 @@ from v2ex.babel.da import GetSite
 from v2ex.babel.locale import GetMessages
 from v2ex.babel.security import CheckAuth
 
+from v2ex.babel.da import GetTotalTopicNum, GetTotalReplyNum, GetTotalMemberNum, GetSiteHottestNode, GetSiteRecentNewNodes
+
 class BaseHandler(webapp.RequestHandler):
 
     def __init__(self, request, response):
@@ -35,6 +37,11 @@ class BaseHandler(webapp.RequestHandler):
             self._values['page_title'] = self.site.title.decode('utf-8') + u' › '
             self._values['canonical'] = 'http://' + str(self.site.domain) + '/'
             self._values['system_version'] = SYSTEM_VERSION
+            self.template_values['site_total_member_number'] = GetTotalMemberNum()
+            self.template_values['site_total_topic_number'] = GetTotalTopicNum()
+            self.template_values['site_total_reply_number'] = GetTotalReplyNum()
+            self.template_values['site_new_nodes'] = GetSiteRecentNewNodes()
+            self.template_values['site_hottest_nodes'] = GetSiteHottestNode()
         return self._values
 
     @property

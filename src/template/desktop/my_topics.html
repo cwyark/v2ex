@@ -2,7 +2,7 @@
 {% block content %}
     <div id="Content">
         <div class="box">
-            <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a> {{ l10n.chevron|safe }} 我收藏的主题</span></div>
+            <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a> {{ l10n.chevron|safe }} 我收藏的主題</span></div>
             {% if has_topics %}
                 {% for bookmark in bookmarks %}
                 <div class="cell from_{{ bookmark.topic.member.num }}">
@@ -41,7 +41,7 @@
             {% else %}
             <div class="inner">
             <div class="sep20"></div>
-            <div align="center"><h2 class="snow">目前你还没有收藏任何主题</h2></div>
+            <div align="center"><h2 class="snow">目前您還沒有收藏任何主題</h2></div>
             <div class="sep20"></div>
             </div>
             {% endif %}

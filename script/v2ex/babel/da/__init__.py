@@ -232,7 +232,7 @@ def GetIndexCategory(site):
             for node in qx:
                 c = c + '<a href="/go/' + node.name + '" style="font-size: 14px;">' + node.title + '</a>&nbsp; &nbsp; '
             c = c + '</td></tr></table></div>'
-            memcache.set('site_index_category', c, 86400)
+        memcache.set('site_index_category', c, 86400)
     return c
 
 

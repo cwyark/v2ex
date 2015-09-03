@@ -39,7 +39,7 @@ template.register_template_library('v2ex.templatetags.filters')
 class MyNodesHandler(BaseHandler):
     def get(self):
         if self.is_member:
-            self.template_values['page_title'] = self.site.title + u' › 我收藏的节点'
+            self.template_values['page_title'] = self.site.title + u' › 我收藏的節點'
             if self.member.favorited_nodes > 0:
                 self.template_values['has_nodes'] = True
                 q = db.GqlQuery("SELECT * FROM NodeBookmark WHERE member = :1 ORDER BY created DESC LIMIT 0,15", self.member)
@@ -77,7 +77,7 @@ class MyTopicsHandler(BaseHandler):
 class MyFollowingHandler(BaseHandler):
     def get(self):
         if self.is_member:
-            self.template_values['page_title'] = self.site.title + u' › 我的特别关注'
+            self.template_values['page_title'] = self.site.title + u' › 我的特別關注'
             if self.member.favorited_members > 0:
                 self.template_values['has_following'] = True
                 q = db.GqlQuery("SELECT * FROM MemberBookmark WHERE member_num = :1 ORDER BY created DESC", self.member.num)

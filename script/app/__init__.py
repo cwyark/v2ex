@@ -2,7 +2,7 @@ import os
 
 from google.appengine.ext import webapp
 
-from . import main, topic, mail, avatar, template, feed, member, place, misc, notes, backstage, money, my, t, images, favorite, queue, sso, notifications, page, blog, xmpp, api, css
+from . import main, topic, mail, avatar, feed, member, place, misc, notes, backstage, money, my, t, images, favorite, queue, sso, notifications, page, blog, xmpp, api, css
 
 config = {}
 config['webapp2_extras.i18n'] = {
@@ -45,8 +45,6 @@ routes = [
 
     ('/avatar/([0-9]+)/(large|normal|mini)', avatar.AvatarHandler),
     ('/navatar/([0-9]+)/(large|normal|mini)', avatar.NodeAvatarHandler),
-
-    ('/my/nodes', template.MyNodesHandler),
 
     ('/index.xml', feed.FeedHomeHandler),
     ('/read.xml', feed.FeedReadHandler),

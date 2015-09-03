@@ -68,11 +68,6 @@ class HomeHandler(BaseHandler):
             SetSiteLandingPageCache(site_landingpagecache)
 
         self.template_values['site_landingpagecache'] = site_landingpagecache
-        self.template_values['site_new_nodes'] = GetSiteRecentNewNodes()
-        self.template_values['site_total_member_number'] = GetTotalMemberNum()
-        self.template_values['site_total_topic_number'] = GetTotalTopicNum()
-        self.template_values['site_total_reply_number'] = GetTotalReplyNum()
-        self.template_values['site_hottest_nodes'] = GetSiteHottestNode()
         self.template_values['site_index_category'] = GetIndexCategory(self.site)
         self.finalize(template_name='index')
 
