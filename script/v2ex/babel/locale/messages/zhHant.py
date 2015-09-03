@@ -58,7 +58,7 @@ total_replies = '回復總數目'
 recent_visited_nodes = '最近訪問的主題'
 rss_subscribe = '訂閱RSS用以追蹤社群最新動態'
 more_recent_topics = '更多新話題'
-nodes_portal = '主題導航'
+nodes_portal = '分類總覽'
 
 # Messages on /t/
 

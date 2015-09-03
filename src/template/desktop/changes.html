@@ -3,11 +3,17 @@
     <div id="Content">
         <div class="box" id="topics_index">
             <div class="cell">
-                <span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> 全站最新更改记录</span>
+                <span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span>`全站最新更新紀錄</span>
             </div>
             {% include 'common/topics_index.html' %}
             <div class="inner" align="center">
-                {% for p in ps %}{% ifequal p page_current %}<span class="page_current">{{ p }}</span>{% else %}<a href="/changes?p={{ p }}" class="page_normal">{{ p }}</a>{% endifequal %}{% endfor %}
+                {% for p in ps %}
+                    {% ifequal p page_current %}
+                        <span class="page_current">{{ p }}</span>
+                    {% else %}
+                        <a href="/changes?p={{ p }}" class="page_normal">{{ p }}</a>
+                    {% endifequal %}
+                {% endfor %}
             </div>
         </div>
     </div>

@@ -1377,43 +1377,33 @@ class BackstageDeactivateUserHandler(webapp.RequestHandler):
                         return self.redirect('/member/' + one.username)
         return self.redirect('/')               
 
-class BackstageMoveTopicHandler(webapp.RequestHandler):
+class BackstageMoveTopicHandler(BaseHandler):
     def get(self, key):
-        template_values = {}
-        site = GetSite()
-        member = CheckAuth(self)
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
         topic = db.get(db.Key(key))
         can_move = False
         ttl = 0
-        if member:
-            if member.level == 0:
+        if self.is_member:
+            if self.member.level == 0:
                 can_move = True
             if topic:
-                if topic.member_num == member.num:
+                if topic.member_num == self.member.num:
                     now = datetime.datetime.now()
                     ttl = 300 - int((now - topic.created).seconds)
                     if ttl > 0:
                         can_move = True
-                        template_values['ttl'] = ttl
-        template_values['can_move'] = can_move
-        if member:
-            template_values['member'] = member
+                        self.template_values['ttl'] = ttl
+        self.template_values['can_move'] = can_move
+        if self.is_member:
             if can_move:
-                template_values['page_title'] = site.title + u' › 移动主题'
-                template_values['site'] = site
+                self.template_values['page_title'] = self.site.title + u' › 移動文章'
                 if topic is not None:
                     node = topic.node
-                    template_values['topic'] = topic
-                    template_values['node'] = node
-                    template_values['system_version'] = SYSTEM_VERSION
-                    # themes = os.listdir(os.path.join(os.path.dirname(__file__), 'tpl', 'themes'))
+                    self.template_values['topic'] = topic
+                    self.template_values['node'] = node
+                    themes = os.listdir(os.path.join('tpl', 'themes'))
                     themes = None
-                    template_values['themes'] = themes
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_move_topic.html')
-                    output = template.render(path, template_values)
-                    self.response.out.write(output)
+                    self.template_values['themes'] = themes
+                    self.finalize(template_name='backstage_move_topic')
                 else:
                     self.redirect('/')
             else:
@@ -1422,36 +1412,28 @@ class BackstageMoveTopicHandler(webapp.RequestHandler):
             self.redirect('/signin')
     
     def post(self, key):
-        template_values = {}
-        site = GetSite()
-        member = CheckAuth(self)
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
         topic = db.get(db.Key(key))
         can_move = False
         ttl = 0
-        if member:
-            if member.level == 0:
+        if self.is_member:
+            if self.member.level == 0:
                 can_move = True
             if topic:
-                if topic.member_num == member.num:
+                if topic.member_num == self.member.num:
                     now = datetime.datetime.now()
                     ttl = 300 - int((now - topic.created).seconds)
                     if ttl > 0:
                         can_move = True
-                        template_values['ttl'] = ttl
-        template_values['can_move'] = can_move
-        if member:
-            template_values['member'] = member
+                        self.template_values['ttl'] = ttl
+        self.template_values['can_move'] = can_move
+        if self.is_member:
             if can_move:
-                template_values['page_title'] = site.title + u' › 移动主题'
-                template_values['site'] = site
+                self.template_values['page_title'] = self.site.title + u' › 移動文章'
                 if topic is not None:
                     errors = 0
                     node = topic.node
-                    template_values['topic'] = topic
-                    template_values['node'] = node
-                    template_values['system_version'] = SYSTEM_VERSION
+                    self.template_values['topic'] = topic
+                    self.template_values['node'] = node
                     destination = self.request.get('destination')
                     if destination is not None:
                         node_new = GetKindByName('Node', destination)
@@ -1480,11 +1462,9 @@ class BackstageMoveTopicHandler(webapp.RequestHandler):
                     else:
                         errors = errors + 1
                     if errors > 0:
-                        themes = os.listdir(os.path.join(os.path.dirname(__file__), 'tpl', 'themes'))
+                        themes = os.listdir(os.path.join('tpl', 'themes'))
                         template_values['themes'] = themes
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'backstage_move_topic.html')
-                        output = template.render(path, template_values)
-                        self.response.out.write(output)
+                        self.finalize(template_name='backstage_move_topic')
                 else:
                     self.redirect('/')
             else:

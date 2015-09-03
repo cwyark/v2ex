@@ -123,7 +123,7 @@ class MemberHandler(BaseHandler):
                     self.template_values['one_is_blocked'] = True
                 else:
                     self.template_values['one_is_blocked'] = False
-                if member.hasFavorited(one):
+                if self.member.hasFavorited(one):
                     self.template_values['favorited'] = True
                 else:
                     self.template_values['favorited'] = False
@@ -227,22 +227,13 @@ class SettingsHandler(BaseHandler):
         
     def post(self):
         self.session = Session()
-        site = GetSite()
-        user_agent = detect(self.request)
-        template_values = {}
-        template_values['site'] = site
-        template_values['system_version'] = SYSTEM_VERSION
         errors = 0
-        member = CheckAuth(self)
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
-        template_values['page_title'] = site.title + u' › ' + l10n.settings.decode('utf-8')
-        if (member):
-            template_values['member'] = member
-            template_values['member_username'] = member.username
-            template_values['member_email'] = member.email
-            template_values['member_website'] = member.website
-            template_values['member_twitter'] = member.twitter
+        self.template_values['page_title'] = self.site.title + u' › ' + self.l10n.settings.decode('utf-8')
+        if (self.is_member):
+            self.template_values['member_username'] = self.member.username
+            self.template_values['member_email'] = self.member.email
+            self.template_values['member_website'] = self.member.website
+            self.template_values['member_twitter'] = self.member.twitter
             # Verification: password
             password_error = 0
             password_update = False
@@ -264,13 +255,13 @@ class SettingsHandler(BaseHandler):
                         password_current_sha1 = hashlib.sha1(password_current).hexdigest()
                         if (password_current_sha1 != member.password):
                             password_error = 3
-            template_values['password_error'] = password_error
-            template_values['password_error_message'] = password_error_messages[password_error]
+            self.template_values['password_error'] = password_error
+            self.template_values['password_error_message'] = password_error_messages[password_error]
             if ((password_error == 0) and (password_update == True)):
-                member.password = hashlib.sha1(password_new).hexdigest()
-                member.auth = hashlib.sha1(str(member.num) + ':' + member.password).hexdigest()
-                member.put()
-                self.response.headers['Set-Cookie'] = str('auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
+                self.member.password = hashlib.sha1(password_new).hexdigest()
+                self.member.auth = hashlib.sha1(str(self.member.num) + ':' + self.member.password).hexdigest()
+                self.member.put()
+                self.response.headers['Set-Cookie'] = str('auth=' + self.member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
                 self.redirect('/settings')
             # Verification: email
             member_email_error = 0
@@ -290,16 +281,16 @@ class SettingsHandler(BaseHandler):
                 else:
                     p = re.compile(r"(?:^|\s)[-a-z0-9_.+]+@(?:[-a-z0-9]+\.)+[a-z]{2,6}(?:\s|$)", re.IGNORECASE)
                     if (p.search(member_email)):
-                        q = db.GqlQuery('SELECT * FROM Member WHERE email = :1 AND num != :2', member_email.lower(), member.num)
+                        q = db.GqlQuery('SELECT * FROM Member WHERE email = :1 AND num != :2', member_email.lower(), self.member.num)
                         if (q.count() > 0):
                             errors = errors + 1
                             member_email_error = 4
                     else:
                         errors = errors + 1
                         member_email_error = 3
-            template_values['member_email'] = member_email
-            template_values['member_email_error'] = member_email_error
-            template_values['member_email_error_message'] = member_email_error_messages[member_email_error]
+            self.template_values['member_email'] = member_email
+            self.template_values['member_email_error'] = member_email_error
+            self.template_values['member_email_error_message'] = member_email_error_messages[member_email_error]
             # Verification: website
             member_website_error = 0
             member_website_error_messages = ['',
@@ -320,9 +311,9 @@ class SettingsHandler(BaseHandler):
                     else:
                         errors = errors + 1
                         member_website_error = 2
-            template_values['member_website'] = member_website
-            template_values['member_website_error'] = member_website_error
-            template_values['member_website_error_message'] = member_website_error_messages[member_website_error]
+            self.template_values['member_website'] = member_website
+            self.template_values['member_website_error'] = member_website_error
+            self.template_values['member_website_error_message'] = member_website_error_messages[member_website_error]
             # Verification: Twitter
             member_twitter_error = 0
             member_twitter_error_messages = ['',
@@ -343,9 +334,9 @@ class SettingsHandler(BaseHandler):
                     else:
                         errors = errors + 1
                         member_twitter_error = 2
-            template_values['member_twitter'] = member_twitter
-            template_values['member_twitter_error'] = member_twitter_error
-            template_values['member_twitter_error_message'] = member_twitter_error_messages[member_twitter_error]
+            self.template_values['member_twitter'] = member_twitter
+            self.template_values['member_twitter_error'] = member_twitter_error
+            self.template_values['member_twitter_error_message'] = member_twitter_error_messages[member_twitter_error]
             # Verification: psn
             member_psn_error = 0
             member_psn_error_messages = ['',
@@ -366,9 +357,9 @@ class SettingsHandler(BaseHandler):
                     else:
                         errors = errors + 1
                         member_psn_error = 2
-            template_values['member_psn'] = member_psn
-            template_values['member_psn_error'] = member_psn_error
-            template_values['member_psn_error_message'] = member_psn_error_messages[member_psn_error]
+            self.template_values['member_psn'] = member_psn
+            self.template_values['member_psn_error'] = member_psn_error
+            self.template_values['member_psn_error_message'] = member_psn_error_messages[member_psn_error]
             # Verification: my_home
             member_my_home_error = 0
             member_my_home_error_messages = ['',
@@ -389,9 +380,9 @@ class SettingsHandler(BaseHandler):
                         if member_my_home.startswith('/') is not True:
                             member_my_home_error = 3
                             errors = errors + 1
-            template_values['member_my_home'] = member_my_home
-            template_values['member_my_home_error'] = member_my_home_error
-            template_values['member_my_home_error_message'] = member_my_home_error_messages[member_my_home_error]
+            self.template_values['member_my_home'] = member_my_home
+            self.template_values['member_my_home_error'] = member_my_home_error
+            self.template_values['member_my_home_error_message'] = member_my_home_error_messages[member_my_home_error]
             # Verification: btc
             member_btc_error = 0
             member_btc_error_messages = ['',
@@ -412,9 +403,9 @@ class SettingsHandler(BaseHandler):
                     else:
                         errors = errors + 1
                         member_btc_error = 2
-            template_values['member_btc'] = member_btc
-            template_values['member_btc_error'] = member_btc_error
-            template_values['member_btc_error_message'] = member_btc_error_messages[member_btc_error]
+            self.template_values['member_btc'] = member_btc
+            self.template_values['member_btc_error'] = member_btc_error
+            self.template_values['member_btc_error_message'] = member_btc_error_messages[member_btc_error]
             # Verification: github
             member_github_error = 0
             member_github_error_messages = ['',
@@ -435,9 +426,9 @@ class SettingsHandler(BaseHandler):
                     else:
                         errors = errors + 1
                         member_github_error = 2
-            template_values['member_github'] = member_github
-            template_values['member_github_error'] = member_github_error
-            template_values['member_github_error_message'] = member_github_error_messages[member_github_error]
+            self.template_values['member_github'] = member_github
+            self.template_values['member_github_error'] = member_github_error
+            self.template_values['member_github_error_message'] = member_github_error_messages[member_github_error]
             # Verification: location
             member_location_error = 0
             member_location_error_messages = ['',
@@ -450,9 +441,9 @@ class SettingsHandler(BaseHandler):
                 if (len(member_location) > 40):
                     errors = errors + 1
                     member_location_error = 1
-            template_values['member_location'] = member_location
-            template_values['member_location_error'] = member_location_error
-            template_values['member_location_error_message'] = member_location_error_messages[member_location_error]
+            self.template_values['member_location'] = member_location
+            self.template_values['member_location_error'] = member_location_error
+            self.template_values['member_location_error_message'] = member_location_error_messages[member_location_error]
             # Verification: tagline
             member_tagline_error = 0
             member_tagline_error_messages = ['',
@@ -465,9 +456,9 @@ class SettingsHandler(BaseHandler):
                 if (len(member_tagline) > 70):
                     errors = errors + 1
                     member_tagline_error = 1
-            template_values['member_tagline'] = member_tagline
-            template_values['member_tagline_error'] = member_tagline_error
-            template_values['member_tagline_error_message'] = member_tagline_error_messages[member_tagline_error]
+            self.template_values['member_tagline'] = member_tagline
+            self.template_values['member_tagline_error'] = member_tagline_error
+            self.template_values['member_tagline_error_message'] = member_tagline_error_messages[member_tagline_error]
             # Verification: bio
             member_bio_error = 0
             member_bio_error_messages = ['',
@@ -480,9 +471,9 @@ class SettingsHandler(BaseHandler):
                 if (len(member_bio) > 2000):
                     errors = errors + 1
                     member_bio_error = 1
-            template_values['member_bio'] = member_bio
-            template_values['member_bio_error'] = member_bio_error
-            template_values['member_bio_error_message'] = member_bio_error_messages[member_bio_error]
+            self.template_values['member_bio'] = member_bio
+            self.template_values['member_bio_error'] = member_bio_error
+            self.template_values['member_bio_error_message'] = member_bio_error_messages[member_bio_error]
             # Verification: show_home_top and show_quick_post
             try:
                 member_show_home_top = int(self.request.get('show_home_top'))
@@ -500,28 +491,28 @@ class SettingsHandler(BaseHandler):
             member_l10n = self.request.get('l10n').strip()
             supported = GetSupportedLanguages()
             if member_l10n == '':
-                member_l10n = site.l10n
+                member_l10n = self.site.l10n
             else:
                 if member_l10n not in supported:
-                    member_l10n = site.l10n
+                    member_l10n = self.site.l10n
             s = GetLanguageSelect(member_l10n)
-            template_values['s'] = s
-            template_values['member_l10n'] = member_l10n
+            self.template_values['s'] = s
+            self.template_values['member_l10n'] = member_l10n
             # Verification: twitter_sync
-            if member.twitter_oauth == 1:
+            if self.member.twitter_oauth == 1:
                 member_twitter_sync = self.request.get('twitter_sync')
                 if member_twitter_sync == 'on':
                     member_twitter_sync = 1
                 else:
                     member_twitter_sync = 0
-                template_values['member_twitter_sync'] = member_twitter_sync
+                self.template_values['member_twitter_sync'] = member_twitter_sync
             # Verification: use_my_css
             member_use_my_css = self.request.get('use_my_css')
             if member_use_my_css == 'on':
                 member_use_my_css = 1
             else:
                 member_use_my_css = 0
-            template_values['member_use_my_css'] = member_use_my_css
+            self.template_values['member_use_my_css'] = member_use_my_css
             # Verification: my_css
             member_my_css_error = 0
             member_my_css_error_messages = ['',
@@ -534,42 +525,40 @@ class SettingsHandler(BaseHandler):
                 if (len(member_my_css) > 2000):
                     errors = errors + 1
                     member_my_css_error = 1
-            template_values['member_my_css'] = member_my_css
-            template_values['member_my_css_error'] = member_my_css_error
-            template_values['member_my_css_error_message'] = member_my_css_error_messages[member_my_css_error]
-            template_values['errors'] = errors
+            self.template_values['member_my_css'] = member_my_css
+            self.template_values['member_my_css_error'] = member_my_css_error
+            self.template_values['member_my_css_error_message'] = member_my_css_error_messages[member_my_css_error]
+            self.template_values['errors'] = errors
             if (errors == 0):
-                member.email = member_email.lower()
-                member.website = member_website
-                member.twitter = member_twitter
-                member.psn = member_psn
-                member.btc = member_btc
-                member.github = member_github
-                member.location = member_location
-                member.tagline = member_tagline
-                if member.twitter_oauth == 1:
-                    member.twitter_sync = member_twitter_sync
-                member.use_my_css = member_use_my_css
-                member.my_css = member_my_css
+                self.member.email = member_email.lower()
+                self.member.website = member_website
+                self.member.twitter = member_twitter
+                self.member.psn = member_psn
+                self.member.btc = member_btc
+                self.member.github = member_github
+                self.member.location = member_location
+                self.member.tagline = member_tagline
+                if self.member.twitter_oauth == 1:
+                    self.member.twitter_sync = member_twitter_sync
+                self.member.use_my_css = member_use_my_css
+                self.member.my_css = member_my_css
                 if member_my_home_error == 0 and len(member_my_home) > 0:
-                    member.my_home = member_my_home
+                    self.member.my_home = member_my_home
                 else:
                     if member_my_home_error == 0:
-                        member.my_home = None
-                member.bio = member_bio
-                member.show_home_top = member_show_home_top
-                member.show_quick_post = member_show_quick_post
-                member.l10n = member_l10n
-                member.put()
-                memcache.delete('Member::' + str(member.username))
-                memcache.delete('Member::' + str(member.username_lower))
-                memcache.set('Member_' + str(member.num), member, 86400)
+                        self.member.my_home = None
+                self.member.bio = member_bio
+                self.member.show_home_top = member_show_home_top
+                self.member.show_quick_post = member_show_quick_post
+                self.member.l10n = member_l10n
+                self.member.put()
+                memcache.delete('Member::' + str(self.member.username))
+                memcache.delete('Member::' + str(self.member.username_lower))
+                memcache.set('Member_' + str(self.member.num), self.member, 86400)
                 self.session['message'] = '个人设置成功更新'
                 self.redirect('/settings')
             else:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'member_settings.html')
-                output = template.render(path, template_values)
-                self.response.out.write(output)
+                self.finalize(template_name='member_settings')
         else:
             self.redirect('/signin')
 

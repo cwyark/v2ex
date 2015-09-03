@@ -401,7 +401,7 @@ class TopicHandler(BaseHandler):
                 memcache.delete('Topic_' + str(topic.num))
                 topic.put()
         else:
-            self.template_values['page_title'] = site.title + u' › 主题未找到'
+            self.template_values['page_title'] = self.site.title + u' › 主题未找到'
         self.template_values['topic'] = topic
         self.template_values['can_edit'] = can_edit
         self.template_values['can_move'] = can_move
@@ -456,7 +456,7 @@ class TopicHandler(BaseHandler):
                         replies = GetUnpacked(replies)
                     self.template_values['replies'] = replies
                     self.template_values['replies_count'] = replies.count()
-                    r = template.render(path, template_values)
+                    r = template.render(path, self.template_values)
                     memcache.set(r_tag, r, 86400)
             else:    
                 if reply_reversed:
@@ -470,9 +470,9 @@ class TopicHandler(BaseHandler):
                             memcache.set('topic_' + str(topic.num) + '_replies_desc_compressed_' + str(page_current), GetPacked(q4), 86400)
                         else:
                             replies = GetUnpacked(replies)
-                        template_values['replies'] = replies
-                        template_values['replies_count'] = replies.count()
-                        r = template.render(path, template_values)
+                        self.template_values['replies'] = replies
+                        self.template_values['replies_count'] = replies.count()
+                        r = template.render(path, self.template_values)
                         memcache.set(r_tag, r, 86400)
                 else:
                     r_tag = 'topic_' + str(topic.num) + '_replies_asc_rendered_desktop_' + str(page_current)
@@ -755,18 +755,10 @@ class TopicHandler(BaseHandler):
             self.redirect('/signin')
 
 
-class TopicEditHandler(webapp.RequestHandler):
+class TopicEditHandler(BaseHandler):
     def get(self, topic_num):
-        site = GetSite()
-        user_agent = detect(self.request)
-        template_values = {}
-        template_values['site'] = site
-        template_values['system_version'] = SYSTEM_VERSION
         errors = 0
-        template_values['errors'] = errors
-        member = CheckAuth(self)
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
+        self.template_values['errors'] = errors
         hottest = memcache.get('site_hottest_nodes')
         if hottest is None:
             qhot = db.GqlQuery("SELECT * FROM Node ORDER BY topics DESC LIMIT 25")
@@ -774,37 +766,36 @@ class TopicEditHandler(webapp.RequestHandler):
             for node in qhot:
                 hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
             memcache.set('site_hottest_nodes', hottest, 86400)
-        template_values['site_hottest_nodes'] = hottest
+        self.template_values['site_hottest_nodes'] = hottest
         topic = False
         topic = GetKindByNum('Topic', int(topic_num))
         if topic:
-            template_values['topic'] = topic
+            self.template_values['topic'] = topic
         can_edit = False
         ttl = 0
-        if member:
-            if member.level == 0:
+        if self.is_member:
+            if self.member.level == 0:
                 can_edit = True
-            if topic.member_num == member.num:
+            if topic.member_num == self.member.num:
                 now = datetime.datetime.now()
                 if (now - topic.created).seconds < 300:
                     can_edit = True
                     ttl = 300 - (now - topic.created).seconds
-                    template_values['ttl'] = ttl
-        if (member):
+                    self.template_values['ttl'] = ttl
+        if (self.is_member):
             if (can_edit):
-                template_values['member'] = member
                 if (topic):
-                    template_values['page_title'] = site.title + u' › ' + topic.title + u' › 编辑'
-                    template_values['topic_title'] = topic.title
-                    template_values['topic_content'] = topic.content
+                    self.template_values['page_title'] = self.site.title + u' › ' + topic.title + u' › `編輯'
+                    self.template_values['topic_title'] = topic.title
+                    self.template_values['topic_content'] = topic.content
                     node = False
                     section = False
                     node = GetKindByNum('Node', topic.node_num)
                     if (node):
                         section = GetKindByNum('Section', node.section_num)
-                    template_values['node'] = node
-                    template_values['section'] = section
-                    if site.use_topic_types:
+                    self.template_values['node'] = node
+                    self.template_values['section'] = section
+                    if self.site.use_topic_types:
                         types = site.topic_types.split("\n")
                         options = '<option value="0">&nbsp;&nbsp;&nbsp;&nbsp;</option>'
                         i = 0
@@ -816,61 +807,50 @@ class TopicEditHandler(webapp.RequestHandler):
                             else:
                                 options = options + '<option value="' + str(i) + '">' + detail[0] + '</option>'
                         tt = '<div class="sep5"></div><table cellpadding="5" cellspacing="0" border="0" width="100%"><tr><td width="60" align="right">Topic Type</td><td width="auto" align="left"><select name="type">' + options + '</select></td></tr></table>'
-                        template_values['tt'] = tt
+                        self.template_values['tt'] = tt
                     else:
-                        template_values['tt'] = ''
+                        self.template_values['tt'] = ''
                     q4 = db.GqlQuery("SELECT * FROM Reply WHERE topic_num = :1 ORDER BY created ASC", topic.num)
-                    template_values['replies'] = q4
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'edit_topic.html')
+                    self.template_values['replies'] = q4
+                    self.finalize(template_name='edit_topic')
                 else:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'topic_not_found.html')
-                output = template.render(path, template_values)
-                self.response.out.write(output)
+                    self.finalize(template_name='topic_not_found')
             else:
                 self.redirect('/t/' + str(topic_num))
         else:
             self.redirect('/signin')
     
     def post(self, topic_num):
-        site = GetSite()
-        template_values = {}
-        template_values['site'] = site
-        user_agent = detect(self.request)
-        template_values['system_version'] = SYSTEM_VERSION
-        member = CheckAuth(self)
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
         topic = False
         topic = GetKindByNum('Topic', int(topic_num))
         if (topic):
-            template_values['topic'] = topic
+            self.template_values['topic'] = topic
         can_edit = False
         ttl = 0
-        if member:
-            if member.level == 0:
+        if self.is_member:
+            if self.member.level == 0:
                 can_edit = True
-            if topic.member_num == member.num:
+            if topic.member_num == self.member.num:
                 now = datetime.datetime.now()
                 if (now - topic.created).seconds < 300:
                     can_edit = True
                     ttl = 300 - (now - topic.created).seconds
-                    template_values['ttl'] = ttl
-        if member:
+                    self.template_values['ttl'] = ttl
+        if self.is_member:
             if can_edit:
-                template_values['member'] = member
                 if (topic):
-                    template_values['page_title'] = site.title + u' › ' + topic.title + u' › 编辑'
+                    self.template_values['page_title'] = self.site.title + u' › ' + topic.title + u' › 編輯'
                     q2 = db.GqlQuery("SELECT * FROM Node WHERE num = :1", topic.node_num)
                     node = False
                     if (q2.count() == 1):
                         node = q2[0]
-                    template_values['node'] = node
+                    self.template_values['node'] = node
                     section = False
                     if node:
                         q3 = db.GqlQuery("SELECT * FROM Section WHERE num = :1", node.section_num)
                         if (q3.count() == 1):
                             section = q3[0]
-                    template_values['section'] = section
+                    self.template_values['section'] = section
                     errors = 0
                     # Verification: title
                     topic_title_error = 0
@@ -886,9 +866,9 @@ class TopicEditHandler(webapp.RequestHandler):
                         if (len(topic_title) > 120):
                             errors = errors + 1
                             topic_title_error = 2
-                    template_values['topic_title'] = topic_title
-                    template_values['topic_title_error'] = topic_title_error
-                    template_values['topic_title_error_message'] = topic_title_error_messages[topic_title_error]
+                    self.template_values['topic_title'] = topic_title
+                    self.template_values['topic_title_error'] = topic_title_error
+                    self.template_values['topic_title_error_message'] = topic_title_error_messages[topic_title_error]
                     # Verification: content
                     topic_content_error = 0
                     topic_content_error_messages = ['',
@@ -899,12 +879,12 @@ class TopicEditHandler(webapp.RequestHandler):
                     if (topic_content_length > 200000):
                         errors = errors + 1
                         topic_content_error = 1
-                    template_values['topic_content'] = topic_content
-                    template_values['topic_content_error'] = topic_content_error
-                    template_values['topic_content_error_message'] = topic_content_error_messages[topic_content_error]
+                    self.template_values['topic_content'] = topic_content
+                    self.template_values['topic_content_error'] = topic_content_error
+                    self.template_values['topic_content_error_message'] = topic_content_error_messages[topic_content_error]
                     # Verification: type
-                    if site.use_topic_types:
-                        types = site.topic_types.split("\n")
+                    if self.site.use_topic_types:
+                        types = self.site.topic_types.split("\n")
                         if len(types) > 0:
                             topic_type = self.request.get('type').strip()
                             try:
@@ -931,10 +911,10 @@ class TopicEditHandler(webapp.RequestHandler):
                             else:
                                 options = options + '<option value="' + str(i) + '">' + detail[0] + '</option>'
                         tt = '<div class="sep5"></div><table cellpadding="5" cellspacing="0" border="0" width="100%"><tr><td width="60" align="right">Topic Type</td><td width="auto" align="left"><select name="type">' + options + '</select></td></tr></table>'
-                        template_values['tt'] = tt
+                        self.template_values['tt'] = tt
                     else:
-                        template_values['tt'] = ''
-                    template_values['errors'] = errors
+                        self.template_values['tt'] = ''
+                    self.template_values['errors'] = errors
                     if (errors == 0):
                         topic.title = topic_title
                         topic.content = topic_content
@@ -943,12 +923,12 @@ class TopicEditHandler(webapp.RequestHandler):
                             topic.content_length = topic_content_length
                         else:
                             topic.has_content = False
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'topic_content.html')
+                        path = os.path.join('tpl', 'portion', 'topic_content.html')
                         output = template.render(path, {'topic' : topic})
                         topic.content_rendered = output
-                        if member.level != 0:
+                        if self.member.level != 0:
                             topic.last_touched = datetime.datetime.now()
-                        if site.use_topic_types:
+                        if self.site.use_topic_types:
                             if topic_type > 0:
                                 topic.type = topic_type_label
                                 topic.type_color = topic_type_color
@@ -966,13 +946,9 @@ class TopicEditHandler(webapp.RequestHandler):
                                 pass
                         self.redirect('/t/' + str(topic.num) + '#reply' + str(topic.replies))
                     else:
-                        path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'edit_topic.html')
-                        output = template.render(path, template_values)
-                        self.response.out.write(output)
+                        self.finalize(template_name='edit_topic')
                 else:
-                    path = os.path.join(os.path.dirname(__file__), 'tpl', 'mobile', 'topic_not_found.html')
-                    output = template.render(path, template_values)
-                    self.response.out.write(output)
+                    self.finalize(template_name='topic_not_fount')
             else:
                 self.redirect('/t/' + str(topic_num))
         else:
