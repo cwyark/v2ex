@@ -19,7 +19,6 @@ from google.appengine.api import urlfetch
 from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 from google.appengine.ext.webapp import util
-from google.appengine.ext.webapp import template
 
 from v2ex.babel import Member
 from v2ex.babel import Counter
@@ -46,8 +45,6 @@ from twitter.oauth import OAuthToken
 
 from config import twitter_consumer_key as CONSUMER_KEY
 from config import twitter_consumer_secret as CONSUMER_SECRET
-
-template.register_template_library('v2ex.templatetags.filters')
 
 import config
 
@@ -258,8 +255,8 @@ class NewTopicHandler(BaseHandler):
                         topic.content_length = topic_content_length
                     else:
                         topic.has_content = False
-                    path = os.path.join('tpl', 'cache', 'topic_content.html')
-                    output = template.render(path, {'topic' : topic})
+                    path = os.path.join('cache', 'topic_content.html')
+                    output = self.jinja2.render_template(path, topic=topic)
                     topic.content_rendered = output
                     topic.node = node
                     topic.node_num = node.num
@@ -394,8 +391,8 @@ class TopicHandler(BaseHandler):
             self.template_values['page_title'] = self.site.title + u' › ' + topic.title
             self.template_values['canonical'] = 'http://' + str(self.site.domain) + '/t/' + str(topic.num)
             if topic.content_rendered is None:
-                path = os.path.join('tpl', 'cache', 'topic_content.html')
-                output = template.render(path, {'topic' : topic})
+                path = os.path.join('cache', 'topic_content.html')
+                output = self.jinja2.render_template(path, topic = topic)
                 topic = db.get(topic.key())
                 topic.content_rendered = output
                 memcache.delete('Topic_' + str(topic.num))
@@ -442,7 +439,7 @@ class TopicHandler(BaseHandler):
             if len(ps) > 1:
                 self.template_values['ps'] = ps
             replies = False
-            path = os.path.join('tpl', 'cache', 'topic_replies.html')
+            path = os.path.join('cache', 'topic_replies.html')
             if filter_mode:
                 r_tag = 'topic_' + str(topic.num) + '_replies_filtered_rendered_desktop_' + str(page_current)
                 r = memcache.get(r_tag)
@@ -456,7 +453,7 @@ class TopicHandler(BaseHandler):
                         replies = GetUnpacked(replies)
                     self.template_values['replies'] = replies
                     self.template_values['replies_count'] = replies.count()
-                    r = template.render(path, self.template_values)
+                    r = self.jinja2.render_template(path, **self.template_values)
                     memcache.set(r_tag, r, 86400)
             else:    
                 if reply_reversed:
@@ -472,7 +469,7 @@ class TopicHandler(BaseHandler):
                             replies = GetUnpacked(replies)
                         self.template_values['replies'] = replies
                         self.template_values['replies_count'] = replies.count()
-                        r = template.render(path, self.template_values)
+                        r = self.jinja2.render_template(path, **self.template_values)
                         memcache.set(r_tag, r, 86400)
                 else:
                     r_tag = 'topic_' + str(topic.num) + '_replies_asc_rendered_desktop_' + str(page_current)
@@ -487,7 +484,7 @@ class TopicHandler(BaseHandler):
                             replies = GetUnpacked(replies)
                         self.template_values['replies'] = replies
                         self.template_values['replies_count'] = replies.count()
-                        r = template.render(path, self.template_values)
+                        r = self.jinja2.render_template(path, **self.template_values)
                         memcache.set(r_tag, r, 86400)
             self.template_values['r'] = r
             if topic and self.is_member:
@@ -548,24 +545,13 @@ class TopicHandler(BaseHandler):
         if can_continue is False:
             return self.redirect('http://' + str(site.domain) + '/')
         ### END: CAN CONTINUE
-        user_agent = detect(self.request)
-        template_values = {}
-        template_values['site'] = site
-        template_values['system_version'] = SYSTEM_VERSION
-        member = CheckAuth(self)
-        template_values['member'] = member
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
         topic_num_str = str(topic_num)
         if len(topic_num_str) > 8:
-            path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic_not_found.html')
-            output = template.render(path, template_values)
-            self.response.out.write(output)
-            return
-        if (member):
+            return self.finalize(template_name='topic_not_found')
+        if (self.is_member):
             topic = False
             topic = GetKindByNum('Topic', int(topic_num))
-            template_values['topic'] = topic
+            self.template_values['topic'] = topic
             errors = 0
             # Verification: content
             reply_content_error = 0
@@ -581,10 +567,10 @@ class TopicHandler(BaseHandler):
                 if (len(reply_content) > 200000):
                     errors = errors + 1
                     reply_content_error = 2
-            template_values['reply_content'] = reply_content
-            template_values['reply_content_error'] = reply_content_error
-            template_values['reply_content_error_message'] = reply_content_error_messages[reply_content_error]
-            template_values['errors'] = errors
+            self.template_values['reply_content'] = reply_content
+            self.template_values['reply_content_error'] = reply_content_error
+            self.template_values['reply_content_error_message'] = reply_content_error_messages[reply_content_error]
+            self.template_values['errors'] = errors
             if (topic and (errors == 0)):
                 reply = Reply(parent=topic)
                 q = db.GqlQuery('SELECT * FROM Counter WHERE name = :1', 'reply.max')
@@ -611,19 +597,19 @@ class TopicHandler(BaseHandler):
                     node = GetKindByNum('Node', topic.node_num)
                     if (node):
                         section = GetKindByNum('Section', node.section_num)
-                    template_values['node'] = node
-                    template_values['section'] = section
+                    self.template_values['node'] = node
+                    self.template_values['section'] = section
                 reply.num = counter.value
                 reply.content = reply_content
                 reply.topic = topic
                 reply.topic_num = topic.num
-                reply.member = member
-                reply.member_num = member.num
-                reply.created_by = member.username
+                reply.member = self.member
+                reply.member_num = self.member.num
+                reply.created_by = self.member.username
                 topic.replies = topic.replies + 1
                 topic.node_name = node.name
                 topic.node_title = node.title
-                topic.last_reply_by = member.username
+                topic.last_reply_by = self.member.username
                 topic.last_touched = datetime.datetime.now()
                 ua = self.request.headers['User-Agent']
                 if (re.findall('Mozilla\/5.0 \(iPhone', ua)):
@@ -672,7 +658,7 @@ class TopicHandler(BaseHandler):
                     notification.payload = reply.content
                     notification.label1 = topic.title
                     notification.link1 = '/t/' + str(topic.num) + '#reply' + str(topic.replies)
-                    notification.member = member
+                    notification.member = self.member
                     notification.for_member_num = topic.member_num
                     
                     keys.append(str(topic.member.key()))
@@ -706,7 +692,7 @@ class TopicHandler(BaseHandler):
                 memcache.delete('topic_' + str(topic.num) + '_replies_asc_rendered_ios_' + str(pages))
                 memcache.delete('topic_' + str(topic.num) + '_replies_filtered_rendered_ios_' + str(pages))
                 
-                memcache.delete('member::' + str(member.num) + '::participated')
+                memcache.delete('member::' + str(self.member.num) + '::participated')
                 memcache.delete('q_latest_16')
                 memcache.delete('Site::LandingPageCache')
                 if topic.replies < 50:
@@ -716,7 +702,7 @@ class TopicHandler(BaseHandler):
                         except:
                             pass
                 # Twitter Sync
-                if member.twitter_oauth == 1 and member.twitter_sync == 1:
+                if self.member.twitter_oauth == 1 and self.member.twitter_sync == 1:
                     access_token = OAuthToken.from_string(member.twitter_oauth_string)
                     twitter = OAuthApi(CONSUMER_KEY, CONSUMER_SECRET, access_token)
                     if topic.replies > page_size:
@@ -746,11 +732,9 @@ class TopicHandler(BaseHandler):
                 node = GetKindByNum('Node', topic.node_num)
                 if (node):
                     section = GetKindByNum('Section', node.section_num)
-                template_values['node'] = node
-                template_values['section'] = section
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'desktop', 'topic.html')
-                output = template.render(path, template_values)
-                self.response.out.write(output)
+                self.template_values['node'] = node
+                self.template_values['section'] = section
+                self.finalize(template_name='topic')
         else:
             self.redirect('/signin')
 
@@ -796,7 +780,7 @@ class TopicEditHandler(BaseHandler):
                     self.template_values['node'] = node
                     self.template_values['section'] = section
                     if self.site.use_topic_types:
-                        types = site.topic_types.split("\n")
+                        types = self.site.topic_types.split("\n")
                         options = '<option value="0">&nbsp;&nbsp;&nbsp;&nbsp;</option>'
                         i = 0
                         for a_type in types:
@@ -923,8 +907,8 @@ class TopicEditHandler(BaseHandler):
                             topic.content_length = topic_content_length
                         else:
                             topic.has_content = False
-                        path = os.path.join('tpl', 'cache', 'topic_content.html')
-                        output = template.render(path, {'topic' : topic})
+                        path = os.path.join('cache', 'topic_content.html')
+                        output = self.jinja2.render_template(path, topic = topic)
                         topic.content_rendered = output
                         if self.member.level != 0:
                             topic.last_touched = datetime.datetime.now()

@@ -45,9 +45,9 @@
                         via {{ topic.source }}
                     {% endif %}
                     at {{ topic.created|timesince }} ago
-                    {% ifnotequal topic.hits 0 %}
+                    {% if not topic.hits == 0 %}
                     , {{ topic.hits }} hits
-                    {% endifnotequal %}
+                    {% endif %}
                     {% if member.level == 0 %}
                     &nbsp; <a href="#;" onclick="if (confirm('{{ l10n.sure_to_delete }} #{{ topic.num }} - {{ topic.title|escape }}')) { location = '/delete/topic/{{ topic.num }}?t={{ member.created_ts }}'; }" class="op">DELETE</a> <a href="/backstage/tidy/topic/{{ topic.num }}" class="op">TIDY</a>
                     {% endif %}
@@ -120,7 +120,7 @@
                         <a href="/t/{{ topic.num }}?f=1">{{ l10n.just_topic_creator }}</a>
                     {% endif %}
                 </div>
-                <span class="fade">{{ topic.replies }} {{ l10n.replies }} &nbsp;<span class="snow">|</span>&nbsp; {{ l10n.till }} {{ topic.last_touched|timezone:8|date:"Y-n-j G:i:s A" }}</span>
+                <span class="fade">{{ topic.replies }} {{ l10n.replies }} &nbsp;<span class="snow">|</span>&nbsp; {{ l10n.till }} {{ topic.last_touched|timezone(8)|date("Y-n-j G:i:s A") }}</span>
             </div>
             <script type="text/javascript">
                 is_admin = {% if is_admin %}{{ is_admin }}{% else %}false{% endif %};

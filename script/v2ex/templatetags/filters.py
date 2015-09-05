@@ -2,15 +2,16 @@ import re
 import string
 import os
 import logging
+from datetime import datetime
 from v2ex.babel.ext import bleach
 
 from django import template
+from django.utils import formats
 import django
 
 from datetime import timedelta
 import urllib, hashlib
-
-os.environ['DJANGO_SETTINGS_MODULE'] = 'app.config'
+from app import config
 
 register = template.Library()
 
@@ -37,11 +38,9 @@ def timezone(value, offset):
     if offset > 12:
         offset = 12 - offset
     return value + timedelta(hours=offset)
-register.filter(timezone)
 
 def autolink2(text):
     return bleach.linkify(text)
-register.filter(autolink2)
 
 def autolink(text, trim_url_limit=None, nofollow=False):
     """
@@ -73,7 +72,6 @@ def autolink(text, trim_url_limit=None, nofollow=False):
             if lead + middle + trail != word:
                 words[i] = lead + middle + trail
     return ''.join(words)
-register.filter(autolink)
 
 # auto convert img.ly/abcd links to image tags
 def imgly(value):
@@ -86,7 +84,6 @@ def imgly(value):
         return value
     else:
         return value
-register.filter(imgly)
 
 # auto convert cl.ly/abcd links to image tags
 def clly(value):
@@ -100,7 +97,6 @@ def clly(value):
     #else:
     #    return value
     return value
-register.filter(clly)
 
 # auto convert *.sinaimg.cn/*/*.jpg and bcs.baidu.com/*.jpg links to image tags
 def sinaimg(value):
@@ -111,7 +107,6 @@ def sinaimg(value):
     for img in baidu_imgs:
         value = value.replace(img[0], '<a href="' + img[0] + '" target="_blank"><img src="' + img[0] + '" class="imgly" border="0" /></a>')
     return value
-register.filter(sinaimg)
 
 # auto convert youtube.com links to player
 def youtube(value):
@@ -123,7 +118,6 @@ def youtube(value):
         return value
     else:
         return value
-register.filter(youtube)
 
 # auto convert youku.com links to player
 # example: http://v.youku.com/v_show/id_XMjA1MDU2NTY0.html
@@ -138,7 +132,6 @@ def youku(value):
         return value
     else:
         return value
-register.filter(youku)
 
 # auto convert tudou.com links to player
 # example: http://www.tudou.com/programs/view/ro1Yt1S75bA/
@@ -153,7 +146,6 @@ def tudou(value):
         return value
     else:
         return value
-register.filter(tudou)
 
 # auto convert @username to clickable links
 def mentions(value):
@@ -167,7 +159,6 @@ def mentions(value):
         return value
     else:
         return value
-register.filter(mentions)
 
 # gravatar filter
 def gravatar(value,arg):
@@ -190,7 +181,6 @@ def gravatar(value,arg):
         gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(value.email.lower()).hexdigest() + "?"
         gravatar_url += urllib.urlencode({'s' : str(number_size), 'd' : default})
         return '<img src="' + gravatar_url + '" border="0" alt="' + value.username + '" align="absmiddle" />'
-register.filter(gravatar)
 
 # avatar filter
 def avatar(value, arg):
@@ -211,12 +201,10 @@ def avatar(value, arg):
         return '<img src="'+ member_avatar_url +'" border="0" />'
     else:
         return '<img src="' + default + '" border="0" />'
-register.filter(avatar)
 
 # github gist script support
 def gist(value):
     return re.sub(r'(http://gist.github.com/[\d]+)', r'<script src="\1.js"></script>', value)
-register.filter(gist)
 
 _base_js_escapes = (
     ('\\', r'\u005C'),
@@ -241,17 +229,54 @@ def escapejs(value):
     for bad, good in _js_escapes:
         value = value.replace(bad, good)
     return value
-register.filter(escapejs)
 
+def timesince(dt, default="just now"):
+    """
+    Returns string representing "time since" e.g.
+    3 days ago, 5 hours ago etc.
+    """
+
+    now = datetime.utcnow()
+    diff = now - dt
+    
+    periods = (
+        (diff.days / 365, "year", "years"),
+        (diff.days / 30, "month", "months"),
+        (diff.days / 7, "week", "weeks"),
+        (diff.days, "day", "days"),
+        (diff.seconds / 3600, "hour", "hours"),
+        (diff.seconds / 60, "minute", "minutes"),
+        (diff.seconds, "second", "seconds"),
+    )
+
+    for period, singular, plural in periods:
+        
+        if period:
+            return "%d %s" % (period, singular if period == 1 else plural)
+
+    return default
+
+def date(value, arg=None):
+    if  value is None:
+        return ''
+    else:
+        return value.strftime(arg)
 
 template_filters = {
     'avatar':avatar,
     'autolink': autolink,
     'mentions': mentions,
     'imgly': imgly,
-    'timesince': django.template.defaultfilters.timesince,
-    'date': django.template.defaultfilters.date,
-    'timezone': django.utils.timezone,
+    'gist': gist,
+    'escapejs': escapejs,
+    'clly':clly,
+    'tudou':tudou,
+    'youku':youku,
+    'youtube':youtube,
+    'sinaimg':sinaimg,
+    'timesince': timesince,
+    'date': date,
+    'timezone': timezone,
     'linebreaksbr': django.template.defaultfilters.linebreaksbr,
     'divisibleby': django.template.defaultfilters.divisibleby,
 }

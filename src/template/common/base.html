@@ -2,35 +2,36 @@
 <body>
     {% include 'common/top.html' %}
     <div id="Wrapper">
-    <div id="Main">
-        <div id="Sidebar">
-        </div>
-        <div class="ui grid">
-            <div class="twelve wide column">
-                {% block content %}
-                {% endblock%}
+        <div id="Main">
+            <div id="Sidebar">
             </div>
-            <div class="four wide column">
-                <div id="Rightbar">
-                    {% include 'rightbar/user.html' %}
-                    <div class="sep20"></div>
-                    {% include 'rightbar/hottest_nodes.html' %}
-                    <div class="sep20"></div>
-                    {% include 'rightbar/recent_nodes.html' %}
-                    <div class="sep20"></div>
-                    {% include 'rightbar/ads.html' %}
-                    <div class="sep20"></div>
-                    {% include 'rightbar/latest_nodes.html' %}
-                     <div class="sep20"></div>
-                    {% include 'rightbar/stats.html' %}
-                    <div class="sep20"></div>
-                    {% include 'rightbar/goodies.html' %}
-                    {% block extra_sidebar %}{% endblock %}
+            <div class="ui grid">
+                <div class="twelve wide column">
+                    {% block content %}
+                    {% endblock%}
+                </div>
+                <div class="four wide column">
+                    <div id="Rightbar">
+                        {% include 'rightbar/user.html' %}
+                        <div class="sep20"></div>
+                        {% include 'rightbar/hottest_nodes.html' %}
+                        <div class="sep20"></div>
+                        {% include 'rightbar/recent_nodes.html' %}
+                        <div class="sep20"></div>
+                        {% include 'rightbar/ads.html' %}
+                        <div class="sep20"></div>
+                        {% include 'rightbar/latest_nodes.html' %}
+                         <div class="sep20"></div>
+                        {% include 'rightbar/stats.html' %}
+                        <div class="sep20"></div>
+                        {% include 'rightbar/goodies.html' %}
+                        {% block extra_sidebar %}{% endblock %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
+    {% block bottom %}{% endblock %}
     {% include 'common/bottom.html' %}
 </body>
 </html>
