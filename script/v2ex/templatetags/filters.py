@@ -6,6 +6,7 @@ from django import template
 
 from datetime import timedelta
 import urllib, hashlib
+
 register = template.Library()
 
 # Configuration for urlize() function

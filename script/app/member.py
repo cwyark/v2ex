@@ -624,7 +624,7 @@ class SettingsPasswordHandler(webapp.RequestHandler):
 class SettingsAvatarHandler(BaseHandler):
     def get(self):
         self.session = Session()
-        self.template_values['page_title'] = self.site.title + u' › 头像'
+        self.template_values['page_title'] = self.site.title + u' › 大頭貼'
         if (self.is_member):
             if 'message' in self.session:
                 self.template_values['message'] = self.session['message']
@@ -634,16 +634,8 @@ class SettingsAvatarHandler(BaseHandler):
             self.redirect('/signin')
         
     def post(self):
-        site = GetSite()
         self.session = Session()
-        user_agent = detect(self.request)
-        template_values = {}
-        template_values['site'] = site
-        template_values['system_version'] = SYSTEM_VERSION
-        member = CheckAuth(self)
-        l10n = GetMessages(self, member, site)
-        template_values['l10n'] = l10n
-        if (member):
+        if (self.is_member):
             dest = '/settings/avatar'
             timestamp = str(int(time.time()))
             try:

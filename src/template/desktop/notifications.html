@@ -4,20 +4,19 @@
         <div class="box">
             <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> 未讀提醒</span></div>
             {% for n in notifications %}
-                <div class="inner">
-                    <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                        <tr>
-                            <td width="32" align="center" valign="top">
-                                <a href="/member/{{ n.member.username }}">{{ n.member|avatar:"normal"|safe }}</a>
-                            </td>
-                            <td valign="top">
-                                <span class="fade">{{ n.text|safe }}</span> &nbsp; <span class="snow">{{ n.created|timesince }} ago</span>
+                <div class="ui feed">
+                    <div class="event">
+                        <label>
+                            <a href="/member/{{ n.member.username }}">{{ n.member|avatar:"normal"|safe }}</a>
+                        </label>
+                        <div class="content">
+                            <div class="summary">{{ n.text|safe }}
+                                <div class="date">{{ n.created|timesince }} ago</div>
                                 <a href="/backstage/remove/notification/{{ n.key }}" class="node">删除</a>
-                                <div class="sep5"></div>
-                                <div class="payload">{{ n.payload|escape|mentions|urlize|linebreaksbr }}</div>
-                            </td>
-                        </tr>
-                    </table>
+                            </div>
+                            <div class="extra text">{{ n.payload|escape|mentions|safe|urlize|linebreaksbr }}</div>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         </div>

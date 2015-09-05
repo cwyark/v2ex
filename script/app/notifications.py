@@ -56,13 +56,13 @@ class NotificationsHandler(BaseHandler):
                             self.member.notification_position = n.num
                             self.member.put()
                     if n.type == 'reply':
-                        n.text = u'<a href="/member/' + n.member.username + u'"><strong>' + n.member.username + u'</strong></a> 在 <a href="' + n.link1 + '">' + self.escape(n.label1) + u'</a> 里回复了你'
+                        n.text = u'<a href="/member/' + n.member.username + u'"><strong>' + n.member.username + u'</strong></a> 在 <a href="' + n.link1 + '">' + self.escape(n.label1) + u'</a> 裡回覆了你'
                         notifications.append(n)
                     if n.type == 'mention_reply':
-                        n.text = u'<a href="/member/' + n.member.username + u'"><strong>' + n.member.username + u'</strong></a> 在回复 <a href="' + n.link1 + '">' + self.escape(n.label1) + u'</a> 时提到了你'
+                        n.text = u'<a href="/member/' + n.member.username + u'"><strong>' + n.member.username + u'</strong></a> 在回覆 <a href="' + n.link1 + '">' + self.escape(n.label1) + u'</a> 時提到了你'
                         notifications.append(n)
                     if n.type == 'mention_topic':
-                        n.text = u'<a href="/member/' + n.member.username + u'"><strong>' + n.member.username + u'</strong></a> 在创建主题 <a href="' + n.link1 + '">' + self.escape(n.label1) + u'</a> 时提到了你'
+                        n.text = u'<a href="/member/' + n.member.username + u'"><strong>' + n.member.username + u'</strong></a> 在建立主題時 <a href="' + n.link1 + '">' + self.escape(n.label1) + u'</a> 時提到了你'
                         notifications.append(n)
                     i = i + 1
                 self.member.notifications = 0
@@ -218,12 +218,12 @@ class NotificationsFeedHandler(BaseHandler):
                 i = 0
                 for n in q:
                     if n.type == 'reply':
-                        n.title = u'' + n.member.username + u' 在 ' + self.escape(n.label1) + u' 里回复了你'
-                        n.text = u'<a href="/member/' + n.member.username + u'"><strong>' + n.member.username + u'</strong></a> 在 <a href="' + n.link1 + '">' + self.escape(n.label1) + u'</a> 里回复了你'
+                        n.title = u'' + n.member.username + u' 在 ' + self.escape(n.label1) + u' 裡回覆了你'
+                        n.text = u'<a href="/member/' + n.member.username + u'"><strong>' + n.member.username + u'</strong></a> 在 <a href="' + n.link1 + '">' + self.escape(n.label1) + u'</a> 裡回覆了你'
                         notifications.append(n)
                     if n.type == 'mention_reply':
-                        n.title = u'' + n.member.username + u' 在回复 ' + self.escape(n.label1) + u' 时提到了你'
-                        n.text = u'<a href="/member/' + n.member.username + u'"><strong>' + n.member.username + u'</strong></a> 在回复 <a href="' + n.link1 + '">' + self.escape(n.label1) + u'</a> 时提到了你'
+                        n.title = u'' + n.member.username + u' 在回覆 ' + self.escape(n.label1) + u' 時提到了你'
+                        n.text = u'<a href="/member/' + n.member.username + u'"><strong>' + n.member.username + u'</strong></a> 在回覆 <a href="' + n.link1 + '">' + self.escape(n.label1) + u'</a> 時提到了你'
                         notifications.append(n)
                     i = i + 1
                 self.values['notifications'] = notifications
