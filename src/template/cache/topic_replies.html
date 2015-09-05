@@ -4,7 +4,7 @@
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
         <tr>
             <td width="48" valign="top">
-                <a href="/member/{{ reply.created_by }}">{{ reply.member|avatar:"normal"|safe }}</a>
+                <a href="/member/{{ reply.created_by }}">{{ reply.member|avatar("normal")|safe }}</a>
             </td>
             <td width="10"></td>
             <td width="auto" valign="top">
@@ -24,7 +24,7 @@
                 <span class="snow">&nbsp; via {{ reply.source }}</span>
             {% endif %}
             <div class="sep5"></div>
-            <div class="content reply_content">{{ reply.content|escape|youku|sinaimg|imgly|clly|mentions|gist|autolink|linebreaksbr }}</div>
+            <div class="content reply_content">{{ reply.content|escape|mentions|gist|urlize|linebreaksbr }}</div>
             </td>
     </table>
     <script>

@@ -7,17 +7,17 @@
                 {% for bookmark in bookmarks %}
                 <div class="cell from_{{ bookmark.topic.member.num }}">
                 <table cellpadding="0" cellspacing="0" border="0" width="100%"><tr>
-                    <td valign="top" class="avatar"><a href="/member/{{ bookmark.topic.created_by }}">{{ bookmark.topic.member|avatar:"normal"|safe }}</a></td>
+                    <td valign="top" class="avatar"><a href="/member/{{ bookmark.topic.created_by }}">{{ bookmark.topic.member|avatar("normal")|safe }}</a></td>
                     <td style="padding-left: 12px" valign="top">
-                        {% ifequal bookmark.topic.replies 0 %}{% else %}
+                        {% if bookmark.topic.replies == 0 %}{% else %}
                             <div class="fr">
-                                {% ifequal member.num bookmark.topic.member_num %}
+                                {% if member.num == bookmark.topic.member_num %}
                                     <a href="/t/{{ bookmark.topic.num }}#reply{{ bookmark.topic.replies }}" class="count_orange">{{ bookmark.topic.replies }}</a>
                                 {% else %}
                                     <a href="/t/{{ bookmark.topic.num }}#reply{{ bookmark.topic.replies }}" class="count_livid">{{ bookmark.topic.replies }}</a>
-                                {% endifequal %}
+                                {% endif %}
                             </div>
-                        {% endifequal %}
+                        {% endif %}
                         <div class="sep3"></div>
                         <span class="bigger" style="font-size: 16px">{% if site.use_topic_types %}{% if bookmark.topic.type %}<span style="display: inline-block; background-color: {{ bookmark.topic.type_color }}; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; color: #fff; padding: 0px 8px 0px 8px; font-size: 13px;">{{ bookmark.topic.type }}</span> &nbsp;{% endif %}{% endif %}<a href="/t/{{ bookmark.topic.num }}#reply{{ bookmark.topic.replies }}">{{ bookmark.topic.title|escape }}</a></span>
                         <div class="sep5"></div>

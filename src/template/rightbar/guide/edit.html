@@ -2,7 +2,7 @@
     <div class="cell">
         <span class="fade">修改功能指南</span>
     </div>
-    {% ifequal member.level 0 %}
+    {% if member.level == 0 %}
     <div class="inner">修改功能只为 root 级用户所设，在使用修改功能时，请保持以下原则：
     <div class="sep10"></div>
     <ul>
@@ -19,5 +19,5 @@
         <div class="sep5"></div>
         <strong>距离本主题的编辑权限关闭还有 <span class="orange">{{ ttl }}</span> 秒</strong>
     </div>
-    {% endifequal %}
+    {% endif %}
 </div>

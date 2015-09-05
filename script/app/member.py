@@ -651,7 +651,7 @@ class SettingsAvatarHandler(BaseHandler):
             avatar_48 = images.resize(avatar, 48, 48)
             avatar_24 = images.resize(avatar, 24, 24)
             # Large 73x73
-            q1 = db.GqlQuery("SELECT * FROM Avatar WHERE name = :1", 'avatar_' + str(member.num) + '_large')
+            q1 = db.GqlQuery("SELECT * FROM Avatar WHERE name = :1", 'avatar_' + str(self.member.num) + '_large')
             if (q1.count() == 1):
                 avatar_large = q1[0]
                 avatar_large.content = db.Blob(avatar_73)
@@ -671,10 +671,10 @@ class SettingsAvatarHandler(BaseHandler):
                 avatar_large.content = db.Blob(avatar_73)
                 avatar_large.num = counter1.value
                 avatar_large.put()
-            member.avatar_large_url = '/avatar/' + str(member.num) + '/large?r=' + timestamp
-            member.put()
+            self.member.avatar_large_url = '/avatar/' + str(self.member.num) + '/large?r=' + timestamp
+            self.member.put()
             # Normal 48x48
-            q2 = db.GqlQuery("SELECT * FROM Avatar WHERE name = :1", 'avatar_' + str(member.num) + '_normal')
+            q2 = db.GqlQuery("SELECT * FROM Avatar WHERE name = :1", 'avatar_' + str(self.member.num) + '_normal')
             if (q2.count() == 1):
                 avatar_normal = q2[0]
                 avatar_normal.content = db.Blob(avatar_48)
@@ -690,14 +690,14 @@ class SettingsAvatarHandler(BaseHandler):
                     counter2.value = 1
                 counter2.put()
                 avatar_normal = Avatar()
-                avatar_normal.name = 'avatar_' + str(member.num) + '_normal'
+                avatar_normal.name = 'avatar_' + str(self.member.num) + '_normal'
                 avatar_normal.content = db.Blob(avatar_48)
                 avatar_normal.num = counter2.value
                 avatar_normal.put()
-            member.avatar_normal_url = '/avatar/' + str(member.num) + '/normal?r=' + timestamp
-            member.put() 
+            self.member.avatar_normal_url = '/avatar/' + str(self.member.num) + '/normal?r=' + timestamp
+            self.member.put() 
             # Mini 24x24
-            q3 = db.GqlQuery("SELECT * FROM Avatar WHERE name = :1", 'avatar_' + str(member.num) + '_mini')
+            q3 = db.GqlQuery("SELECT * FROM Avatar WHERE name = :1", 'avatar_' + str(self.member.num) + '_mini')
             if (q3.count() == 1):
                 avatar_mini = q3[0]
                 avatar_mini.content = db.Blob(avatar_24)
@@ -713,70 +713,70 @@ class SettingsAvatarHandler(BaseHandler):
                     counter3.value = 1
                 counter3.put()
                 avatar_mini = Avatar()
-                avatar_mini.name = 'avatar_' + str(member.num) + '_mini'
+                avatar_mini.name = 'avatar_' + str(self.member.num) + '_mini'
                 avatar_mini.content = db.Blob(avatar_24)
                 avatar_mini.num = counter3.value
                 avatar_mini.put()
-            member.avatar_mini_url = '/avatar/' + str(member.num) + '/mini?r=' + timestamp
-            member.put()
+            self.member.avatar_mini_url = '/avatar/' + str(self.member.num) + '/mini?r=' + timestamp
+            self.member.put()
             # Upload to MobileMe
             if config.mobileme_enabled:
                 headers = {'Authorization' : 'Basic ' + base64.b64encode(config.mobileme_username + ':' + config.mobileme_password)}
                 host = 'idisk.me.com'
                 # Sharding
                 timestamp = str(int(time.time()))
-                shard = member.num % 31
+                shard = self.member.num % 31
                 root = '/' + config.mobileme_username + '/Web/Sites/v2ex/avatars/' + str(shard)
                 root_mini = root + '/mini'
                 root_normal = root + '/normal'
                 root_large = root + '/large'
                 h = httplib.HTTPConnection(host)
                 # Mini
-                h.request('PUT', root_mini + '/' + str(member.num) + '.png', str(avatar_24), headers)
+                h.request('PUT', root_mini + '/' + str(self.member.num) + '.png', str(avatar_24), headers)
                 response = h.getresponse()
                 if response.status == 201 or response.status == 204:
-                    member.avatar_mini_url = 'http://web.me.com/' + config.mobileme_username + '/v2ex/avatars/' + str(shard) + '/mini/' + str(member.num) + '.png?r=' + timestamp
+                    self.member.avatar_mini_url = 'http://web.me.com/' + config.mobileme_username + '/v2ex/avatars/' + str(shard) + '/mini/' + str(self.member.num) + '.png?r=' + timestamp
                 # Normal
-                h.request('PUT', root_normal + '/' + str(member.num) + '.png', str(avatar_48), headers)
+                h.request('PUT', root_normal + '/' + str(self.member.num) + '.png', str(avatar_48), headers)
                 response = h.getresponse()
                 if response.status == 201 or response.status == 204:
-                    member.avatar_normal_url = 'http://web.me.com/' + config.mobileme_username + '/v2ex/avatars/' + str(shard) + '/normal/' + str(member.num) + '.png?r=' + timestamp
+                    self.member.avatar_normal_url = 'http://web.me.com/' + config.mobileme_username + '/v2ex/avatars/' + str(shard) + '/normal/' + str(self.member.num) + '.png?r=' + timestamp
                 # Large
-                h.request('PUT', root_large + '/' + str(member.num) + '.png', str(avatar_73), headers)
+                h.request('PUT', root_large + '/' + str(self.member.num) + '.png', str(avatar_73), headers)
                 response = h.getresponse()
                 if response.status == 201 or response.status == 204:
-                    member.avatar_large_url = 'http://web.me.com/' + config.mobileme_username + '/v2ex/avatars/' + str(shard) + '/large/' + str(member.num) + '.png?r=' + timestamp
-                member.put()
+                    self.member.avatar_large_url = 'http://web.me.com/' + config.mobileme_username + '/v2ex/avatars/' + str(shard) + '/large/' + str(self.member.num) + '.png?r=' + timestamp
+                self.member.put()
             # Upload to UpYun
             if config.upyun_enabled:
                 u = UpYun(config.upyun_bucket, config.upyun_username, config.upyun_password)
                 # Mini
                 mini = avatar_24
                 u.setContentMD5(md5(mini))
-                mini_suffix = '/avatars/mini/' + str(member.num) + '.png'
+                mini_suffix = '/avatars/mini/' + str(self.member.num) + '.png'
                 r = u.writeFile(mini_suffix, mini, True)
                 if r == True:
-                    member.avatar_mini_url = 'http://' + config.upyun_bucket + '.b0.upaiyun.com' + mini_suffix + '?r=' + timestamp
+                    self.member.avatar_mini_url = 'http://' + config.upyun_bucket + '.b0.upaiyun.com' + mini_suffix + '?r=' + timestamp
                 # Normal
                 normal = avatar_48
                 u.setContentMD5(md5(normal))
-                normal_suffix = '/avatars/normal/' + str(member.num) + '.png'
+                normal_suffix = '/avatars/normal/' + str(self.member.num) + '.png'
                 r = u.writeFile(normal_suffix, normal, True)
                 if r == True:
-                    member.avatar_normal_url = 'http://' + config.upyun_bucket + '.b0.upaiyun.com' + normal_suffix + '?r=' + timestamp
+                    self.member.avatar_normal_url = 'http://' + config.upyun_bucket + '.b0.upaiyun.com' + normal_suffix + '?r=' + timestamp
                 # Large
                 large = avatar_73
                 u.setContentMD5(md5(large))
-                large_suffix = '/avatars/large/' + str(member.num) + '.png'
+                large_suffix = '/avatars/large/' + str(self.member.num) + '.png'
                 r = u.writeFile(large_suffix, large, True)
                 if r == True:
-                    member.avatar_large_url = 'http://' + config.upyun_bucket + '.b0.upaiyun.com' + large_suffix + '?r=' + timestamp
-                member.put()
-            memcache.set('Member_' + str(member.num), member, 86400 * 14)
-            memcache.set('Member::' + member.username_lower, member, 86400 * 14)
-            memcache.delete('Avatar::avatar_' + str(member.num) + '_large')
-            memcache.delete('Avatar::avatar_' + str(member.num) + '_normal')
-            memcache.delete('Avatar::avatar_' + str(member.num) + '_mini')
+                    self.member.avatar_large_url = 'http://' + config.upyun_bucket + '.b0.upaiyun.com' + large_suffix + '?r=' + timestamp
+                self.member.put()
+            memcache.set('Member_' + str(self.member.num), self.member, 86400 * 14)
+            memcache.set('Member::' + self.member.username_lower, self.member, 86400 * 14)
+            memcache.delete('Avatar::avatar_' + str(self.member.num) + '_large')
+            memcache.delete('Avatar::avatar_' + str(self.member.num) + '_normal')
+            memcache.delete('Avatar::avatar_' + str(self.member.num) + '_mini')
             self.session['message'] = '新头像设置成功'
             self.redirect('/settings/avatar')
         else:

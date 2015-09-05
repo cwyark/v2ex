@@ -1,6 +1,8 @@
 import os
 
-from google.appengine.ext import webapp
+import webapp2
+
+from v2ex.templatetags.filters import template_filters
 
 from . import main, topic, mail, avatar, feed, member, place, misc, notes, backstage, money, my, t, images, favorite, queue, sso, notifications, page, blog, xmpp, api, css
 
@@ -8,10 +10,13 @@ config = {}
 config['webapp2_extras.i18n'] = {
     'translations_path': 'locale',
 }
+
 config['webapp2_extras.jinja2'] = {
+    'template_path':'tpl',
     'environment_args': {
         'extensions': ['jinja2.ext.i18n']
-    }
+    },
+    'filters': template_filters
 }
 
 routes = [
@@ -165,4 +170,4 @@ routes = [
 
 debug = os.environ.get('SERVER_SOFTWARE', '').startswith('Dev')
 
-application = webapp.WSGIApplication(config = config, debug = debug, routes = routes)
+application = webapp2.WSGIApplication(config = config, debug = debug, routes = routes)

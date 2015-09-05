@@ -4,11 +4,15 @@
 import os
 import random
 import re
+import sys
+
+
+import webapp2
+from webapp2_extras import jinja2
 
 from google.appengine.ext import db
 from google.appengine.api import memcache
 from google.appengine.ext import webapp
-from google.appengine.ext.webapp import template
 
 from v2ex.babel.ext.cookies import Cookies
 from v2ex.babel import SYSTEM_VERSION
@@ -19,10 +23,17 @@ from v2ex.babel.security import CheckAuth
 
 from v2ex.babel.da import GetTotalTopicNum, GetTotalReplyNum, GetTotalMemberNum, GetSiteHottestNode, GetSiteRecentNewNodes
 
-class BaseHandler(webapp.RequestHandler):
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
+class BaseHandler(webapp2.RequestHandler):
+    
     def __init__(self, request, response):
         self.initialize(request, response)
+    
+    @webapp2.cached_property
+    def jinja2(self):
+        return jinja2.get_jinja2(app=self.app)
 
     @property
     def template_values(self):
@@ -95,9 +106,8 @@ class BaseHandler(webapp.RequestHandler):
         self.response.out.write(output)
     
     def render(self, template_name, template_root='desktop', template_type='html'):
-        path = os.path.join('tpl', template_root, template_name + '.' + template_type)
-        return template.render(path, self.template_values)
-
+        path = os.path.join(template_root, template_name + '.' + template_type)
+        return self.jinja2.render_template(path, **self.template_values)
 
     def escape(self, text):
         text = text.replace('<', '&lt;')

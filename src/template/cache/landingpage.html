@@ -4,7 +4,7 @@
 			<tr>
 				<td valign="top" class="avatar">
 					<a href="/member/{{ topic.created_by }}">
-						{{ topic.member|avatar:"normal"|safe }}
+						{{ topic.member|avatar('normal') }}
 					</a>
 				</td>
 				<td style="padding-left: 12px" valign="top">
@@ -41,12 +41,12 @@
 					</span>
 				</td>
 				<td>
-					{% ifequal topic.replies 0 %}
+					{% if topic.replies == 0 %}
 					{% else %}
 						<div>
 							<a href="/t/{{ topic.num }}#reply{{ topic.replies }}" class="ui grey circular label">{{ topic.replies }}</a>
 						</div>
-					{% endifequal %}
+					{% endif %}
 				</td>
 			</tr>
 		</table>

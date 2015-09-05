@@ -127,27 +127,27 @@
                            -</div>
                            -->
                     </div>
-                    {% ifequal member.twitter_oauth 1 %}
+                    {% if member.twitter_oauth == 1 %}
                     <div class="field">
                         <span class="small">Twitter Sync</span>
-                        {% ifequal member_twitter_sync 1 %}
+                        {% if member_twitter_sync == 1 %}
                         <input type="checkbox" name="twitter_sync" checked="checked" />
                         {% else %}
                         <input type="checkbox" name="twitter_sync" />
-                        {% endifequal %}
+                        {% endif %}
                     </div>
-                    {% endifequal %}
+                    {% endif %}
                     <div class="field">
                             <label class="small">My CSS</label>
                             <textarea class="ml" name="my_css">{{ member_my_css|escape }}</textarea>
                     </div>
                      <div class="field">
                         <span class="small">Use My CSS</span>
-                        {% ifequal member_use_my_css 1 %}
+                        {% if member_use_my_css == 1 %}
                             <input type="checkbox" name="use_my_css" checked="checked" />
                         {% else %}
                             <input type="checkbox" name="use_my_css" />
-                        {% endifequal %}
+                        {% endif %}
                     </div>
                     <div class="field">
                         <input type="submit" value="{{ l10n.save_settings }}" class="ui button" />
@@ -167,9 +167,9 @@
                             {{ l10n.current_avatar }}
                         </td>
                         <td align="left">
-                            {{ member|avatar:"large"|safe }}&nbsp; 
-                                                {{ member|avatar:"normal"|safe }}&nbsp;
-                                                {{ member|avatar:"mini"|safe }}&nbsp;
+                                    {{ member|avatar("large")|safe }}&nbsp; 
+                                    {{ member|avatar("normal")|safe }}&nbsp;
+                                    {{ member|avatar("mini")|safe }}&nbsp;
                         </td>
                     </tr>
                     <tr>
@@ -224,7 +224,7 @@
             </div>
             <div class="cell">
                 <table cellpadding="5" cellspacing="0" border="0">
-                    {% ifequal member.twitter_oauth 1 %}
+                    {% if member.twitter_oauth == 1 %}
                     <tr>
                         <td width="120" align="right">
                             <img src="{{ member.twitter_profile_image_url }}" />
@@ -262,7 +262,7 @@
                             <input type="submit" value="Link My Twitter Account" class="ui button" onclick="location.href = '/twitter/link'" />
                         </td>
                     </tr>
-                    {% endifequal %}
+                    {% endif %}
                 </table>
             </div>
             <div class="inner">

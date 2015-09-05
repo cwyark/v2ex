@@ -1,11 +1,16 @@
-import re, string
+import re
+import string
+import os
 import logging
 from v2ex.babel.ext import bleach
 
 from django import template
+import django
 
 from datetime import timedelta
 import urllib, hashlib
+
+os.environ['DJANGO_SETTINGS_MODULE'] = 'app.config'
 
 register = template.Library()
 
@@ -237,3 +242,17 @@ def escapejs(value):
         value = value.replace(bad, good)
     return value
 register.filter(escapejs)
+
+
+template_filters = {
+    'avatar':avatar,
+    'autolink': autolink,
+    'mentions': mentions,
+    'imgly': imgly,
+    'timesince': django.template.defaultfilters.timesince,
+    'date': django.template.defaultfilters.date,
+    'timezone': django.utils.timezone,
+    'linebreaksbr': django.template.defaultfilters.linebreaksbr,
+    'divisibleby': django.template.defaultfilters.divisibleby,
+}
+

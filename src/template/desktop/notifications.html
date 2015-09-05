@@ -7,7 +7,7 @@
                 <div class="ui feed">
                     <div class="event">
                         <label>
-                            <a href="/member/{{ n.member.username }}">{{ n.member|avatar:"normal"|safe }}</a>
+                            <a href="/member/{{ n.member.username }}">{{ n.member|avatar("normal")|safe }}</a>
                         </label>
                         <div class="content">
                             <div class="summary">{{ n.text|safe }}

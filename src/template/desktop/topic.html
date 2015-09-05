@@ -28,7 +28,7 @@
             <div class="inner" style="min-height: 73px;">
             {% endif %}
             <div class="fr snow" style="padding-left: 10px; padding-bottom: 10px;">
-                <a href="/member/{{ topic.member.username }}">{{ topic.member|avatar:"large"|safe }}</a>
+                <a href="/member/{{ topic.member.username }}">{{ topic.member|avatar("large")|safe }}</a>
             </div>
             <span class="bigger">
                 <a href="/">{{ site.title }}</a> {{ l10n.chevron|safe }} <a href="/go/{{ node.name}}">{{ node.title|escape }}</a>
@@ -48,9 +48,9 @@
                     {% ifnotequal topic.hits 0 %}
                     , {{ topic.hits }} hits
                     {% endifnotequal %}
-                    {% ifequal member.level 0 %}
+                    {% if member.level == 0 %}
                     &nbsp; <a href="#;" onclick="if (confirm('{{ l10n.sure_to_delete }} #{{ topic.num }} - {{ topic.title|escape }}')) { location = '/delete/topic/{{ topic.num }}?t={{ member.created_ts }}'; }" class="op">DELETE</a> <a href="/backstage/tidy/topic/{{ topic.num }}" class="op">TIDY</a>
-                    {% endifequal %}
+                    {% endif %}
                     {% if can_move %}
                         <a href="/backstage/move/topic/{{ topic.key }}" class="op">MOVE</a>
                     {% endif %}
@@ -81,7 +81,7 @@
                     &nbsp;
                 </div>
             {% endif %}
-            {% ifequal topic.explicit 1 %}
+            {% if topic.explicit == 1 %}
             <div class="inner">
                 <script type="text/javascript"><!--
                 google_ad_client = "pub-9823529788289591";
@@ -95,9 +95,9 @@
                 src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
                 </script>
             </div>
-            {% endifequal %}
+            {% endif %}
         </div>
-        {% ifequal topic.replies 0 %}
+        {% if topic.replies == 0 %}
         <div class="sep20"></div>
         <div class="glass" align="center">
             <div class="inner">
@@ -159,11 +159,11 @@
             {% endif %}
             {% if ps %}
             <div class="inner" align="center">
-                {% for p in ps %}{% ifequal p page_current %}<span class="page_current">{{ p }}</span>{% else %}<a href="/t/{{ topic.num }}?p={{ p }}" class="page_normal">{{ p }}</a>{% endifequal %}{% endfor %}
+                {% for p in ps %}{% if p == page_current %}<span class="page_current">{{ p }}</span>{% else %}<a href="/t/{{ topic.num }}?p={{ p }}" class="page_normal">{{ p }}</a>{% endif %}{% endfor %}
             </div>
             {% endif %}
         </div>
-        {% endifequal %}
+        {% endif %}
         {% if member %}
         <script type="text/javascript">
         function v() {
@@ -201,7 +201,7 @@
                     <input type="submit" class="ui button" value="{{ l10n.send }}" />
                 </div>
             </form>
-            {% ifequal topic.explicit 1 %}
+            {% if topic.explicit == 1 %}
             <div class="inner">
                 <script type="text/javascript"><!--
                 google_ad_client = "pub-9823529788289591";
@@ -215,7 +215,7 @@
                 src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
                 </script>
             </div>
-            {% endifequal %}
+            {% endif %}
             <div class="inner"><div class="fr" style="font-size: 12px; margin-left: 20px;"><a href="/">← {{ site.title }}</a></div>{{ l10n.no_pointless|safe }}</div>
         </div>
         {% endif %}

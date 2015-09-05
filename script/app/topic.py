@@ -258,7 +258,7 @@ class NewTopicHandler(BaseHandler):
                         topic.content_length = topic_content_length
                     else:
                         topic.has_content = False
-                    path = os.path.join('tpl', 'portion', 'topic_content.html')
+                    path = os.path.join('tpl', 'cache', 'topic_content.html')
                     output = template.render(path, {'topic' : topic})
                     topic.content_rendered = output
                     topic.node = node
@@ -394,7 +394,7 @@ class TopicHandler(BaseHandler):
             self.template_values['page_title'] = self.site.title + u' › ' + topic.title
             self.template_values['canonical'] = 'http://' + str(self.site.domain) + '/t/' + str(topic.num)
             if topic.content_rendered is None:
-                path = os.path.join(os.path.dirname(__file__), 'tpl', 'portion', 'topic_content.html')
+                path = os.path.join('tpl', 'cache', 'topic_content.html')
                 output = template.render(path, {'topic' : topic})
                 topic = db.get(topic.key())
                 topic.content_rendered = output
@@ -442,7 +442,7 @@ class TopicHandler(BaseHandler):
             if len(ps) > 1:
                 self.template_values['ps'] = ps
             replies = False
-            path = os.path.join('tpl', 'portion', 'topic_replies.html')
+            path = os.path.join('tpl', 'cache', 'topic_replies.html')
             if filter_mode:
                 r_tag = 'topic_' + str(topic.num) + '_replies_filtered_rendered_desktop_' + str(page_current)
                 r = memcache.get(r_tag)
@@ -923,7 +923,7 @@ class TopicEditHandler(BaseHandler):
                             topic.content_length = topic_content_length
                         else:
                             topic.has_content = False
-                        path = os.path.join('tpl', 'portion', 'topic_content.html')
+                        path = os.path.join('tpl', 'cache', 'topic_content.html')
                         output = template.render(path, {'topic' : topic})
                         topic.content_rendered = output
                         if self.member.level != 0:

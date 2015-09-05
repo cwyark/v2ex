@@ -7,13 +7,13 @@
             <ul>
                 <li><a href="/" class="top">{{ l10n.home }}</a></li>
                 <li><a href="/member/{{ member.username }}" class="top">{{ member.username }}</a></li>
-                {% ifequal member.twitter_oauth 1 %}
-                <li><a href="/twitter" class="top"><img src="/static/img/bird.png" style="padding: 0px 3px 0px 3px;" border="0" alt="Twitter" /></a></li>
-                {% endifequal %}
+                {% if member.twitter_oauth == 1 %}
+                    <li><a href="/twitter" class="top"><img src="/static/img/bird.png" style="padding: 0px 3px 0px 3px;" border="0" alt="Twitter" /></a></li>
+                {% endif %}
                 <li><a href="/settings" class="top">{{ l10n.settings }}</a></li>
-                {% ifequal member.level 0 %}
-                <li><a href="/backstage" class="top">{{ l10n.backstage }}</a></li>
-                {% endifequal %}
+                {% if member.level == 0 %}
+                    <li><a href="/backstage" class="top">{{ l10n.backstage }}</a></li>
+                {% endif %}
                 <li><a href="/signout" class="top">{{ l10n.signout }}</a></li>
             </ul>
             {% else %}

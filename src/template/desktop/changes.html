@@ -8,11 +8,11 @@
             {% include 'common/topics_index.html' %}
             <div class="inner" align="center">
                 {% for p in ps %}
-                    {% ifequal p page_current %}
+                    {% if p == page_current %}
                         <span class="page_current">{{ p }}</span>
                     {% else %}
                         <a href="/changes?p={{ p }}" class="page_normal">{{ p }}</a>
-                    {% endifequal %}
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>

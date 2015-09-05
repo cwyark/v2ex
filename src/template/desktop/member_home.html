@@ -15,7 +15,7 @@
             {% endif %}
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
                 <tr>
-                    <td width="73" valign="top" align="center">{{ one|avatar:"large"|safe }}
+                    <td width="73" valign="top" align="center">{{ one|avatar("large")|safe }}
                         {% if show_block %}
                         <div class="sep10"></div>
                         {% if one_is_blocked %}
@@ -28,7 +28,7 @@
                         <div class="sep10"></div>
                         <div align="center"><small><strong><a href="/backstage/deactivate/user/{{ one.key }}?t={{ member.created_ts }}" class="dark">DEACTIVATE</a></strong></small></div>
                         {% endif %}
-                        {% if member %}{% ifequal member.level 0 %}<div class="sep10"></div><div align="center"><a href="/backstage/member/{{ one.username }}"><img src="/static/img/gear.png" border="0" alt="管理" /></a></div>{% endifequal %}{% endif %}
+                        {% if member %}{% if member.level == 0 %}<div class="sep10"></div><div align="center"><a href="/backstage/member/{{ one.username }}"><img src="/static/img/gear.png" border="0" alt="管理" /></a></div>{% endif %}{% endif %}
                     </td>
                     <td width="10" valign="top"></td>
                     <td width="auto" align="left" valign="top">
@@ -48,7 +48,7 @@
                         <span class="fade bigger">{{ one.tagline|escape }}</span>
                         {% endif %}
                         <div class="sep5"></div>
-                        <span class="snow">{{ site.title }} 第 {{ one.num }} 号会员，加入于 {{ one.created|timezone:8|date:"Y-n-j G:i:s A" }}</span>
+                        <span class="snow">{{ site.title }} 第 {{ one.num }} 号会员，加入于 {{ one.created|timezone(8)|date("Y-n-j G:i:s A") }}</span>
                         <div class="sep10"></div>
 
                         <div class="ui list">
@@ -132,24 +132,24 @@
                     </tr>
                     {% for topic in topics %}
                     <tr>
-                        <td align="center" width="50" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} lend">
-                            {% ifequal topic.replies 0 %}
+                        <td align="center" width="50" class="{% if forloop.counter|divisibleby(2) %}even{% else %}odd{% endif %} lend">
+                            {% if topic.replies == 0 %}
                                 <span class="snow">{{ topic.replies }}</span>
                             {% else %}
                                 <strong><span class="green">{{ topic.replies }}</span></strong>
-                            {% endifequal %}
+                            {% endif %}
                         </td>
-                        <td align="left" width="auto" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+                        <td align="left" width="auto" class="{% if forloop.counter|divisibleby(2) %}even{% else %}odd{% endif %}">
                             <a href="/t/{{ topic.num }}">{{ topic.title|escape }}</a>
                         </td>
-                        <td align="left" width="80" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+                        <td align="left" width="80" class="{% if forloop.counter|divisibleby(2) %}even{% else %}odd{% endif %}">
                             {% if topic.last_reply_by %}
                                 <a href="/member/{{ topic.last_reply_by }}" class="dark">{{ topic.last_reply_by }}</a>
                             {% else %}
                                 <a href="/member/{{ topic.created_by }}" class="dark">{{ topic.created_by }}</a>
                             {% endif %}
                         </td>
-                        <td align="left" width="110" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} rend"><small class="fade">{{ topic.last_touched|timezone:8|date:"Y-n-j G:i:s"}}</small></td>
+                        <td align="left" width="110" class="{% if forloop.counter|divisibleby(2) %}even{% else %}odd{% endif %} rend"><small class="fade">{{ topic.last_touched|timezone(8)|date("Y-n-j G:i:s")}}</small></td>
                     </tr>
                     {% endfor %}
                 </table>
@@ -168,10 +168,10 @@
                     </tr>
                     {% for reply in replies %}
                     <tr>
-                        <td align="center" width="50" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} lend">{% ifequal reply.topic.replies 0 %}<span class="snow">{{ reply.topic.replies }}</span>{% else %}<strong><span class="green">{{ reply.topic.replies }}</span></strong>{% endifequal %}</td>
-                        <td align="left" width="auto" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}"><a href="/t/{{ reply.topic.num }}">{{ reply.topic.title|escape }}</a></td>
-                        <td align="left" width="80" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{% if reply.topic.last_reply_by %}<a href="/member/{{ reply.topic.last_reply_by }}" class="dark">{{ reply.topic.last_reply_by }}</a>{% else %}<a href="/member/{{ reply.topic.created_by }}" class="dark">{{ reply.topic.created_by }}</a>{% endif %}</td>
-                        <td align="left" width="110" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} rend"><small class="fade">{{ reply.topic.last_touched|timezone:8|date:"Y-n-j G:i:s"}}</small></td>
+                        <td align="center" width="50" class="{% if forloop.counter|divisibleby(2) %}even{% else %}odd{% endif %} lend">{% if reply.topic.replies == 0 %}<span class="snow">{{ reply.topic.replies }}</span>{% else %}<strong><span class="green">{{ reply.topic.replies }}</span></strong>{% endif %}</td>
+                        <td align="left" width="auto" class="{% if forloop.counter|divisibleby(2) %}even{% else %}odd{% endif %}"><a href="/t/{{ reply.topic.num }}">{{ reply.topic.title|escape }}</a></td>
+                        <td align="left" width="80" class="{% if forloop.counter|divisibleby(2) %}even{% else %}odd{% endif %}">{% if reply.topic.last_reply_by %}<a href="/member/{{ reply.topic.last_reply_by }}" class="dark">{{ reply.topic.last_reply_by }}</a>{% else %}<a href="/member/{{ reply.topic.created_by }}" class="dark">{{ reply.topic.created_by }}</a>{% endif %}</td>
+                        <td align="left" width="110" class="{% if forloop.counter|divisibleby(2) %}even{% else %}odd{% endif %} rend"><small class="fade">{{ reply.topic.last_touched|timezone(8)|date("Y-n-j G:i:s") }}</small></td>
                     </tr>
                     {% endfor %}
                 </table>

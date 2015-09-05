@@ -3,7 +3,7 @@
     <div class="ui card">
 		<div class="content">
 			<div class="right floated ui image mini">
-				<a href="/member/{{ member.username }}">{{ member|avatar:"normal"|safe}}</a>
+				<a href="/member/{{ member.username }}">{{ member|avatar("normal")|safe}}</a>
 			</div>
 			<div class="header">
 				<a href="/member/{{ member.username }}">{{ member.username }}</a>
@@ -65,10 +65,10 @@
     {% else %}
     <div class="cell">
         <strong>Please choose a way to sign in</strong>
-        {% ifequal site.title 'V2EX' %}
+        {% if site.title == 'V2EX' %}
 			<div class="sep5"></div>
 			<span class="fade">V2EX 是一个关于分享和探索的地方</span>
-        {% endifequal %}
+        {% endif %}
     </div>
     <div class="inner">
         <div class="sep5"></div>

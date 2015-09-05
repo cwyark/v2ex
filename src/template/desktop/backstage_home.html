@@ -47,7 +47,7 @@
                     {% endfor %}
                 </table>
             </div>
-            <div class="inner"><strong class="fade">Recently Modified</strong> <span class="chevron">›</span>&nbsp; {% for node in latest_nodes %}{% ifnotequal forloop.counter 1 %} &nbsp;<span class="snow">•</span>&nbsp; {% endifnotequal %}<a href="/backstage/node/{{ node.name }}">{{ node.title|escape }}</a>{% endfor%}</div>
+            <div class="inner"><strong class="fade">Recently Modified</strong> <span class="chevron">›</span>&nbsp; {% for node in latest_nodes %}{% if not loop.counter == 1 %} &nbsp;<span class="snow">•</span>&nbsp; {% endif %}<a href="/backstage/node/{{ node.name }}">{{ node.title|escape }}</a>{% endfor%}</div>
         </div>
         <div class="sep20"></div>
         <div class="box">

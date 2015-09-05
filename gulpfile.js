@@ -36,9 +36,10 @@ gulp.task('image', function(){
 
 gulp.task('html', function(){
 	return gulp.src('src/template/**/*.html')
-		.pipe(htmlmin({collapseWhitespace: true}))
+        /*
+		 *.pipe(htmlmin({collapseWhitespace: true}))
+         */
 		.pipe(gulp.dest('tpl'))
-        .pipe(livereload())
 });
 
 gulp.task('css', function(){

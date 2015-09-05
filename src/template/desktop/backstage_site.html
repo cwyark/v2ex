@@ -95,11 +95,11 @@
                         </label>
                         <select name="theme">
                             {% for theme in themes %}
-                            {% ifequal theme site_theme %}
-                            <option value="{{ theme }}" selected="selected">{{ theme }}</option>
-                            {% else %}
-                            <option value="{{ theme }}">{{ theme }}</option>
-                            {% endifequal %}
+                                {% if theme == site_theme %}
+                                    <option value="{{ theme }}" selected="selected">{{ theme }}</option>
+                                {% else %}
+                                    <option value="{{ theme }}">{{ theme }}</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </div>
@@ -137,11 +137,11 @@
                         <label>
                             Data Migration Mode
                         </label>
-                        {% ifequal site_data_migration_mode 1 %}
+                        {% if site_data_migration_mode == 1 %}
                             <input type="checkbox" name="data_migration_mode" checked="checked" />
                             {% else %}
                             <input type="checkbox" name="data_migration_mode" />
-                        {% endifequal %}
+                        {% endif %}
                     </div>
                     <div class="field">
                         <input type="submit" value="{{ l10n.save }}" class="ui button" />

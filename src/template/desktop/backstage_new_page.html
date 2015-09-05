@@ -57,13 +57,13 @@
         			    <div class="field">
                             <label>嵌入模式</label>
                             <select name="mode">
-                                {% ifequal page_mode 1 %}
-                                <option value="1" selected="selected">嵌入式页面</option>
-                                <option value="0">独立式页面</option>
+                                {% if page_mode == 1 %}
+                                    <option value="1" selected="selected">嵌入式页面</option>
+                                    <option value="0">独立式页面</option>
                                 {% else %}
-                                <option value="1">嵌入式页面</option>
-                                <option value="0" selected="selected">独立式页面</option>
-                                {% endifequal %}
+                                    <option value="1">嵌入式页面</option>
+                                    <option value="0" selected="selected">独立式页面</option>
+                                {% endif %}
                             </select>
         			    </div>
         			    <div class="field">

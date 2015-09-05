@@ -10,7 +10,7 @@
     {% endif %}
 
     {% if member %}
-        {% ifequal member.show_quick_post 1 %}
+        {% if member.show_quick_post == 1 %}
             <div class="cell">
                 <div class="fr fade">
                     快速發問將會把文章發表至<strong>問答專區</strong>，請在 120 字內描述您的問題，也可以使用
@@ -33,7 +33,7 @@
                     </div>
                 </form>
             </div>
-        {% endifequal %}
+        {% endif %}
     {% endif %}
 
     <div class="cell">

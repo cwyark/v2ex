@@ -7,10 +7,10 @@
 	<title>
 		{{ page_title|escape }}
 		{% if member.notifications %}
-			{% ifequal member.notifications 0 %}
+			{% if member.notifications == 0 %}
 			{% else %}
 				({{ member.notifications }})
-			{% endifequal %}
+			{% endif %}
 		{% endif %}
 	</title>
 
