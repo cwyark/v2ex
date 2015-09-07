@@ -12,7 +12,7 @@
                         <div class="content">
                             <div class="summary">{{ n.text|safe }}
                                 <div class="date">{{ n.created|timesince }} ago</div>
-                                <a href="/backstage/remove/notification/{{ n.key }}" class="node">删除</a>
+                                <a href="/backstage/remove/notification/{{ n.key() }}" class="node">删除</a>
                             </div>
                             <div class="extra text">{{ n.payload|escape|mentions|safe|urlize|linebreaksbr }}</div>
                         </div>

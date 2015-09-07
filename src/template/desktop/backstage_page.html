@@ -18,7 +18,7 @@
             <div class="box">
                 <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="/backstage">后台</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="/backstage/minisite/{{ minisite.name }}">{{ minisite.title|escape }}</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ page.title|escape }}</span></div>
                 <div class="inner">
-                    <form action="/backstage/page/{{ page.key }}" method="post">
+                    <form action="/backstage/page/{{ page.key() }}" method="post">
                     {% if errors %}
         			<strong>请解决以下错误之后继续。</strong>
         			<div class="sep10"></div>

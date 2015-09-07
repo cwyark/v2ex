@@ -1463,7 +1463,7 @@ class BackstageMoveTopicHandler(BaseHandler):
                         errors = errors + 1
                     if errors > 0:
                         themes = os.listdir(os.path.join('tpl', 'themes'))
-                        template_values['themes'] = themes
+                        self.template_values['themes'] = themes
                         self.finalize(template_name='backstage_move_topic')
                 else:
                     self.redirect('/')

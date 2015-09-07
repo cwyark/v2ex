@@ -28,7 +28,7 @@
             </td>
     </table>
     <script>
-        replies_keys[({{ loop.counter }} - 1)] = '{{ reply.key }}';
+        replies_keys[({{ loop.counter }} - 1)] = '{{ reply.key() }}';
         replies_ids[({{ loop.counter }} - 1)] = '{{ reply.num }}';
         {% if reply.parent %}
             replies_parents[({{ loop.counter }} - 1)] = 1;

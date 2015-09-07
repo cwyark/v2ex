@@ -26,7 +26,7 @@
                         {% endif %}
                         {% if show_extra_options %}
                         <div class="sep10"></div>
-                        <div align="center"><small><strong><a href="/backstage/deactivate/user/{{ one.key }}?t={{ member.created_ts }}" class="dark">DEACTIVATE</a></strong></small></div>
+                        <div align="center"><small><strong><a href="/backstage/deactivate/user/{{ one.key() }}?t={{ member.created_ts }}" class="dark">DEACTIVATE</a></strong></small></div>
                         {% endif %}
                         {% if member %}{% if member.level == 0 %}<div class="sep10"></div><div align="center"><a href="/backstage/member/{{ one.username }}"><img src="/static/img/gear.png" border="0" alt="管理" /></a></div>{% endif %}{% endif %}
                     </td>

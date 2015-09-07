@@ -8,6 +8,12 @@
 					</a>
 				</td>
 				<td style="padding-left: 12px" valign="top">
+                    {% if topic.replies == 0 %}
+					{% else %}
+                    <div class="fr">
+                        <a href="/t/{{ topic.num }}#reply{{ topic.replies }}" class="count_livid">{{ topic.replies }}</a>
+                    </div>
+					{% endif %}
 
 					<span class="bigger" style="font-size: 16px; line-height: 130%">
 						{% if site.use_topic_types %}
@@ -39,12 +45,7 @@
 					</span>
 				</td>
 				<td>
-					{% if topic.replies == 0 %}
-					{% else %}
-						<div>
-							<a href="/t/{{ topic.num }}#reply{{ topic.replies }}" class="ui grey circular label">{{ topic.replies }}</a>
-						</div>
-					{% endif %}
+				
 				</td>
 			</tr>
 		</table>
