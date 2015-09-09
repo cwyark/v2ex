@@ -74,7 +74,7 @@ just_topic_creator = "只看樓主"
 replies = "回覆"
 till = "直到"
 sure_to_delete = "確認刪除？"
-no_pointless = '请认真考虑自己的回复能够如何帮助到别人。这里不欢迎无意义的“顶”，“沙发”，“不懂”，“<a href="http://www.v2ex.com/t/23249">楼主火星了</a>”。'
+no_pointless = '回覆別人前請注意禮節, 請勿帶有攻擊或是激烈的語氣, 希望各位可以養成有禮貌的鄉民禮節'
 for_good = '<a href="/t/10740" class="node">技术类问题回答指南</a> <a href="http://www.v2ex.com/t/18160" class="node">不要让敷衍成为一种习惯</a>'
 
 # Messages on /go/

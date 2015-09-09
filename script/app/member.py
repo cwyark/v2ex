@@ -667,7 +667,7 @@ class SettingsAvatarHandler(BaseHandler):
                     counter1.value = 1
                 counter1.put()
                 avatar_large = Avatar()
-                avatar_large.name = 'avatar_' + str(member.num) + '_large'
+                avatar_large.name = 'avatar_' + str(self.member.num) + '_large'
                 avatar_large.content = db.Blob(avatar_73)
                 avatar_large.num = counter1.value
                 avatar_large.put()

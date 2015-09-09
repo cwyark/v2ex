@@ -23,3 +23,5 @@ recaptcha_private_key = 'your recaptcha_private_key'
 daydream_secret = ''
 
 site_key = ''
+
+upyun_enabled = False

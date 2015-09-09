@@ -13,3 +13,4 @@ bower_components
 lib
 .sass-cache/
 *.swp
+test.db
