@@ -388,7 +388,7 @@ class TopicHandler(webapp.RequestHandler):
                 hottest = hottest + '<a href="/go/' + node.name + '" class="item_node">' + node.title + '</a>'
             memcache.set('index_hottest_sidebar', hottest, 86400)
         template_values['index_hottest_sidebar'] = hottest
-        if member is not False:
+        if member:
             try:
                 blocked = pickle.loads(member.blocked.encode('utf-8'))
             except:

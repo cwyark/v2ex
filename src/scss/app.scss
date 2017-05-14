@@ -13,7 +13,7 @@ html {
 }
 
 body {
-	padding: 0px;
+	padding: 70px 0px 0px 0px;
 	margin: 0px;
 	font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti !important;
 	background-color: #fff;
@@ -135,7 +135,6 @@ a.dark:hover {
 /* IDs */
 
 #Top {
-	height:100px;
 }
 
 #top_class {
@@ -148,7 +147,6 @@ a.dark:hover {
 
 #TopMain {
 	width: 960px;
-	height: 80px;
 	text-align: center;
 	margin: 0px auto 0px auto;
 }

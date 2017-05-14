@@ -78,7 +78,7 @@
                 </div>
 				{% if topic.has_content %}
                 <div class="inner">
-                    <div class="content topic_content">{{ topic.content_rendered }}</div>
+                    <div class="content topic_content">{{ topic.content_rendered|safe }}</div>
                 </div>
 				{% endif %}
                 {% if member %}

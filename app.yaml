@@ -1,5 +1,3 @@
-application: v2ex
-version: alpha
 runtime: python27
 api_version: 1
 threadsafe: false

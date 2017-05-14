@@ -69,8 +69,8 @@ class NotificationsHandler(BaseHandler):
                 self.member.put()
                 memcache.set('Member_' + str(self.member.num), self.member, 86400)
                 memcache.set('nn::' + self.member.username_lower, notifications, 360)
-            self.values['notifications'] = notifications
-            self.set_title(u'提醒系统')
+            self.template_values['notifications'] = notifications
+            #self.set_title(u'提醒系统')
             self.finalize(template_name='notifications', mobile_optimized=True)
         else:
             self.redirect('/signin')
