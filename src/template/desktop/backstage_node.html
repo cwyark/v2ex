@@ -16,7 +16,7 @@
             <div class="sep20"></div>
             {% endif %}
             <div class="box">
-                <div class="cell"><div class="fr"><a href="/go/{{ node.name }}">返回节点</a></div><span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="/backstage">后台</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="/backstage/section/{{ section.name }}">{{ section.title|escape }}</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ node.title|escape }}</span></div>
+                <div class="cell"><div class="fr"><a href="/go/{{ node.name }}">返回节点</a></div><span class="grey"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="/backstage">后台</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="/backstage/section/{{ section.name }}">{{ section.title|escape }}</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ node.title|escape }}</span></div>
                 <div class="inner">
                     <form action="/backstage/node/{{ node.name }}" method="post">
                     {% if errors %}
@@ -117,7 +117,7 @@
         			            侧栏信息
         			        </td>
         			        <td width="200" align="left">
-        			            <span class="fade">头部，尾部及侧栏可使用 HTML</span>
+        			            <span class="grey">头部，尾部及侧栏可使用 HTML</span>
         			        </td>
         			    </tr>
         			    <tr>
@@ -130,7 +130,7 @@
         			            侧栏广告代码
         			        </td>
         			        <td width="200" align="left">
-        			            <span class="fade">如果为空则使用系统的默认 Google AdSense 样式</span>
+        			            <span class="grey">如果为空则使用系统的默认 Google AdSense 样式</span>
         			        </td>
         			    </tr>
         			    <tr>
@@ -175,7 +175,7 @@
                 </div>
                 <div class="inner">
                     <form enctype="multipart/form-data" action="/backstage/node/{{ node.name }}/avatar" method="post">
-                    <span class="fade">支持 1MB 以内的 PNG / GIF / JPG 图片文件作为头像，推荐使用正方形的透明 PNG 图片以获得最佳效果。</span>
+                    <span class="grey">支持 1MB 以内的 PNG / GIF / JPG 图片文件作为头像，推荐使用正方形的透明 PNG 图片以获得最佳效果。</span>
         			<div class="sep5"></div>
         			<table cellpadding="5" cellspacing="0" border="0">
         			    <tr>

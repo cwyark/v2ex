@@ -9,14 +9,14 @@
         <div id="Rightbar">
             {% if github_repos %}
 				<div class="box">
-					<div class="cell"><span class="fade">GitHub Public Repos</span></div>
+					<div class="cell"><span class="grey">GitHub Public Repos</span></div>
 						{% for repo in github_repos %}
 							<div class="inner">
 								<div class="ui grey ribbon label">
 									<i class="star icon"></i> {{repo.stargazers_count}}
 								 </div>
 								<div class="fr">
-									<strong class="fade">
+									<strong class="grey">
 									{% if repo.language %}
 										{{ repo.language }}
 									{% endif %}
@@ -25,7 +25,7 @@
 								<strong>
 									<a href="{{ repo.html_url }}" target="_blank" class="black">{{ repo.name }}</a>
 								</strong>
-								<div class="fade">{{ repo.description|escape|urlize }}</div>
+								<div class="grey">{{ repo.description|escape|urlize }}</div>
 							</div>
 						{% endfor %}
 				</div>
@@ -76,7 +76,7 @@
 							<h2 style="padding: 0px; margin: 0px; font-size: 22px; line-height: 22px;">{{ one.username }}</h2>
                             {% if one.tagline %}
                             <div class="sep5"></div>
-                            <span class="fade bigger">{{ one.tagline|escape }}</span>
+                            <span class="grey bigger">{{ one.tagline|escape }}</span>
                             {% endif %}
                             <div class="sep5"></div>
                             <span class="snow">{{ site.title }} 第 {{ one.num }} 号会员，加入于 {{ one.created|timezone:8|date:"Y-n-j G:i:s A" }}</span>
@@ -142,7 +142,7 @@
                 </div>
                 {% if blog %}
                 <div class="cell">
-                <img src="/static/img/chat.png" align="absmiddle" />&nbsp; <span class="fade">Latest from {{ one.username }}'s Blog</span> &nbsp;<span class="chevron">›</span>&nbsp; <a href="/blog/{{ one.username }}">{{ blog.title|escape }}</a>
+                <img src="/static/img/chat.png" align="absmiddle" />&nbsp; <span class="grey">Latest from {{ one.username }}'s Blog</span> &nbsp;<span class="chevron">›</span>&nbsp; <a href="/blog/{{ one.username }}">{{ blog.title|escape }}</a>
                 </div>
                 {% endif %}
                 {% if one.bio %}
@@ -153,7 +153,7 @@
             </div>
             <div class="sep20"></div>
             <div class="box">
-                <div class="cell"><span class="fade">{{ l10n.recent_topics }}</span></div>
+                <div class="cell"><span class="grey">{{ l10n.recent_topics }}</span></div>
                 <div class="inner">
                     <table cellpadding="5" cellspacing="0" border="0" width="100%" class="topics">
                         <tr>
@@ -166,7 +166,7 @@
                             <td align="right" width="50" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} lend">{% ifequal topic.replies 0 %}<span class="snow">{{ topic.replies }}</span>{% else %}<strong><span class="green">{{ topic.replies }}</span></strong>{% endifequal %}</td>
                             <td align="left" width="auto" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}"><a href="/t/{{ topic.num }}">{{ topic.title|escape }}</a></td>
                             <td align="left" width="80" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{% if topic.last_reply_by %}<a href="/member/{{ topic.last_reply_by }}" class="dark">{{ topic.last_reply_by }}</a>{% else %}<a href="/member/{{ topic.created_by }}" class="dark">{{ topic.created_by }}</a>{% endif %}</td>
-                            <td align="left" width="110" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} rend"><small class="fade">{{ topic.last_touched|timezone:8|date:"Y-n-j G:i:s"}}</small></td>
+                            <td align="left" width="110" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} rend"><small class="grey">{{ topic.last_touched|timezone:8|date:"Y-n-j G:i:s"}}</small></td>
                         </tr>
                         {% endfor %}
                     </table>
@@ -175,7 +175,7 @@
             {% if replies %}
             <div class="sep20"></div>
             <div class="box">
-                <div class="cell"><span class="fade">{{ l10n.recent_participated_topics }}</span></div>
+                <div class="cell"><span class="grey">{{ l10n.recent_participated_topics }}</span></div>
                 <div class="inner">
                     <table cellpadding="5" cellspacing="0" border="0" width="100%" class="topics">
                         <tr>
@@ -188,7 +188,7 @@
                             <td align="right" width="50" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} lend">{% ifequal reply.topic.replies 0 %}<span class="snow">{{ reply.topic.replies }}</span>{% else %}<strong><span class="green">{{ reply.topic.replies }}</span></strong>{% endifequal %}</td>
                             <td align="left" width="auto" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}"><a href="/t/{{ reply.topic.num }}">{{ reply.topic.title|escape }}</a></td>
                             <td align="left" width="80" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">{% if reply.topic.last_reply_by %}<a href="/member/{{ reply.topic.last_reply_by }}" class="dark">{{ reply.topic.last_reply_by }}</a>{% else %}<a href="/member/{{ reply.topic.created_by }}" class="dark">{{ reply.topic.created_by }}</a>{% endif %}</td>
-                            <td align="left" width="110" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} rend"><small class="fade">{{ reply.topic.last_touched|timezone:8|date:"Y-n-j G:i:s"}}</small></td>
+                            <td align="left" width="110" class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} rend"><small class="grey">{{ reply.topic.last_touched|timezone:8|date:"Y-n-j G:i:s"}}</small></td>
                         </tr>
                         {% endfor %}
                     </table>

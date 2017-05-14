@@ -59,7 +59,7 @@
     {% if member.avatar_large_url %}
     {% else %}
 		<div class="yellow">
-			<span class="fade">上傳您的頭像 <a href="/settings/avatar">上傳 →</a></span>
+			<span class="grey">上傳您的頭像 <a href="/settings/avatar">上傳 →</a></span>
 		</div>
     {% endif %}
     {% else %}
@@ -67,7 +67,7 @@
         <strong>Please choose a way to sign in</strong>
         {% ifequal site.title 'V2EX' %}
 			<div class="sep5"></div>
-			<span class="fade">V2EX 是一个关于分享和探索的地方</span>
+			<span class="grey">V2EX 是一个关于分享和探索的地方</span>
         {% endifequal %}
     </div>
     <div class="inner">

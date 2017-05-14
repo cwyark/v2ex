@@ -12,7 +12,7 @@
         </div>
         <div id="Content">
             <div class="box">
-                <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a> {{ l10n.chevron|safe }} 我收藏的主题</span></div>
+                <div class="cell"><span class="grey"><a href="/">{{ site.title }}</a> {{ l10n.chevron|safe }} 我收藏的主题</span></div>
                 {% if has_topics %}
                     {% for bookmark in bookmarks %}
                     <div class="cell from_{{ bookmark.topic.member.num }}">
@@ -31,7 +31,7 @@
                     	    <div class="sep3"></div>
                     		<span class="bigger" style="font-size: 16px">{% if site.use_topic_types %}{% if bookmark.topic.type %}<span style="display: inline-block; background-color: {{ bookmark.topic.type_color }}; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; color: #fff; padding: 0px 8px 0px 8px; font-size: 13px;">{{ bookmark.topic.type }}</span> &nbsp;{% endif %}{% endif %}<a href="/t/{{ bookmark.topic.num }}#reply{{ bookmark.topic.replies }}">{{ bookmark.topic.title|escape }}</a></span>
                     		<div class="sep5"></div>
-                    		<span class="fade" style="font-size: 10px;">By <strong><a href="/member/{{ bookmark.topic.created_by|escape }}" class="dark">{{ bookmark.topic.created_by|escape }}</a></strong>{% if bookmark.topic.node_name %} in <strong><a href="/go/{{ bookmark.topic.node_name }}" class="dark">{{ bookmark.topic.node_title|escape }}</a></strong>{% endif %}<br />
+                    		<span class="grey" style="font-size: 10px;">By <strong><a href="/member/{{ bookmark.topic.created_by|escape }}" class="dark">{{ bookmark.topic.created_by|escape }}</a></strong>{% if bookmark.topic.node_name %} in <strong><a href="/go/{{ bookmark.topic.node_name }}" class="dark">{{ bookmark.topic.node_title|escape }}</a></strong>{% endif %}<br />
                             <span class="created">{{ bookmark.topic.last_touched|timesince }} ago{% if bookmark.topic.last_reply_by %} replied by <a href="/member/{{ bookmark.topic.last_reply_by }}" class="dark">{{ bookmark.topic.last_reply_by }}</a>{% endif %}</span>
                     	</td>
                     	</tr>

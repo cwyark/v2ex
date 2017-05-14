@@ -9,17 +9,17 @@ m   <div id="Wrapper">
             {% include 'rightbar/user.html' %}
             <div class="sep20"></div>
             <div class="box">
-                <div class="cell"><span class="fade">{{ l10n.personal_records }}</span>
+                <div class="cell"><span class="grey">{{ l10n.personal_records }}</span>
                 </div>
                 <div class="cell">
                     <table cellpadding="5" cellspacing="0" border="0">
                         <tr>
-                            <td align="right"><span class="fade">{{ l10n.blocked }}</span></td>
+                            <td align="right"><span class="grey">{{ l10n.blocked }}</span></td>
                             <td align="left"><strong>{{ member_stats_blocks }}</strong></td>
                         </tr>
                     </table>
                 </div>
-                <div class="inner"><span class="fade">{{ l10n.updated_every_4_hours }}</span></div>
+                <div class="inner"><span class="grey">{{ l10n.updated_every_4_hours }}</span></div>
             </div>
         </div>
         <div id="Content">
@@ -31,7 +31,7 @@ m   <div id="Wrapper">
             {% endif %}
             <div class="box">
                 <div class="cell">
-					<span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ l10n.settings }}</span>
+					<span class="grey"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ l10n.settings }}</span>
 				</div>
                 <div class="inner">
                     <form action="/settings" method="post" class="ui form">
@@ -191,7 +191,7 @@ m   <div id="Wrapper">
         			        </td>
         			        <td align="left">
         			            <div class="sep5"></div>
-        			            <a href="/settings/avatar" class="ui button">{{ l10n.upload_new_avatar }}</a> &nbsp; <!--<span class="fade">{{ l10n.gravatar_support }}</span>-->
+        			            <a href="/settings/avatar" class="ui button">{{ l10n.upload_new_avatar }}</a> &nbsp; <!--<span class="grey">{{ l10n.gravatar_support }}</span>-->
         			        </td>
         			    </tr>
         			</table>
@@ -214,7 +214,7 @@ m   <div id="Wrapper">
 						</ul>
         			</div>
         			{% else %}
-        			<label class="fade">{{ l10n.leave_blank }}</label>
+        			<label class="grey">{{ l10n.leave_blank }}</label>
         			{% endif %}
         			    <div class="field">
 							<label>{{ l10n.current_password }}</label>
@@ -243,9 +243,9 @@ m   <div id="Wrapper">
         			            <img src="{{ member.twitter_profile_image_url }}" />
         			        </td>
         			        <td width="200" align="left">
-        			            {{ member.twitter_name }} <span class="fade">@<a href="http://twitter.com/{{ member.twitter_screen_name }}" target="_blank">{{ member.twitter_screen_name }}</a></span>
+        			            {{ member.twitter_name }} <span class="grey">@<a href="http://twitter.com/{{ member.twitter_screen_name }}" target="_blank">{{ member.twitter_screen_name }}</a></span>
         			            <div class="sep5"></div>
-        			            <span class="fade">
+        			            <span class="grey">
         			            {{ member.twitter_statuses_count }} tweets
         			            <div class="sep3"></div>
         			            {{ member.twitter_followers_count }} followers, following {{ member.twitter_friends_count }}
@@ -265,7 +265,7 @@ m   <div id="Wrapper">
         			            {{ l10n.account_status }}
         			        </td>
         			        <td width="200" align="left">
-        			            <span class="fade">{{ l10n.twitter_not_linked }}</span>
+        			            <span class="grey">{{ l10n.twitter_not_linked }}</span>
         			        </td>
         			    </tr>
         			    <tr>

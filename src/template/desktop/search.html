@@ -16,7 +16,7 @@
                     <a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> 搜索 <span class="chevron">&nbsp;›&nbsp;</span> <strong>{{ q|escape }}</strong>
                 </div>
                 {% if node %}
-                <div class="cell"><span class="fade bigger">相关节点 <span class="chevron">&nbsp;›&nbsp;</span> <a href="/go/{{ node.name }}">{{ node.title }}</a> &nbsp; <small>{{ node.topics }} 个主题</small></span></div>
+                <div class="cell"><span class="grey bigger">相关节点 <span class="chevron">&nbsp;›&nbsp;</span> <a href="/go/{{ node.name }}">{{ node.title }}</a> &nbsp; <small>{{ node.topics }} 个主题</small></span></div>
                 {% endif %}
                 {% if topics %}
                 {% include 'common/topics_search.html' %}

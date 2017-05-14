@@ -11,7 +11,7 @@
 <div class="sep10"></div>
 <div class="fr"><input type="submit" value="Tweet" class="super normal button" /></div>
 {% if rate_limit %}
-<small class="fade">Now tweeting from @<strong><a href="/twitter/user/{{ member.twitter_screen_name }}" class="dark">{{ member.twitter_screen_name }}</a></strong>
+<small class="grey">Now tweeting from @<strong><a href="/twitter/user/{{ member.twitter_screen_name }}" class="dark">{{ member.twitter_screen_name }}</a></strong>
 <div class="sep3"></div>
 <strong><span class="snow">API Rate Limit:</span> {{ rate_limit.remaining_hits }} / {{ rate_limit.hourly_limit }}</strong></small>
 {% endif %}

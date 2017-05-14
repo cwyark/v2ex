@@ -16,7 +16,7 @@
             <div class="sep20"></div>
             {% endif %}
             <div class="box">
-                <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="/backstage">后台</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="/backstage/minisite/{{ minisite.name }}">{{ minisite.title|escape }}</a> <span class="chevron">&nbsp;›&nbsp;</span> 添加新页面</span></div>
+                <div class="cell"><span class="grey"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="/backstage">后台</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="/backstage/minisite/{{ minisite.name }}">{{ minisite.title|escape }}</a> <span class="chevron">&nbsp;›&nbsp;</span> 添加新页面</span></div>
                 <div class="inner">
                     <form action="/backstage/new/page/{{ minisite.name }}" method="post">
                     {% if errors %}
@@ -44,7 +44,7 @@
         			        <td width="200" align="left">
         			            <input type="text" class="sl" name="name" value="{{ page_name|escape }}" />
         			            <div class="sep5"></div>
-        			            <span class="fade">这将成为 URL 的一部分，只能使用半角字母和数字及点号</span>
+        			            <span class="grey">这将成为 URL 的一部分，只能使用半角字母和数字及点号</span>
         			        </td>
         			    </tr>
         			    <tr>
@@ -71,7 +71,7 @@
         			        <td width="200" align="left">
         			            <input type="text" class="sl" name="content_type" value="{{ page_content_type|escape }}" />
         			            <div class="sep5"></div>
-        			            <span class="fade">默认是 text/html;charset=utf-8</span>
+        			            <span class="grey">默认是 text/html;charset=utf-8</span>
         			        </td>
         			    </tr>
         			    <tr>
@@ -98,7 +98,7 @@
         			        <td width="200" align="left">
         			            <input type="text" class="sls" name="weight" value="{{ page_weight }}" />
         			            <div class="sep5"></div>
-        			            <span class="fade">请输入一个整数</span>
+        			            <span class="grey">请输入一个整数</span>
         			        </td>
         			    </tr>
                         <tr>

@@ -51,7 +51,7 @@
 					<a href="/">{{ site.title }}</a> {{ l10n.chevron|safe }} <a href="/go/{{ node.name}}">{{ node.title|escape }}</a>
 				</span>
                 <h1>{{ topic.title|escape }}</h1>
-                <small class="fade">
+                <small class="grey">
 					{% if site.use_topic_types %}
 						{% if topic.type %}
 							<span style="display: inline-block; background-color: {{ topic.type_color }}; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; color: #fff; padding: 0px 8px 0px 8px; font-size: 11px;">{{ topic.type }}</span> &nbsp;
@@ -137,7 +137,7 @@
                             <a href="/t/{{ topic.num }}?f=1">{{ l10n.just_topic_creator }}</a>
                         {% endif %}
                     </div>
-                    <span class="fade">{{ topic.replies }} {{ l10n.replies }} &nbsp;<span class="snow">|</span>&nbsp; {{ l10n.till }} {{ topic.last_touched|timezone:8|date:"Y-n-j G:i:s A" }}</span>
+                    <span class="grey">{{ topic.replies }} {{ l10n.replies }} &nbsp;<span class="snow">|</span>&nbsp; {{ l10n.till }} {{ topic.last_touched|timezone:8|date:"Y-n-j G:i:s A" }}</span>
                 </div>
                 <script type="text/javascript">
                     is_admin = {% if is_admin %}{{ is_admin }}{% else %}false{% endif %};
@@ -206,15 +206,15 @@
                         {% if errors %}
                             <strong class="black">{{ reply_content_error_message }}</strong>
                         {% else %}
-                        <div class="fr fade">⬆ <a href="#_top" class="dark">回到顶部</a></div>
-                        <span class="fade">{{ l10n.add_a_reply_now }}</span>
+                        <div class="fr grey">⬆ <a href="#_top" class="dark">回到顶部</a></div>
+                        <span class="grey">{{ l10n.add_a_reply_now }}</span>
                         {% endif %}
                     </div>
 
                     <div class="cell">
                         <textarea class="mll" name="content" id="reply_content" style="height: 200px;" onkeyup="c();"></textarea>
                         <div class="sep10"></div>
-                        <div class="fr fade" id="e"></div>
+                        <div class="fr grey" id="e"></div>
                         <input type="submit" class="ui button" value="{{ l10n.send }}" />
                     </div>
                 </form>

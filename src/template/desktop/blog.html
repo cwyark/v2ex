@@ -14,7 +14,7 @@
                             <td width="10" valign="top"></td>
                             <td width="auto" align="left"><span class="bigger"><a href="/member/{{ one.username }}">{{ one.username }}</a></span>
                                 <div class="sep5"></div>
-                                <span class="fade">{{ one.tagline|escape }}</span>
+                                <span class="grey">{{ one.tagline|escape }}</span>
                             </td>
                         </tr>
                     </table>
@@ -53,7 +53,7 @@
             </div>
             <div class="sep20"></div>
             <div class="box">
-                <div class="cell"><strong class="fade">{{ one.username }} 关注的</strong></div>
+                <div class="cell"><strong class="grey">{{ one.username }} 关注的</strong></div>
                 <div class="inner">
                     {% for friend in friends %}
                     <div style="display: inline-block; margin: 5px;"><a href="/blog/{{ friend.one.username }}">{{ friend.one|avatar:"normal"|safe }}</a></div>
@@ -84,7 +84,7 @@
                 </div>
                 {% endif %}
                 <div class="sep10"></div>
-                <small class="fade">Posted at <a href="/entry/{{ topic.num }}" class="dark">{{ topic.created|timesince }}</a> ago • {{ topic.replies }} comments</small>
+                <small class="grey">Posted at <a href="/entry/{{ topic.num }}" class="dark">{{ topic.created|timesince }}</a> ago • {{ topic.replies }} comments</small>
             </div>
             {% endfor %}
             </div>

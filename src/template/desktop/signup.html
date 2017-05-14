@@ -10,7 +10,7 @@
         </div>
         <div id="Content">
             <div class="box">
-                <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ l10n.signup }}</span></div>
+                <div class="cell"><span class="grey"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ l10n.signup }}</span></div>
                 <div class="inner">
                     <form action="/signup" method="post" class="ui form">
         			{% if errors %}
@@ -38,7 +38,7 @@
         			    <div class="field">
 							<label>{{ l10n.username }}</label>
 							<input type="text" class="sl" name="username" value="{{ member_username|escape }}" />
-							<div class="sep5"></div><span class="fade">请使用半角的 a-z 或数字 0-9</span>
+							<div class="sep5"></div><span class="grey">请使用半角的 a-z 或数字 0-9</span>
         			    </div>
         			    <div class="field">
 							<label>{{ l10n.password }}</label>
@@ -48,7 +48,7 @@
         			        <td width="80" align="right" valign="top">
 								<label>{{ l10n.email }}</label>
         			            <input type="text" class="sl" name="email" value="{{ member_email|escape }}" />
-        			            <div class="sep5"></div><span class="fade">请使用真实邮箱注册</span>
+        			            <div class="sep5"></div><span class="grey">请使用真实邮箱注册</span>
         			    </div>
         			    <div class="field">
 							{{ captchahtml|safe}}
@@ -61,7 +61,7 @@
             </div>
             <div class="sep20"></div>
             <div class="box">
-                <div class="cell"><span class="fade">关于注册 V2EX</span></div>
+                <div class="cell"><span class="grey">关于注册 V2EX</span></div>
                 <div class="cell" style="font-size: 13px; line-height: 150%;">
                     V2EX 是一个创意工作者社区，注册并登录后，你将可以在这里和大家<a href="/go/share" target="_blank">分享你的最新发现</a>，讨论解决各种技术问题，<a href="/go/jobs" target="_blank">寻找合作伙伴</a>，<a href="/go/create" target="_blank">展示你的作品</a>，任意的<a href="/go/random" target="_blank">奇思妙想</a>，及更多<a href="/planes" target="_blank">等待你去发现的惊喜</a>。以下是在注册及将来的使用过程中你需要知道的几点：<br /><br />
 

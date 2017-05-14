@@ -16,7 +16,7 @@
             <div class="sep20"></div>
             {% endif %}
             <div class="box">
-                <div class="cell"><span class="fade"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="/backstage">后台</a> <span class="chevron">&nbsp;›&nbsp;</span> 添加新站点</span></div>
+                <div class="cell"><span class="grey"><a href="/">{{ site.title }}</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="/backstage">后台</a> <span class="chevron">&nbsp;›&nbsp;</span> 添加新站点</span></div>
                 <div class="inner">
                     <form action="/backstage/new/minisite" method="post">
                     {% if errors %}
@@ -44,7 +44,7 @@
         			        <td width="200" align="left">
         			            <input type="text" class="sl" name="name" value="{{ minisite_name|escape }}" />
         			            <div class="sep5"></div>
-        			            <span class="fade">这将成为 URL 的一部分，请勿使用系统保留关键字</span>
+        			            <span class="grey">这将成为 URL 的一部分，请勿使用系统保留关键字</span>
         			        </td>
         			    </tr>
         			    <tr>
