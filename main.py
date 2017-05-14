@@ -153,7 +153,7 @@ class SignupHandler(BaseHandler):
 
         chtml = captcha.displayhtml(
             public_key=config.recaptcha_public_key,
-            use_ssl=False,
+            use_ssl=True,
             error=None)
         self.template_values['errors'] = 0
         self.template_values['captchahtml'] = chtml
@@ -262,7 +262,7 @@ class SignupHandler(BaseHandler):
             error = cResponse.error_code
             chtml = captcha.displayhtml(
                 public_key = config.recaptcha_public_key,
-                use_ssl = False,
+                use_ssl = True,
                 error = cResponse.error_code)
             self.template_values['captchahtml'] = chtml
             self.template_values['recaptcha_error'] = 1
