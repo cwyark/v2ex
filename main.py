@@ -519,21 +519,21 @@ class NodeHandler(BaseHandler):
             if self.member:
                 favorited = self.member.hasFavorited(node)
                 self.template_values['favorited'] = favorited
-                recent_nodes = memcache.get('member::' + str(member.num) + '::recent_nodes')
-                recent_nodes_ids = memcache.get('member::' + str(member.num) + '::recent_nodes_ids')
+                recent_nodes = memcache.get('member::' + str(self.member.num) + '::recent_nodes')
+                recent_nodes_ids = memcache.get('member::' + str(self.member.num) + '::recent_nodes_ids')
                 if recent_nodes and recent_nodes_ids:
                     if (node.num in recent_nodes_ids) is not True:
                         recent_nodes.insert(0, node)
                         recent_nodes_ids.insert(0, node.num)
-                        memcache.set('member::' + str(member.num) + '::recent_nodes', recent_nodes, 7200)
-                        memcache.set('member::' + str(member.num) + '::recent_nodes_ids', recent_nodes_ids, 7200)
+                        memcache.set('member::' + str(self.member.num) + '::recent_nodes', recent_nodes, 7200)
+                        memcache.set('member::' + str(self.member.num) + '::recent_nodes_ids', recent_nodes_ids, 7200)
                 else:
                     recent_nodes = []
                     recent_nodes.append(node)
                     recent_nodes_ids = []
                     recent_nodes_ids.append(node.num)
-                    memcache.set('member::' + str(member.num) + '::recent_nodes', recent_nodes, 7200)
-                    memcache.set('member::' + str(member.num) + '::recent_nodes_ids', recent_nodes_ids, 7200)
+                    memcache.set('member::' + str(self.member.num) + '::recent_nodes', recent_nodes, 7200)
+                    memcache.set('member::' + str(self.member.num) + '::recent_nodes_ids', recent_nodes_ids, 7200)
                 self.template_values['recent_nodes'] = recent_nodes
             self.template_values['page_title'] = self.site.title + u' › ' + node.title
             # Pagination
