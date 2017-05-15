@@ -114,6 +114,12 @@ handlers:
 - url: /twitter/.*
   script: t.application
 
+- url: /auth/?
+  script: auth.application
+
+- url: /auth/.*
+  script: auth.application
+
 - url: /time/?
   script: misc.application
 
