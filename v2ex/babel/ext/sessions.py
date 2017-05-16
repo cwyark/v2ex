@@ -56,6 +56,13 @@ class Session(object):
             del self.session[keyname]
             self._update_cache()
 
+    # Support the dictionary pop() method
+    def pop(self, keyname, default=None):
+        if keyname in self.session:
+            #self.delete_item(keyname)
+            return self.session[keyname]
+        return default
+
     # Support the dictionary get() method
     def get(self, keyname, default=None):
         if keyname in self.session:

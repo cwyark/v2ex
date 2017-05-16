@@ -37,6 +37,8 @@ from v2ex.babel.handlers import BaseHandler
 
 from simpleauth import SimpleAuthHandler
 
+import config
+
 FACEBOOK_AVATAR_URL = 'https://graph.facebook.com/{0}/picture?type=large'
 DEFAULT_AVATAR_URL = '/img/missing-avatar.png'
 
@@ -69,6 +71,8 @@ class AuthHandler(BaseHandler, SimpleAuthHandler):
           'public-profile-url': 'link'
         }
     }
+
+    session = Session()
 
     def _on_signin(self, data, auth_info, provider, extra=None):
         """Callback whenever a new or existing user is logging in.
@@ -131,8 +135,7 @@ class AuthHandler(BaseHandler, SimpleAuthHandler):
         return self.redirect(destination_url)
 
     def logout(self):
-        self.auth.unset_session()
-        self.redirect('/')
+        self.redirect('/signout')
 
     def handle_exception(self, exception, debug):
         logging.error(exception)
@@ -143,11 +146,11 @@ class AuthHandler(BaseHandler, SimpleAuthHandler):
 
     def _get_consumer_info_for(self, provider):
         """Returns a tuple (key, secret) for auth init requests."""
-        return secrets.AUTH_CONFIG[provider]
+        return config.AUTH_CONFIG[provider]
 
     def _get_optional_params_for(self, provider):
         """Returns optional parameters for auth init requests."""
-        return secrets.AUTH_OPTIONAL_PARAMS.get(provider)
+        return config.AUTH_OPTIONAL_PARAMS.get(provider)
           	
     def _to_user_model_attrs(self, data, attrs_map):
         """Get the needed information from the provider dataset."""
@@ -159,6 +162,8 @@ class AuthHandler(BaseHandler, SimpleAuthHandler):
         return user_attrs
   
 routes = [
+    webapp.Route('/auth/logout',
+        handler='auth.AuthHandler:logout', name='logout'),
     webapp.Route('/auth/<provider>',
         handler='auth.AuthHandler:_simple_auth', name='auth_login'),
     webapp.Route('/auth/<provider>/callback',

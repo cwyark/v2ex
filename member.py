@@ -193,9 +193,6 @@ class SettingsHandler(webapp.RequestHandler):
             if (member.website == None):
                 member.website = ''
             template_values['member_website'] = member.website
-            if (member.twitter == None):
-                member.twitter = ''
-            template_values['member_twitter'] = member.twitter
             if (member.location == None):
                 member.location = ''
             if member.psn is None:
@@ -223,8 +220,6 @@ class SettingsHandler(webapp.RequestHandler):
             template_values['member_l10n'] = member.l10n
             s = GetLanguageSelect(member.l10n)
             template_values['s'] = s
-            if member.twitter_sync == 1:
-                template_values['member_twitter_sync'] = 1
             if member.use_my_css == 1:
                 template_values['member_use_my_css'] = 1
             if (member.my_css == None):
@@ -264,7 +259,6 @@ class SettingsHandler(webapp.RequestHandler):
             template_values['member_username'] = member.username
             template_values['member_email'] = member.email
             template_values['member_website'] = member.website
-            template_values['member_twitter'] = member.twitter
             # Verification: password
             password_error = 0
             password_update = False
@@ -345,29 +339,6 @@ class SettingsHandler(webapp.RequestHandler):
             template_values['member_website'] = member_website
             template_values['member_website_error'] = member_website_error
             template_values['member_website_error_message'] = member_website_error_messages[member_website_error]
-            # Verification: Twitter
-            member_twitter_error = 0
-            member_twitter_error_messages = ['',
-                u'Twitter 用户名长度不能超过 20 个字符',
-                u'Twitter 用户名不符合规则'
-            ]
-            member_twitter = self.request.get('twitter').strip()
-            if (len(member_twitter) == 0):
-                member_twitter = ''
-            else:
-                if (len(member_twitter) > 20):
-                    errors = errors + 1
-                    member_twitter_error = 1
-                else:
-                    p = re.compile('[a-zA-Z0-9\_]+')
-                    if (p.search(member_twitter)):
-                        errors = errors
-                    else:
-                        errors = errors + 1
-                        member_twitter_error = 2
-            template_values['member_twitter'] = member_twitter
-            template_values['member_twitter_error'] = member_twitter_error
-            template_values['member_twitter_error_message'] = member_twitter_error_messages[member_twitter_error]
             # Verification: psn
             member_psn_error = 0
             member_psn_error_messages = ['',
@@ -529,14 +500,6 @@ class SettingsHandler(webapp.RequestHandler):
             s = GetLanguageSelect(member_l10n)
             template_values['s'] = s
             template_values['member_l10n'] = member_l10n
-            # Verification: twitter_sync
-            if member.twitter_oauth == 1:
-                member_twitter_sync = self.request.get('twitter_sync')
-                if member_twitter_sync == 'on':
-                    member_twitter_sync = 1
-                else:
-                    member_twitter_sync = 0
-                template_values['member_twitter_sync'] = member_twitter_sync
             # Verification: use_my_css
             member_use_my_css = self.request.get('use_my_css')
             if member_use_my_css == 'on':
@@ -563,14 +526,11 @@ class SettingsHandler(webapp.RequestHandler):
             if (errors == 0):
                 member.email = member_email.lower()
                 member.website = member_website
-                member.twitter = member_twitter
                 member.psn = member_psn
                 member.btc = member_btc
                 member.github = member_github
                 member.location = member_location
                 member.tagline = member_tagline
-                if member.twitter_oauth == 1:
-                    member.twitter_sync = member_twitter_sync
                 member.use_my_css = member_use_my_css
                 member.my_css = member_my_css
                 if member_my_home_error == 0 and len(member_my_home) > 0:
