@@ -241,15 +241,13 @@ class SignupHandler(BaseHandler):
         self.template_values['member_email_error'] = member_email_error
         self.template_values['member_email_error_message'] = member_email_error_messages[member_email_error]
         # Verification: reCAPTCHA
-        challenge = self.request.get('recaptcha_challenge_field')
-        response = self.request.get('recaptcha_response_field')
+        response = self.request.get('g-recaptcha-response')
         try:
             remoteip = os.environ['REMOTE_ADDR']
         except:
             remoteip = self.request.remote_addr
 
         cResponse = captcha.submit(
-                challenge,
                 response,
                 config.recaptcha_private_key,
                 remoteip)
