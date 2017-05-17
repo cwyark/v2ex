@@ -58,7 +58,8 @@ class AuthHandler(BaseHandler, SimpleAuthHandler):
         'googleplus': {
           'image': lambda img: ('avatar_url', img.get('url', DEFAULT_AVATAR_URL)),
           'displayName': 'name',
-          'url': 'link'
+          'url': 'link',
+          'emails': "emails"
         },
         'twitter': {
           'profile_image_url': 'avatar_url',
@@ -85,54 +86,72 @@ class AuthHandler(BaseHandler, SimpleAuthHandler):
         auth_id = '%s:%s' % (provider, data['id'])
 
         logging.debug('Looking for a user with id %s', auth_id)
-        user = self.auth.store.user_model.get_by_auth_id(auth_id)
         _attrs = self._to_user_model_attrs(data, self.USER_ATTRS[provider])
 
-        if user:
-          logging.debug('Found existing user to log in')
-          # Existing users might've changed their profile data so we update our
-          # local model anyway. This might result in quite inefficient usage
-          # of the Datastore, but we do this anyway for demo purposes.
-          #
-          # In a real app you could compare _attrs with user's properties fetched
-          # from the datastore and update local user in case something's changed.
-          user.populate(**_attrs)
-          user.put()
-          self.auth.set_session(self.auth.store.user_to_dict(user))
+        logging.debug(_attrs)
+
+        if self.member:
+            logging.debug('Found existing user to log in')
+            # Existing users might've changed their profile data so we update our
+            # local model anyway. This might result in quite inefficient usage
+            # of the Datastore, but we do this anyway for demo purposes.
+            #
+            # In a real app you could compare _attrs with user's properties fetched
+            # from the datastore and update local user in case something's changed.
+            #user.populate(**_attrs)
+            #user.put()
+            #self.auth.set_session(self.auth.store.user_to_dict(user))
 
         else:
-          # check whether there's a user currently logged in
-          # then, create a new user if nobody's signed in,
-          # otherwise add this auth_id to currently logged in user.
+            # if not a authed member
+            member = Member()
+            q = db.GqlQuery('SELECT * FROM Counter WHERE name = :1', 'member.max')
+            if (q.count() == 1):
+                counter = q[0]
+                counter.value = counter.value + 1
+            else:
+                counter = Counter()
+                counter.name = 'member.max'
+                counter.value = 1
+            q2 = db.GqlQuery('SELECT * FROM Counter WHERE name = :1', 'member.total')
+            if (q2.count() == 1):
+                counter2 = q2[0]
+                counter2.value = counter2.value + 1
+            else:
+                counter2 = Counter()
+                counter2.name = 'member.total'
+                counter2.value = 1
 
-          if self.logged_in:
-            logging.debug('Updating currently logged in user')
+            member.num = counter.value
+            member.username = _attrs.get("name", "Unknown")
+            member.username_lower = member.username.lower()
+            member.password = None
+            #member.email = member_email.lower()
+            emails = _attrs.get("emails", list)
+            email = emails[0].get("value", None)
+            member.email = email
+            #member.auth = hashlib.sha1(str(member.num) + ':' + member.password).hexdigest()
+            member.auth = auth_id
+            member.l10n = self.site.l10n
+            member.newbie = 1
+            member.noob = 0
+            if member.num == 1:
+                member.level = 0
+            else:
+                member.level = 1000
+            member.put()
+            counter.put()
+            counter2.put()
+            self.response.headers['Set-Cookie'] = str('auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
+            memcache.delete('member_total')
 
-            u = self.current_user
-            u.populate(**_attrs)
-            # The following will also do u.put(). Though, in a real app
-            # you might want to check the result, which is
-            # (boolean, info) tuple where boolean == True indicates success
-            # See webapp2_extras.appengine.auth.models.User for details.
-            u.add_auth_id(auth_id)
 
-          else:
-            logging.debug('Creating a brand new user')
-            ok, user = self.auth.store.user_model.create_user(auth_id, **_attrs)
-            if ok:
-              self.auth.set_session(self.auth.store.user_to_dict(user))
+            # Remember auth data during redirect, just for this demo. You wouldn't
+            # normally do this.
+            #self.session.add_flash(auth_info, 'auth_info')
+            #self.session.add_flash({'extra': extra}, 'extra')
 
-        # Remember auth data during redirect, just for this demo. You wouldn't
-        # normally do this.
-        self.session.add_flash(auth_info, 'auth_info')
-        self.session.add_flash({'extra': extra}, 'extra')
-
-        # user profile page
-        destination_url = '/profile'
-        if extra is not None:
-          params = webob.multidict.MultiDict(extra)
-          destination_url = str(params.get('destination_url', '/profile'))
-        return self.redirect(destination_url)
+        self.redirect("/")
 
     def logout(self):
         self.redirect('/signout')

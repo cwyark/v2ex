@@ -40,12 +40,6 @@ from v2ex.babel.ext.sessions import Session
 
 from django.utils import simplejson as json
 
-from twitter.oauthtwitter import OAuthApi
-from twitter.oauth import OAuthToken
-
-from config import twitter_consumer_key as CONSUMER_KEY
-from config import twitter_consumer_secret as CONSUMER_SECRET
-
 template.register_template_library('v2ex.templatetags.filters')
 
 import config
@@ -303,15 +297,6 @@ class NewTopicHandler(webapp.RequestHandler):
                     except:
                         pass
                     
-                    # Twitter Sync
-                    if member.twitter_oauth == 1 and member.twitter_sync == 1:
-                        access_token = OAuthToken.from_string(member.twitter_oauth_string)
-                        twitter = OAuthApi(CONSUMER_KEY, CONSUMER_SECRET, access_token)
-                        status = topic.title + ' #' + topic.node.name + ' http://' + self.request.headers['Host'] + '/t/' + str(topic.num)
-                        try:
-                            twitter.PostUpdate(status.encode('utf-8'))
-                        except:
-                            logging.error("Failed to sync to Twitter for Topic #" + str(topic.num))
                     # Change newbie status?
                     if member.newbie == 1:
                         now = datetime.datetime.now()
@@ -725,27 +710,6 @@ class TopicHandler(webapp.RequestHandler):
                             taskqueue.add(url='/index/topic/' + str(topic.num))
                         except:
                             pass
-                # Twitter Sync
-                if member.twitter_oauth == 1 and member.twitter_sync == 1:
-                    access_token = OAuthToken.from_string(member.twitter_oauth_string)
-                    twitter = OAuthApi(CONSUMER_KEY, CONSUMER_SECRET, access_token)
-                    if topic.replies > page_size:
-                        link = 'http://' + self.request.headers['Host'] + '/t/' + str(topic.num) + '?p=' + str(pages) + '#r' + str(topic.replies)
-                    else:
-                        link = 'http://' + self.request.headers['Host'] + '/t/' + str(topic.num) + '#r' + str(topic.replies)
-                    link_length = len(link)
-                    reply_content_length = len(reply.content)
-                    available = 140 - link_length - 1
-                    if available > reply_content_length:
-                        status = reply.content + ' ' + link
-                    else:
-                        status = reply.content[0:(available - 4)] + '... ' + link
-                    self.response.out.write('Status: ' + status)
-                    logging.error('Status: ' + status)
-                    try:
-                        twitter.PostUpdate(status.encode('utf-8'))
-                    except:
-                        logging.error("Failed to sync to Twitter for Reply #" + str(reply.num))
                 if pages > 1:
                     self.redirect('/t/' + str(topic.num) + '?p=' + str(pages) + '#reply' + str(topic.replies))
                 else:
