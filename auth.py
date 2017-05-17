@@ -103,53 +103,63 @@ class AuthHandler(BaseHandler, SimpleAuthHandler):
             #self.auth.set_session(self.auth.store.user_to_dict(user))
 
         else:
-            # if not a authed member
-            member = Member()
-            q = db.GqlQuery('SELECT * FROM Counter WHERE name = :1', 'member.max')
-            if (q.count() == 1):
-                counter = q[0]
-                counter.value = counter.value + 1
-            else:
-                counter = Counter()
-                counter.name = 'member.max'
-                counter.value = 1
-            q2 = db.GqlQuery('SELECT * FROM Counter WHERE name = :1', 'member.total')
-            if (q2.count() == 1):
-                counter2 = q2[0]
-                counter2.value = counter2.value + 1
-            else:
-                counter2 = Counter()
-                counter2.name = 'member.total'
-                counter2.value = 1
 
-            member.num = counter.value
-            member.username = _attrs.get("name", "Unknown")
-            member.username_lower = member.username.lower()
-            member.password = None
-            #member.email = member_email.lower()
-            emails = _attrs.get("emails", list)
-            email = emails[0].get("value", None)
-            member.email = email
-            #member.auth = hashlib.sha1(str(member.num) + ':' + member.password).hexdigest()
-            member.auth = auth_id
-            member.l10n = self.site.l10n
-            member.newbie = 1
-            member.noob = 0
-            if member.num == 1:
-                member.level = 0
+            email = _attrs.get("emails", list)[0].get("value", None)
+
+            q = db.GqlQuery("SELECT * FROM Member WHERE email = :1", email)
+
+            if q.count() == 1:
+                member = q[0]
             else:
-                member.level = 1000
-            member.put()
-            counter.put()
-            counter2.put()
+
+                # if not a authed member
+                member = Member()
+                q = db.GqlQuery('SELECT * FROM Counter WHERE name = :1', 'member.max')
+                if (q.count() == 1):
+                    counter = q[0]
+                    counter.value = counter.value + 1
+                else:
+                    counter = Counter()
+                    counter.name = 'member.max'
+                    counter.value = 1
+                q2 = db.GqlQuery('SELECT * FROM Counter WHERE name = :1', 'member.total')
+                if (q2.count() == 1):
+                    counter2 = q2[0]
+                    counter2.value = counter2.value + 1
+                else:
+                    counter2 = Counter()
+                    counter2.name = 'member.total'
+                    counter2.value = 1
+
+                member.num = counter.value
+                member.username = email.split("@")[0]
+                member.username_lower = member.username.lower()
+                member.password = None
+                member.email = email
+                member.auth = hashlib.sha1(auth_id).hexdigest()
+                member.l10n = self.site.l10n
+                member.newbie = 1
+                member.oauth = True
+                member.noob = 0
+                member.avatar_large_url = _attrs.get("avatar_url").split("?")[0] + "?sz=72"
+                member.avatar_normal_url = _attrs.get("avatar_url").split("?")[0] + "?sz=48"
+                member.avatar_mini_url = _attrs.get("avatar_url").split("?")[0] + "?sz=24"
+                if member.num == 1:
+                    member.level = 0
+                else:
+                    member.level = 1000
+                member.put()
+                counter.put()
+                counter2.put()
+
+                memcache.delete('member_total')
+
+
+                # Remember auth data during redirect, just for this demo. You wouldn't
+                # normally do this.
+                #self.session.add_flash(auth_info, 'auth_info')
+                #self.session.add_flash({'extra': extra}, 'extra')
             self.response.headers['Set-Cookie'] = str('auth=' + member.auth + '; expires=' + (datetime.datetime.now() + datetime.timedelta(days=365)).strftime("%a, %d-%b-%Y %H:%M:%S GMT") + '; path=/')
-            memcache.delete('member_total')
-
-
-            # Remember auth data during redirect, just for this demo. You wouldn't
-            # normally do this.
-            #self.session.add_flash(auth_info, 'auth_info')
-            #self.session.add_flash({'extra': extra}, 'extra')
 
         self.redirect("/")
 

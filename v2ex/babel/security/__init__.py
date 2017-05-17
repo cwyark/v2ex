@@ -41,11 +41,3 @@ def CheckAuth(handler):
                 return None
     else:
         return None
-
-
-def DoAuth(request, destination, message = None):
-    if message != None:
-        request.session['message'] = message
-    else:
-        request.session['message'] = u'请首先登入或注册'
-    return request.redirect('/signin?destination=' + destination)

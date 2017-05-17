@@ -76,8 +76,16 @@
 			<a href="/auth/googleplus">
 			    <img src="/static/img/btn_google_signin_light_normal_web.png">
 			</a>
-			<div class="sep10"></div>
-			{{ l10n.email_ony_member|safe}}
+            <br>
+            or 
+            <br>
+            <a href="/signin">
+                <button class="circular ui icon button">
+                    <i class="mail icon"></i>
+                </button>
+            </a>
+            <div class="sep10"></div>
+            {{ l10n.email_ony_member|safe}}
 		</div>
     </div>
     {% endif %}

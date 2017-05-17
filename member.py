@@ -198,6 +198,8 @@ class SettingsHandler(webapp.RequestHandler):
             if member.psn is None:
                 member.psn = ''
             template_values['member_psn'] = member.psn
+            template_values['member_oauth'] = member.oauth
+            print(template_values['member_oauth'])
             if (member.my_home == None):
                 member.my_home = ''
             template_values['member_my_home'] = member.my_home

@@ -10,6 +10,7 @@ from google.appengine.api import users
 class Member(db.Model):
     num = db.IntegerProperty(indexed=True)
     auth = db.StringProperty(required=False, indexed=True)
+    oauth = db.BooleanProperty(required=True, default=False)
     deactivated = db.IntegerProperty(required=True, default=0)
     username = db.StringProperty(required=False, indexed=True)
     username_lower = db.StringProperty(required=False, indexed=True)
