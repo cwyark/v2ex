@@ -122,7 +122,7 @@ class NewTopicHandler(webapp.RequestHandler):
             can_continue = False
         if ('Referer' in self.request.headers):
             has_v2ex = False
-            if ('http://mpiot-forum.appspot.com' in self.request.headers['Referer']):
+            if ('https://mpiot-forum.appspot.com' in self.request.headers['Referer']):
                 has_v2ex = True
             if ('http://' + str(site.domain) in self.request.headers['Referer']):
                 has_v2ex = True
@@ -527,7 +527,7 @@ class TopicHandler(webapp.RequestHandler):
             has_v2ex = False
             if ('http://localhost:8080' in self.request.headers['Referer']):
                 has_v2ex = True
-            if ('http://mpiot-forum.appspot.com' in self.request.headers['Referer']):
+            if ('https://mpiot-forum.appspot.com' in self.request.headers['Referer']):
                 has_v2ex = True
             if ('http://' + str(site.domain) in self.request.headers['Referer']):
                 has_v2ex = True
