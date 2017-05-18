@@ -1,1 +1,3 @@
-{{ topic.content|escape|youtube|youku|tudou|sinaimg|imgly|clly|mentions|gist|autolink|linebreaksbr }}
+{% autoescape off %}
+{{ topic.content|mentions|gist|linebreaksbr|bleachify }}
+{% endautoescape %}

@@ -1,11 +1,14 @@
 import re, string
 import logging
-from v2ex.babel.ext import bleach
 
 from django import template
 
 from datetime import timedelta
 import urllib, hashlib
+import bleach
+from functools import partial
+from bleach import Cleaner
+from bleach.linkifier import LinkifyFilter
 register = template.Library()
 
 # Configuration for urlize() function
@@ -32,10 +35,6 @@ def timezone(value, offset):
         offset = 12 - offset
     return value + timedelta(hours=offset)
 register.filter(timezone)
-
-def autolink2(text):
-    return bleach.linkify(text)
-register.filter(autolink2)
 
 def autolink(text, trim_url_limit=None, nofollow=False):
     """
@@ -236,3 +235,11 @@ def escapejs(value):
         value = value.replace(bad, good)
     return value
 register.filter(escapejs)
+
+allowed_tags = ['a', 'br', 'code']
+
+def bleachify(value):
+    cleaner = Cleaner(tags=allowed_tags, filters=[partial(LinkifyFilter, skip_tags=allowed_tags)])
+    value = cleaner.clean(value)
+    return value
+register.filter(bleachify)

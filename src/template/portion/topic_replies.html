@@ -24,7 +24,9 @@
                 <span class="snow">&nbsp; via {{ reply.source }}</span>
             {% endif %}
             <div class="sep5"></div>
-            <div class="content reply_content">{{ reply.content|escape|youku|sinaimg|imgly|clly|mentions|gist|autolink|linebreaksbr }}</div>
+            {% autoescape off %}
+            <div class="content reply_content">{{ reply.content|imgly|mentions|gist|linebreaksbr|bleachify }}</div>
+            {% endautoescape %}
             </td>
     </table>
     <script>
