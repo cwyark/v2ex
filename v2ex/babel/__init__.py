@@ -32,7 +32,7 @@ class Member(db.Model):
     last_modified = db.DateTimeProperty(auto_now=True)
     last_signin = db.DateTimeProperty()
     blocked = db.TextProperty(required=False, default='')
-    l10n = db.StringProperty(default='en')
+    l10n = db.StringProperty(default='zh-Hant')
     favorited_nodes = db.IntegerProperty(required=True, default=0)
     favorited_topics = db.IntegerProperty(required=True, default=0)
     favorited_members = db.IntegerProperty(required=True, default=0)
