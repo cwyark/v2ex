@@ -236,7 +236,7 @@ def escapejs(value):
     return value
 register.filter(escapejs)
 
-allowed_tags = ['a', 'br', 'code']
+allowed_tags = ['pre', 'a', 'br', 'code']
 
 def bleachify(value):
     cleaner = Cleaner(tags=allowed_tags, filters=[partial(LinkifyFilter, skip_tags=allowed_tags)])
