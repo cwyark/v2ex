@@ -42,7 +42,7 @@ handlers:
 - url: /settings/.*
   script: member.application
 
-- url: /member/.*
+- url: /member/([a-z0-9A-Z\_\-\.]+)
   script: member.application
 
 - url: /backstage

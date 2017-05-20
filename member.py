@@ -847,8 +847,8 @@ class MemberUnblockHandler(webapp.RequestHandler):
         self.redirect(go)
 
 application = webapp.WSGIApplication([
-    ('/member/([a-z0-9A-Z\_\-]+)', MemberHandler),
-    ('/member/([a-z0-9A-Z\_\-]+).json', MemberApiHandler),
+    ('/member/([a-z0-9A-Z\_\-\.]+)', MemberHandler),
+    ('/member/([a-z0-9A-Z\_\-\.]+).json', MemberApiHandler),
     ('/settings', SettingsHandler),
     ('/settings/password', SettingsPasswordHandler),
     ('/settings/avatar', SettingsAvatarHandler),
