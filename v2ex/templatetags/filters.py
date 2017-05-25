@@ -239,7 +239,7 @@ register.filter(escapejs)
 allowed_tags = ['pre', 'a', 'br', 'code']
 
 def bleachify(value):
-    cleaner = Cleaner(tags=allowed_tags, filters=[partial(LinkifyFilter, skip_tags=allowed_tags)])
+    cleaner = Cleaner(tags=allowed_tags, attributes={u'code':[u'class']}, filters=[partial(LinkifyFilter, skip_tags=allowed_tags)])
     value = cleaner.clean(value)
     return value
 register.filter(bleachify)
