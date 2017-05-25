@@ -236,10 +236,11 @@ def escapejs(value):
     return value
 register.filter(escapejs)
 
-allowed_tags = ['pre', 'a', 'br', 'code']
+allowed_tags = ['pre', 'a', 'br', 'code', 'img', 'h1', 'h2']
+allowed_attributes = {'img':['src'], '*':['class'], 'a':['href']}
 
 def bleachify(value):
-    cleaner = Cleaner(tags=allowed_tags, attributes={u'code':[u'class']}, filters=[partial(LinkifyFilter, skip_tags=allowed_tags)])
+    cleaner = Cleaner(tags=allowed_tags, attributes=allowed_attributes, filters=[partial(LinkifyFilter, callbacks=[])])
     value = cleaner.clean(value)
     return value
 register.filter(bleachify)
